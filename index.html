@@ -15,10 +15,11 @@
         .leaflet-popup-tip { background: #334155; }
         .leaflet-popup-close-button { color: #94a3b8 !important; font-size: 20px !important; }
 
-        /* Pin de Búsqueda */
-        .search-pin-icon { filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8)); animation: dropBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        /* --- PIN DE BÚSQUEDA (SIN TRANSFORM EN EL PADRE PARA NO ROMPER LEAFLET) --- */
+        .search-pin-icon { filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8)); }
+        .pin-bounce-inner { animation: dropBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes dropBounce {
-            0% { transform: translateY(-150px); opacity: 0; }
+            0% { transform: translateY(-100px); opacity: 0; }
             60% { transform: translateY(15px); opacity: 1; }
             80% { transform: translateY(-10px); }
             100% { transform: translateY(0); }
@@ -82,7 +83,6 @@
         .btn-create { background: #ef4444; } .btn-create:hover { background: #dc2626; }
         .btn-cancel-modal { background: #64748b; margin-top: 10px; } .btn-cancel-modal:hover { background: #475569; }
         .btn-danger-confirm { background: #991b1b; } .btn-danger-confirm:hover { background: #7f1d1d; }
-        
         .danger-level { display: flex; gap: 5px; }
         .level-btn { flex: 1; padding: 10px; border: none; text-align: center; cursor: pointer; font-weight: bold; border-radius: 4px; color: white; transition: transform 0.1s;}
 
@@ -145,7 +145,6 @@
 
     <div id="modal-overlay">
         <div id="modal">
-            <!-- FORMULARIO DE CREACIÓN -->
             <div id="modal-create-view">
                 <h2 style="margin-bottom: 20px;" id="modal-title">Nuevo Reporte</h2>
                 <form id="report-form">
@@ -172,8 +171,6 @@
                     <button type="button" class="btn-submit btn-cancel-modal" onclick="closeModal()" data-i18n="btn_cancel">Cancelar</button>
                 </form>
             </div>
-
-            <!-- PANTALLA DE CONFIRMACIÓN DE ELIMINACIÓN -->
             <div id="modal-delete-view" style="display: none; text-align: center;">
                 <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
                 <h2 style="margin-bottom: 15px; color: #f87171;" data-i18n="modal_confirm_title">¿Estás seguro?</h2>
@@ -190,58 +187,54 @@
         // --- TRADUCCIONES ---
         let currentLang = 'es';
         const translations = {
-            es: {
-                title: "🇻🇪 SismoVe Ayuda", lang_btn: "EN", search_placeholder: "Buscar calle o coordenadas...", search_btn: "Ir",
-                filter_critical: "Crítico", filter_danger: "Peligro", filter_help: "Ayuda", filter_info: "Info", filter_solved: "Solucionado",
-                legend_critical: "Punto Crítico", legend_danger: "Zona de Peligro", legend_help: "Zona de Ayuda/Recursos", legend_info: "Punto Informativo", legend_solved: "Solucionado",
-                ctx_critical: "🚨 Reportar Emergencia Crítica", ctx_danger: "⚠️ Marcar Zona de Peligro", ctx_help: "🏥 Solicitar/Ofrecer Ayuda", ctx_info: "ℹ️ Reporte Informativo",
-                modal_title_prefix: "Nuevo Reporte: ", lbl_title: "Título del Reporte", ph_title: "Ej: Edificio colapsado en la calle 10",
-                lbl_desc: "Descripción", ph_desc: "Detalles adicionales...", lbl_level: "Nivel de Peligro / Prioridad",
-                level_1: "Bajo", level_2: "Medio", level_3: "Alto", level_4: "Crítico", btn_submit: "Enviar al Mapa", btn_cancel: "Cancelar",
-                popup_priority: "Prioridad", popup_type: "Tipo", popup_solved: "✅ Marcar como Solucionado", popup_add_note: "+ Añadir nota", popup_save_note: "Guardar", popup_delete: "🗑️ Eliminar aviso",
-                sidebar_solved: "✅ SOLUCIONADO", type_critical: "Emergencia Crítica", type_danger: "Zona de Peligro", type_help: "Ayuda/Recurso", type_info: "Informativo",
-                alert_no_results: "Sin resultados para:",
-                modal_confirm_title: "¿Estás seguro?", modal_confirm_text: "Esta acción eliminará el aviso permanentemente y no se puede deshacer.", modal_btn_confirm_delete: "Sí, eliminar aviso"
-            },
-            en: {
-                title: "🇻🇪 SismoVe Help", lang_btn: "ES", search_placeholder: "Search street or coordinates...", search_btn: "Go",
-                filter_critical: "Critical", filter_danger: "Danger", filter_help: "Help", filter_info: "Info", filter_solved: "Solved",
-                legend_critical: "Critical Point", legend_danger: "Danger Zone", legend_help: "Help/Resources Zone", legend_info: "Info Point", legend_solved: "Solved",
-                ctx_critical: "🚨 Report Critical Emergency", ctx_danger: "⚠️ Mark Danger Zone", ctx_help: "🏥 Request/Offer Help", ctx_info: "ℹ️ Info Report",
-                modal_title_prefix: "New Report: ", lbl_title: "Report Title", ph_title: "Ex: Building collapsed on 10th street",
-                lbl_desc: "Description", ph_desc: "Additional details...", lbl_level: "Danger Level / Priority",
-                level_1: "Low", level_2: "Medium", level_3: "High", level_4: "Critical", btn_submit: "Send to Map", btn_cancel: "Cancel",
-                popup_priority: "Priority", popup_type: "Type", popup_solved: "✅ Mark as Solved", popup_add_note: "+ Add note", popup_save_note: "Save", popup_delete: "🗑️ Delete alert",
-                sidebar_solved: "✅ SOLVED", type_critical: "Critical Emergency", type_danger: "Danger Zone", type_help: "Help/Resource", type_info: "Informational",
-                alert_no_results: "No results for:",
-                modal_confirm_title: "Are you sure?", modal_confirm_text: "This action will delete the alert permanently and cannot be undone.", modal_btn_confirm_delete: "Yes, delete alert"
-            }
+            es: { title: "🇻🇪 SismoVe Ayuda", lang_btn: "EN", search_placeholder: "Buscar calle o coordenadas...", search_btn: "Ir", filter_critical: "Crítico", filter_danger: "Peligro", filter_help: "Ayuda", filter_info: "Info", filter_solved: "Solucionado", legend_critical: "Punto Crítico", legend_danger: "Zona de Peligro", legend_help: "Zona de Ayuda/Recursos", legend_info: "Punto Informativo", legend_solved: "Solucionado", ctx_critical: "🚨 Reportar Emergencia Crítica", ctx_danger: "⚠️ Marcar Zona de Peligro", ctx_help: "🏥 Solicitar/Ofrecer Ayuda", ctx_info: "ℹ️ Reporte Informativo", modal_title_prefix: "Nuevo Reporte: ", lbl_title: "Título del Reporte", ph_title: "Ej: Edificio colapsado en la calle 10", lbl_desc: "Descripción", ph_desc: "Detalles adicionales...", lbl_level: "Nivel de Peligro / Prioridad", level_1: "Bajo", level_2: "Medio", level_3: "Alto", level_4: "Crítico", btn_submit: "Enviar al Mapa", btn_cancel: "Cancelar", popup_priority: "Prioridad", popup_type: "Tipo", popup_solved: "✅ Marcar como Solucionado", popup_add_note: "+ Añadir nota", popup_save_note: "Guardar", popup_delete: "🗑️ Eliminar aviso", sidebar_solved: "✅ SOLUCIONADO", type_critical: "Emergencia Crítica", type_danger: "Zona de Peligro", type_help: "Ayuda/Recurso", type_info: "Informativo", alert_no_results: "Sin resultados para:", modal_confirm_title: "¿Estás seguro?", modal_confirm_text: "Esta acción eliminará el aviso permanentemente y no se puede deshacer.", modal_btn_confirm_delete: "Sí, eliminar aviso" },
+            en: { title: "🇻🇪 SismoVe Help", lang_btn: "ES", search_placeholder: "Search street or coordinates...", search_btn: "Go", filter_critical: "Critical", filter_danger: "Danger", filter_help: "Help", filter_info: "Info", filter_solved: "Solved", legend_critical: "Critical Point", legend_danger: "Danger Zone", legend_help: "Help/Resources Zone", legend_info: "Info Point", legend_solved: "Solved", ctx_critical: "🚨 Report Critical Emergency", ctx_danger: "⚠️ Mark Danger Zone", ctx_help: "🏥 Request/Offer Help", ctx_info: "ℹ️ Info Report", modal_title_prefix: "New Report: ", lbl_title: "Report Title", ph_title: "Ex: Building collapsed on 10th street", lbl_desc: "Description", ph_desc: "Additional details...", lbl_level: "Danger Level / Priority", level_1: "Low", level_2: "Medium", level_3: "High", level_4: "Critical", btn_submit: "Send to Map", btn_cancel: "Cancel", popup_priority: "Priority", popup_type: "Type", popup_solved: "✅ Mark as Solved", popup_add_note: "+ Add note", popup_save_note: "Save", popup_delete: "🗑️ Delete alert", sidebar_solved: "✅ SOLVED", type_critical: "Critical Emergency", type_danger: "Danger Zone", type_help: "Help/Resource", type_info: "Informational", alert_no_results: "No results for:", modal_confirm_title: "Are you sure?", modal_confirm_text: "This action will delete the alert permanently and cannot be undone.", modal_btn_confirm_delete: "Yes, delete alert" }
         };
         function t(key) { return translations[currentLang][key] || key; }
-        function toggleLanguage() {
-            currentLang = currentLang === 'es' ? 'en' : 'es';
-            document.getElementById('lang-toggle').innerText = t('lang_btn');
-            document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (translations[currentLang][key]) el.innerText = translations[currentLang][key]; });
-            document.querySelectorAll('[data-i18n-ph]').forEach(el => { const key = el.getAttribute('data-i18n-ph'); if (translations[currentLang][key]) el.placeholder = translations[currentLang][key]; });
-        }
+        function toggleLanguage() { currentLang = currentLang === 'es' ? 'en' : 'es'; document.getElementById('lang-toggle').innerText = t('lang_btn'); document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (translations[currentLang][key]) el.innerText = translations[currentLang][key]; }); document.querySelectorAll('[data-i18n-ph]').forEach(el => { const key = el.getAttribute('data-i18n-ph'); if (translations[currentLang][key]) el.placeholder = translations[currentLang][key]; }); }
 
         // --- MAPA BASE ---
         const map = L.map('map').setView([8.5, -66.5], 6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
 
         let markers = []; let currentLatLng = null; let currentType = null; let selectedLevel = 1;
-        let markerToDeleteId = null; // Variable para saber cuál vamos a borrar
+        let markerToDeleteId = null; let searchPinMarker = null;
         const colors = { critical: '#ef4444', danger: '#f97316', help: '#22c55e', info: '#3b82f6' };
 
-        // --- PIN ROJO DE BÚSQUEDA ---
-        let searchPinMarker = null;
+        // --- PIN ROJO CORREGIDO ---
         function createSearchPinIcon() {
-            return L.divIcon({ className: 'search-pin-icon', html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="32" height="48"><path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#EF4444" stroke="#B91C1C" stroke-width="1"/><circle cx="12" cy="12" r="5" fill="white"/></svg>`, iconSize: [32, 48], iconAnchor: [16, 48], popupAnchor: [0, -45] });
+            // Se aplica la animación a una capa interna (.pin-bounce-inner) para no romper los cálculos de posición de Leaflet
+            return L.divIcon({
+                className: 'search-pin-icon',
+                html: `<div class="pin-bounce-inner">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="32" height="48">
+                                <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#EF4444" stroke="#B91C1C" stroke-width="1"/>
+                                <circle cx="12" cy="12" r="5" fill="white"/>
+                            </svg>
+                        </div>`,
+                iconSize: [32, 48],
+                iconAnchor: [16, 48], 
+                popupAnchor: [0, -45]
+            });
         }
+
         function goToLocation(lat, lng, zoom = 17) {
+            // 1. Si ya hay un pin, lo quitamos inmediatamente antes de mover el mapa
+            if (searchPinMarker) { 
+                map.removeLayer(searchPinMarker); 
+                searchPinMarker = null; 
+            }
+
+            // 2. Movemos el mapa (Duración de 1.5 segundos)
             map.flyTo([lat, lng], zoom, { duration: 1.5 });
-            if (searchPinMarker) { map.removeLayer(searchPinMarker); }
-            searchPinMarker = L.marker([lat, lng], { icon: createSearchPinIcon() }).addTo(map);
+
+            // 3. Esperamos a que el vuelo del mapa termine (1500ms) y ENTONCES añadimos el pin.
+            // Esto evita que el pin se "vaya volando" por toda la pantalla durante el zoom
+            setTimeout(() => {
+                // Comprobación de seguridad por si el usuario hizo otra búsqueda mientras volaba
+                if (searchPinMarker) { map.removeLayer(searchPinMarker); }
+                searchPinMarker = L.marker([lat, lng], { icon: createSearchPinIcon() }).addTo(map);
+            }, 1600); 
         }
 
         // --- BUSCADOR ---
@@ -251,11 +244,8 @@
         const VZLA_VIEWBOX = "-73.304687,-0.351562,-59.765625,12.480204"; 
         function isLikelyCoordinates(text) { return /[\d°'"NSEW]/i.test(text); }
 
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout); const query = this.value.trim();
-            if (query.length < 4 || isLikelyCoordinates(query)) { searchResults.style.display = 'none'; return; }
-            searchTimeout = setTimeout(() => { fetchSuggestions(query); }, 1200);
-        });
+        searchInput.addEventListener('input', function() { clearTimeout(searchTimeout); const query = this.value.trim(); if (query.length < 4 || isLikelyCoordinates(query)) { searchResults.style.display = 'none'; return; } searchTimeout = setTimeout(() => { fetchSuggestions(query); }, 1200); });
+        
         function fetchSuggestions(query) {
             const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${VZLA_VIEWBOX}&bounded=0&limit=5&addressdetails=1`;
             fetch(url).then(res => res.json()).then(data => {
@@ -266,11 +256,13 @@
                 } else { searchResults.innerHTML = `<div class="search-no-results">${t('alert_no_results')} "${query}"</div>`; searchResults.style.display = 'block'; }
             }).catch(err => console.error(err));
         }
+        
         document.addEventListener('click', (e) => { if (!document.getElementById('search-wrapper').contains(e.target)) searchResults.style.display = 'none'; });
         document.getElementById('search-btn').addEventListener('click', performSearch);
         searchInput.addEventListener('keypress', function(e) { if(e.key === 'Enter') { e.preventDefault(); performSearch(); } });
 
         function parseDMSToDecimal(dmsString) { const regex = /(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([NSns]).*?(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([EWew])/i; const match = dmsString.match(regex); if (match) { let lat = parseInt(match[1]) + (parseInt(match[2]) / 60) + (parseFloat(match[3].replace(',', '.')) / 3600); let lon = parseInt(match[5]) + (parseInt(match[6]) / 60) + (parseFloat(match[7].replace(',', '.')) / 3600); if (match[4].toUpperCase() === 'S') lat *= -1; if (match[8].toUpperCase() === 'W') lon *= -1; return { lat, lon }; } return null; }
+        
         function performSearch() {
             const query = searchInput.value.trim(); if (!query) return; searchResults.style.display = 'none';
             const dmsCoords = parseDMSToDecimal(query); if (dmsCoords) { goToLocation(dmsCoords.lat, dmsCoords.lon, 18); return; }
@@ -282,55 +274,16 @@
         // --- CREACIÓN Y GESTIÓN DE REPORTES ---
         map.on('contextmenu', function(e) { e.originalEvent.preventDefault(); currentLatLng = e.latlng; const menu = document.getElementById('context-menu'); menu.style.left = e.originalEvent.clientX + 'px'; menu.style.top = e.originalEvent.clientY + 'px'; menu.style.display = 'block'; });
         document.addEventListener('click', () => { document.getElementById('context-menu').style.display = 'none'; });
-
         document.querySelectorAll('.ctx-item').forEach(item => { item.addEventListener('click', function() { currentType = this.getAttribute('data-type'); document.getElementById('report-type').value = currentType; document.getElementById('report-lat').value = currentLatLng.lat; document.getElementById('report-lng').value = currentLatLng.lng; document.getElementById('modal-title').innerText = t('modal_title_prefix') + t('type_'+currentType); openCreateModal(); document.getElementById('context-menu').style.display = 'none'; }); });
-        
         document.querySelectorAll('.level-btn').forEach(btn => { btn.addEventListener('click', function() { document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)'); this.style.transform = 'scale(1.1)'; selectedLevel = this.getAttribute('data-level'); document.getElementById('report-level').value = selectedLevel; }); });
 
-        // Controlar qué se ve en el Modal (Crear o Eliminar)
-        function openCreateModal() {
-            document.getElementById('modal-create-view').style.display = 'block';
-            document.getElementById('modal-delete-view').style.display = 'none';
-            document.getElementById('modal-overlay').style.display = 'flex';
-        }
-        function openDeleteModal(id) {
-            markerToDeleteId = id;
-            document.getElementById('modal-create-view').style.display = 'none';
-            document.getElementById('modal-delete-view').style.display = 'block';
-            document.getElementById('modal-overlay').style.display = 'flex';
-        }
+        function openCreateModal() { document.getElementById('modal-create-view').style.display = 'block'; document.getElementById('modal-delete-view').style.display = 'none'; document.getElementById('modal-overlay').style.display = 'flex'; }
+        function openDeleteModal(id) { markerToDeleteId = id; document.getElementById('modal-create-view').style.display = 'none'; document.getElementById('modal-delete-view').style.display = 'block'; document.getElementById('modal-overlay').style.display = 'flex'; }
+        function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; document.getElementById('report-form').reset(); document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)'); markerToDeleteId = null; }
 
-        function closeModal() {
-            document.getElementById('modal-overlay').style.display = 'none';
-            document.getElementById('report-form').reset();
-            document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)');
-            markerToDeleteId = null; // Limpiar variable por seguridad
-        }
+        document.getElementById('report-form').addEventListener('submit', function(e) { e.preventDefault(); addMarkerToMap(document.getElementById('report-lat').value, document.getElementById('report-lng').value, document.getElementById('inp-title').value, document.getElementById('inp-desc').value, document.getElementById('report-type').value, document.getElementById('report-level').value); closeModal(); });
 
-        document.getElementById('report-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            addMarkerToMap(document.getElementById('report-lat').value, document.getElementById('report-lng').value, document.getElementById('inp-title').value, document.getElementById('inp-desc').value, document.getElementById('report-type').value, document.getElementById('report-level').value);
-            closeModal();
-        });
-
-        // --- FUNCIÓN DE ELIMINAR ---
-        function confirmDeleteMarker() {
-            if (!markerToDeleteId) return;
-            
-            // 1. Eliminar del mapa
-            const markerIndex = markers.findIndex(m => m.id === markerToDeleteId);
-            if (markerIndex !== -1) {
-                map.removeLayer(markers[markerIndex].marker);
-                markers.splice(markerIndex, 1); // Sacarlo del arreglo
-            }
-            
-            // 2. Eliminar del menú lateral
-            const sidebarItem = document.querySelector(`.report-item[data-id="${markerToDeleteId}"]`);
-            if (sidebarItem) sidebarItem.remove();
-            
-            // 3. Cerrar modal
-            closeModal();
-        }
+        function confirmDeleteMarker() { if (!markerToDeleteId) return; const markerIndex = markers.findIndex(m => m.id === markerToDeleteId); if (markerIndex !== -1) { map.removeLayer(markers[markerIndex].marker); markers.splice(markerIndex, 1); } const sidebarItem = document.querySelector(`.report-item[data-id="${markerToDeleteId}"]`); if (sidebarItem) sidebarItem.remove(); closeModal(); }
 
         // --- LÓGICA DE PUNTOS ---
         function createCustomIcon(type, level) { const size = (type === 'critical' || parseInt(level) >= 4) ? 20 : 14; const className = (type === 'critical') ? 'marker-critical' : ''; return L.divIcon({ className, html: `<div style="width:${size}px; height:${size}px; background-color:${colors[type]}; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.5);"></div>`, iconSize: [size, size], iconAnchor: [size/2, size/2] }); }
@@ -351,7 +304,6 @@
                     </div>
                     <button class="btn-popup btn-add-note" id="btn-note-${markerId}" onclick="toggleNoteInput('${markerId}')">${t('popup_add_note')}</button>
                     <button class="btn-popup btn-solved" onclick="markAsSolved('${markerId}')">${t('popup_solved')}</button>
-                    <!-- NUEVO BOTÓN DE ELIMINAR -->
                     <button class="btn-popup btn-delete-popup" onclick="openDeleteModal('${markerId}')">${t('popup_delete')}</button>
                 </div>`;
             const marker = L.marker([lat, lng], { icon: createCustomIcon(type, level) }).addTo(map).bindPopup(popupContent, { maxWidth: 300 });
@@ -363,20 +315,11 @@
         function saveNote(markerId) { const input = document.getElementById(`note-input-${markerId}`); const text = input.value.trim(); if (!text) return; const markerData = markers.find(m => m.id === markerId); if (markerData) { const now = new Date(); const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`; markerData.notes.push({ text, time }); const notesContainer = document.getElementById(`notes-${markerId}`); notesContainer.innerHTML += `<div class="note-item"><strong>[${time}]</strong> ${text}</div>`; notesContainer.scrollTop = notesContainer.scrollHeight; input.value = ''; toggleNoteInput(markerId); updateSidebarNoteCount(markerId); } }
         function updateSidebarNoteCount(markerId) { const markerData = markers.find(m => m.id === markerId); const sidebarItem = document.querySelector(`.report-item[data-id="${markerId}"]`); if (markerData && sidebarItem) { let badge = sidebarItem.querySelector('.note-count-badge'); const count = markerData.notes.length; if (count > 0) { if (!badge) { badge = document.createElement('div'); badge.className = 'note-count-badge'; sidebarItem.querySelector('.report-title').appendChild(badge); } badge.innerText = count; } } }
         function markAsSolved(markerId) { const markerData = markers.find(m => m.id === markerId); if (markerData && !markerData.solved) { markerData.solved = true; markerData.marker.setIcon(createSolvedIcon()); markerData.marker.closePopup(); const sidebarItem = document.querySelector(`.report-item[data-id="${markerId}"]`); if (sidebarItem) { sidebarItem.classList.add('solved-item'); sidebarItem.querySelector('.report-meta span:first-child').innerText = t('sidebar_solved'); } } }
-        
-        function addReportToSidebar(title, type, level, lat, lng, markerId) {
-            const list = document.getElementById('reports-list'); const item = document.createElement('div');
-            item.className = 'report-item'; item.style.borderLeftColor = colors[type]; item.setAttribute('data-id', markerId);
-            const now = new Date(); const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-            item.innerHTML = `<div class="report-title">${title}</div><div class="report-meta"><span>${t('type_'+type)} - ${t('popup_priority')} ${level}</span><span>${time}</span></div>`;
-            item.addEventListener('click', () => { map.flyTo([lat, lng], 15, { duration: 1.5 }); const m = markers.find(m => m.id === markerId); if(m) m.marker.openPopup(); });
-            list.prepend(item);
-        }
+        function addReportToSidebar(title, type, level, lat, lng, markerId) { const list = document.getElementById('reports-list'); const item = document.createElement('div'); item.className = 'report-item'; item.style.borderLeftColor = colors[type]; item.setAttribute('data-id', markerId); const now = new Date(); const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`; item.innerHTML = `<div class="report-title">${title}</div><div class="report-meta"><span>${t('type_'+type)} - ${t('popup_priority')} ${level}</span><span>${time}</span></div>`; item.addEventListener('click', () => { map.flyTo([lat, lng], 15, { duration: 1.5 }); const m = markers.find(m => m.id === markerId); if(m) m.marker.openPopup(); }); list.prepend(item); }
 
         // --- FILTROS ---
         document.querySelectorAll('.filter-btn').forEach(btn => { btn.addEventListener('click', function() { this.classList.toggle('active'); const filterType = this.getAttribute('data-filter'); const isActive = this.classList.contains('active'); markers.forEach(m => { const isHidden = (filterType === 'solved') ? m.solved : (m.type === filterType); if (isHidden) { if (isActive) map.addLayer(m.marker); else map.removeLayer(m.marker); } }); document.querySelectorAll('.report-item').forEach(item => { const mData = markers.find(m => m.id === item.getAttribute('data-id')); if(mData) { const shouldHide = (filterType === 'solved' && mData.solved) || (mData.type === filterType && !mData.solved); if(shouldHide) item.style.display = isActive ? 'block' : 'none'; } }); }); });
 
-        // Datos de prueba
         const mockData = [
             { lat: 10.491, lng: -66.879, title: "Edificio colapsado Los Caobos", desc: "Personas atrapadas.", type: "critical", level: 4 },
             { lat: 10.480, lng: -66.860, title: "Centro de acopio activo", desc: "Iglesia Santa Ana recogiendo agua.", type: "help", level: 1 },
