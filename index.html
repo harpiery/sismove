@@ -94,7 +94,7 @@
         .note-input-group button { background: #3b82f6; color: white; border: none; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: bold;}
         
         /* Aumento de tamaño de interfaz de Notas y Scrollbar */
-        .notes-list { max-height: 250px; overflow-y: auto; margin-top: 10px; border-top: 1px solid #475569; padding-top: 10px; scrollbar-width: thin; scrollbar-color: #475569 #1e293b; }
+        .notes-list { max-height: 250px; overflow-y: auto; margin-top: 15px; border-top: 1px solid #475569; padding-top: 10px; scrollbar-width: thin; scrollbar-color: #475569 #1e293b; }
         .notes-list::-webkit-scrollbar { width: 6px; }
         .notes-list::-webkit-scrollbar-thumb { background-color: #475569; border-radius: 3px; }
         .note-item { font-size: 0.95rem; color: #e2e8f0; margin-bottom: 8px; background: #1e293b; padding: 8px; border-radius: 4px; line-height: 1.4; }
@@ -108,7 +108,7 @@
             .top-right-buttons { justify-content: space-between; }
             #search-wrapper { width: 100%; }
             #sidebar { width: 100%; height: 40vh; top: auto; bottom: 0; left: 0; border-radius: 12px 12px 0 0; }
-            #legend { display: none; } /* Oculto en móvil para no estorbar */
+            #legend { display: none; } 
             #modal { width: 95%; padding: 20px; }
         }
     </style>
@@ -281,7 +281,6 @@
                 currentType = this.getAttribute('data-type'); 
                 document.getElementById('report-type').value = currentType; 
                 
-                // Si viene del botón superior, usar el centro del mapa. Si no, usar el del click derecho.
                 if(this.closest('#add-report-menu')) {
                     const center = map.getCenter();
                     currentLatLng = { lat: center.lat, lng: center.lng };
@@ -345,47 +344,104 @@
         // ==========================================
         function loadReportsFromDB() {
             db.ref('reports').on('value', (snapshot) => {
+                // Guardar el ID del popup que está abierto para no cerrarlo al actualizar
+                let openPopupId = null;
+                markersData.forEach(m => {
+                    if (m.marker.isPopupOpen()) openPopupId = m.id;
+                });
+                
                 markersData.forEach(m => map.removeLayer(m.marker));
                 markersData = [];
                 document.getElementById('reports-list').innerHTML = '';
                 const data = snapshot.val();
-                if (data) { Object.keys(data).forEach(id => renderMarkerOnMap(id, data[id])); }
+                if (data) {
+                    Object.keys(data).forEach(id => {
+                        renderMarkerOnMap(id, data[id]);
+                        if (id === openPopupId) {
+                            const m = markersData.find(m => m.id === id);
+                            if (m) m.marker.openPopup();
+                        }
+                    });
+                }
             });
         }
 
         function renderMarkerOnMap(id, report) {
+            // Construir el HTML de las notas previamente para que aparezcan encima de los botones
+            let notesHtml = '';
+            if (report.notes) {
+                Object.values(report.notes).forEach(note => {
+                    notesHtml += `<div class="note-item"><strong>[${note.time}]</strong> ${note.text}</div>`;
+                });
+            }
+
             const popupContent = `
                 <div style="min-width: 280px;">
                     <h3 style="margin:0 0 10px; color:${colors[report.type]};">${report.title}</h3>
                     <p style="margin:0 0 10px; font-size:0.95rem;">${report.desc}</p>
                     <hr style="margin:10px 0; border-color:#475569;">
                     <small>${t('popup_priority')}: ${report.level}/4 | ${t('popup_type')}: ${t('type_'+report.type)}</small>
-                    <div class="notes-list" id="notes-${id}"></div>
+                    
+                    <div class="notes-list" id="notes-${id}">${notesHtml}</div>
+                    
                     <div class="note-input-group" id="input-group-${id}" style="display: none;">
-                        <input type="text" id="note-input-${id}" placeholder="Nota...">
+                        <input type="text" id="note-input-${id}" placeholder="Escribe una nota...">
                         <button onclick="saveNote('${id}')">${t('popup_save_note')}</button>
                     </div>
+                    
                     <button class="btn-popup btn-add-note" id="btn-note-${id}" onclick="toggleNoteInput('${id}')">${t('popup_add_note')}</button>
                     ${!report.solved ? `<button class="btn-popup btn-solved" onclick="markAsSolved('${id}')">${t('popup_solved')}</button>` : ''}
                     <button class="btn-popup btn-delete-popup" onclick="openDeleteModal('${id}')">${t('popup_delete')}</button>
                 </div>`;
+                
             const icon = report.solved ? createSolvedIcon() : createCustomIcon(report.type, report.level);
             const marker = L.marker([report.lat, report.lng], { icon: icon }).addTo(map).bindPopup(popupContent, { maxWidth: 350 });
             markersData.push({ marker, type: report.type, id: id, solved: report.solved });
             addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved);
-
-            if (report.notes) {
-                const notesContainer = document.getElementById(`notes-${id}`);
-                if(notesContainer) { Object.values(report.notes).forEach(note => { notesContainer.innerHTML += `<div class="note-item"><strong>[${note.time}]</strong> ${note.text}</div>`; }); }
-            }
         }
 
         // --- LÓGICA INTERFAZ ---
         function createCustomIcon(type, level) { const size = (type === 'critical' || parseInt(level) >= 4) ? 20 : 14; const className = (type === 'critical') ? 'marker-critical' : ''; return L.divIcon({ className, html: `<div style="width:${size}px; height:${size}px; background-color:${colors[type]}; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.5);"></div>`, iconSize: [size, size], iconAnchor: [size/2, size/2] }); }
         function createSolvedIcon() { return L.divIcon({ className: '', html: `<div style="width:18px; height:18px; background-color:#9ca3af; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:bold;">✓</div>`, iconSize: [18, 18], iconAnchor: [9, 9] }); }
 
-        function toggleNoteInput(markerId) { const inputGroup = document.getElementById(`input-group-${markerId}`); const btnNote = document.getElementById(`btn-note-${markerId}`); if (inputGroup.style.display === 'none') { inputGroup.style.display = 'flex'; btnNote.style.display = 'none'; document.getElementById(`note-input-${markerId}`).focus(); } else { inputGroup.style.display = 'none'; btnNote.style.display = 'block'; } }
-        function saveNote(markerId) { const input = document.getElementById(`note-input-${markerId}`); const text = input.value.trim(); if (!text) return; addNoteInDB(markerId, text); input.value = ''; toggleNoteInput(markerId); }
+        function toggleNoteInput(markerId) { 
+            const inputGroup = document.getElementById(`input-group-${markerId}`); 
+            const btnNote = document.getElementById(`btn-note-${markerId}`); 
+            if (inputGroup.style.display === 'none') { 
+                inputGroup.style.display = 'flex'; 
+                btnNote.style.display = 'none'; 
+                document.getElementById(`note-input-${markerId}`).focus(); 
+            } else { 
+                inputGroup.style.display = 'none'; 
+                btnNote.style.display = 'block'; 
+            } 
+        }
+        
+        function saveNote(markerId) {
+            const input = document.getElementById(`note-input-${markerId}`);
+            const text = input.value.trim();
+            if (!text) return;
+            
+            // 1. Guardar en Firebase
+            addNoteInDB(markerId, text);
+            
+            // 2. Actualización visual inmediata (Optimistic UI)
+            const now = new Date();
+            const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            const notesContainer = document.getElementById(`notes-${markerId}`);
+            if (notesContainer) {
+                const newNote = document.createElement('div');
+                newNote.className = 'note-item';
+                newNote.innerHTML = `<strong>[${time}]</strong> ${text}`;
+                notesContainer.appendChild(newNote);
+                // Auto-scroll hacia la nueva nota
+                notesContainer.scrollTop = notesContainer.scrollHeight;
+            }
+            
+            input.value = '';
+            toggleNoteInput(markerId);
+        }
+        
         function markAsSolved(markerId) { updateSolvedInDB(markerId, true); const markerData = markersData.find(m => m.id === markerId); if (markerData) { markerData.solved = true; markerData.marker.setIcon(createSolvedIcon()); markerData.marker.closePopup(); const sidebarItem = document.querySelector(`.report-item[data-id="${markerId}"]`); if (sidebarItem) { sidebarItem.classList.add('solved-item'); sidebarItem.querySelector('.report-meta span:first-child').innerText = t('sidebar_solved'); } } }
         function addReportToSidebar(title, type, level, lat, lng, markerId, isSolved) { const list = document.getElementById('reports-list'); const item = document.createElement('div'); item.className = 'report-item' + (isSolved ? ' solved-item' : ''); item.style.borderLeftColor = colors[type]; item.setAttribute('data-id', markerId); item.innerHTML = `<div class="report-title">${title}</div><div class="report-meta"><span>${isSolved ? t('sidebar_solved') : `${t('type_'+type)} - ${t('popup_priority')} ${level}`}</span></div>`; item.addEventListener('click', () => { map.flyTo([lat, lng], 15, { duration: 1.5 }); const m = markersData.find(m => m.id === markerId); if(m) m.marker.openPopup(); }); list.prepend(item); }
 
