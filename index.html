@@ -94,7 +94,12 @@
         .ctx-item:hover { background-color: #475569; }
 
         #modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: none; justify-content: center; align-items: center; }
-        #modal { background: #334155; padding: 30px; border-radius: 12px; width: 400px; max-width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        #modal { background: #334155; padding: 30px; border-radius: 12px; width: 400px; max-width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.8); position: relative; }
+        
+        /* Botón Rojo de Cierre Modal */
+        .btn-close-modal { position: absolute; top: 15px; right: 15px; background: #991b1b; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.5); transition: background 0.2s; }
+        .btn-close-modal:hover { background: #dc2626; }
+
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #1e293b; color: white; font-family: inherit; }
@@ -239,6 +244,9 @@
 
     <div id="modal-overlay">
         <div id="modal">
+            <!-- Botón rojo de cierre rápido -->
+            <button class="btn-close-modal" onclick="closeModal()" title="Cerrar">✖</button>
+            
             <div id="modal-create-view">
                 <h2 style="margin-bottom: 20px;" id="modal-title">Nuevo Reporte</h2>
                 <form id="report-form">
@@ -317,7 +325,7 @@
         // ==========================================
         // MAPA (Zoom desactivado por defecto, usaremos custom)
         // ==========================================
-        const map = L.map('map', { zoomControl: false }).setView([8.5, -66.5], 6);
+        const map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([8.5, -66.5], 6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
 
         let markersData = []; let currentLatLng = null; let currentType = null; let selectedLevel = 1;
@@ -362,18 +370,56 @@
             sidebar.classList.toggle('closed');
         }
 
-        // --- COPIAR COORDENADAS ---
+        // --- COPIAR COORDENADAS (Método robusto con respaldo) ---
         function copyCoords(id, e) {
             e.stopPropagation();
+            e.preventDefault();
             const coordsText = document.getElementById(`coords-${id}`).innerText;
-            navigator.clipboard.writeText(coordsText).then(() => {
-                const btn = e.currentTarget;
-                const originalText = btn.innerText;
-                btn.innerText = '✅';
-                setTimeout(() => { btn.innerText = originalText; }, 1500);
-            }).catch(err => {
-                alert('No se pudo copiar automáticamente. Cópialo manualmente: ' + coordsText);
-            });
+            
+            // Método moderno (HTTPS)
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(coordsText).then(() => {
+                    showCopySuccess(e.currentTarget);
+                }).catch(err => {
+                    fallbackCopy(coordsText, e.currentTarget);
+                });
+            } else {
+                // Respaldo para HTTP o navegadores antiguos
+                fallbackCopy(coordsText, e.currentTarget);
+            }
+        }
+
+        function fallbackCopy(text, btn) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.top = "-9999px";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            let successful = false;
+            try {
+                successful = document.execCommand('copy');
+            } catch (err) {
+                console.error('Error en fallback de copiado:', err);
+            }
+            document.body.removeChild(textArea);
+            
+            if (successful) {
+                showCopySuccess(btn);
+            } else {
+                alert('No se pudo copiar automáticamente. Por favor, cópialo manualmente: ' + text);
+            }
+        }
+
+        function showCopySuccess(btn) {
+            const originalText = btn.innerText;
+            btn.innerText = '✅';
+            setTimeout(() => { 
+                if (btn.innerText === '✅') btn.innerText = originalText; 
+            }, 1500);
         }
 
         // --- MODALES Y MENUS ---
@@ -447,7 +493,6 @@
         // ==========================================
         function loadReportsFromDB() {
             db.ref('reports').on('value', (snapshot) => {
-                // Guardar el ID del popup que está abierto para no cerrarlo al actualizar
                 let openPopupId = null;
                 markersData.forEach(m => {
                     if (m.marker.isPopupOpen()) openPopupId = m.id;
@@ -470,7 +515,6 @@
         }
 
         function renderMarkerOnMap(id, report) {
-            // Construir el HTML de las notas previamente para que aparezcan encima de los botones
             let notesHtml = '';
             if (report.notes) {
                 Object.values(report.notes).forEach(note => {
@@ -478,7 +522,6 @@
                 });
             }
 
-            // Formatear coordenadas a 5 decimales para mejor lectura
             const latFormatted = parseFloat(report.lat).toFixed(5);
             const lngFormatted = parseFloat(report.lng).toFixed(5);
 
@@ -534,10 +577,8 @@
             const text = input.value.trim();
             if (!text) return;
             
-            // 1. Guardar en Firebase
             addNoteInDB(markerId, text);
             
-            // 2. Actualización visual inmediata (Optimistic UI)
             const now = new Date();
             const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
             const notesContainer = document.getElementById(`notes-${markerId}`);
@@ -546,7 +587,6 @@
                 newNote.className = 'note-item';
                 newNote.innerHTML = `<strong>[${time}]</strong> ${text}`;
                 notesContainer.appendChild(newNote);
-                // Auto-scroll hacia la nueva nota
                 notesContainer.scrollTop = notesContainer.scrollHeight;
             }
             
@@ -568,7 +608,6 @@
                 const m = markersData.find(m => m.id === markerId); 
                 if(m) m.marker.openPopup(); 
                 
-                // Cerrar el menú lateral en la versión móvil tras hacer clic
                 if (window.innerWidth <= 768) {
                     toggleSidebarMobile();
                 }
