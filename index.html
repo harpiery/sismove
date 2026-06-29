@@ -24,16 +24,7 @@
             100% { transform: translateY(0); }
         }
 
-        /* --- BOTÓN HAMBURGUESA (Solo visible en móvil) --- */
-        #menu-toggle {
-            display: none; /* Oculto en PC */
-            position: absolute; top: 15px; left: 15px; z-index: 2000;
-            background: rgba(15, 23, 42, 0.95); color: white; border: 1px solid #475569;
-            width: 45px; height: 45px; border-radius: 8px; font-size: 1.5rem;
-            cursor: pointer; align-items: center; justify-content: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
+        #menu-toggle { display: none; position: absolute; top: 15px; left: 15px; z-index: 2000; background: rgba(15, 23, 42, 0.95); color: white; border: 1px solid #475569; width: 45px; height: 45px; border-radius: 8px; font-size: 1.5rem; cursor: pointer; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .top-right-panel { position: absolute; top: 15px; right: 15px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
         #lang-toggle { background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         #lang-toggle:hover { background: #475569; }
@@ -53,14 +44,7 @@
         .search-result-text { overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .search-no-results { padding: 15px; color: #94a3b8; text-align: center; font-size: 0.9rem; }
 
-        /* --- SIDEBAR --- */
-        #sidebar {
-            position: absolute; top: 10px; left: 10px; bottom: 10px; width: 320px; 
-            background-color: rgba(30, 41, 59, 0.98); border-radius: 12px; 
-            display: flex; flex-direction: column; z-index: 1500; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden;
-            transition: transform 0.3s ease-in-out; /* Animación suave al abrir/cerrar */
-        }
+        #sidebar { position: absolute; top: 10px; left: 10px; bottom: 10px; width: 320px; background-color: rgba(30, 41, 59, 0.98); border-radius: 12px; display: flex; flex-direction: column; z-index: 1500; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; transition: transform 0.3s ease-in-out; }
         .sidebar-header { padding: 20px; background-color: #0f172a; border-bottom: 2px solid #ef4444; display: flex; justify-content: space-between; align-items: center;}
         .sidebar-header h1 { font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
         #close-sidebar-btn { display: none; background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; }
@@ -80,9 +64,16 @@
         .report-meta { font-size: 0.8rem; opacity: 0.8; display: flex; justify-content: space-between; }
         .note-count-badge { background: #3b82f6; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;}
 
-        #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.9); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .legend-item { display: flex; align-items: center; margin-bottom: 6px; font-size: 0.85rem; }
-        .legend-color { width: 14px; height: 14px; border-radius: 50%; margin-right: 10px; }
+        /* --- LEYENDA MEJORADA (Colapsable) --- */
+        #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.95); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); width: 220px; overflow: hidden; }
+        .legend-header { padding: 12px 15px; background-color: #0f172a; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .legend-header h3 { font-size: 0.9rem; margin: 0; color: #cbd5e1; }
+        .legend-toggle-icon { transition: transform 0.3s ease; font-size: 1.2rem; color: #94a3b8; }
+        .legend-toggle-icon.collapsed { transform: rotate(-90deg); }
+        .legend-body { padding: 10px 15px 15px 15px; transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease; max-height: 200px; opacity: 1; overflow: hidden; }
+        .legend-body.hidden { max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.85rem; }
+        .legend-color { width: 14px; height: 14px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
 
         #context-menu { position: absolute; z-index: 2000; background: #334155; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); padding: 8px 0; display: none; min-width: 240px; }
         .ctx-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
@@ -104,48 +95,37 @@
         .btn-solved { background: #22c55e; } .btn-solved:hover { background: #16a34a; }
         .btn-add-note { background: #64748b; } .btn-add-note:hover { background: #475569; }
         .btn-delete-popup { background: #991b1b; } .btn-delete-popup:hover { background: #7f1d1d; }
+        
+        /* --- MENU DE NOTAS MEJORADO --- */
         .note-input-group { display: flex; gap: 5px; margin-top: 8px;}
         .note-input-group input { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #475569; background: #1e293b; color: white; font-size: 0.9rem; min-width: 0;}
         .note-input-group button { background: #3b82f6; color: white; border: none; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: bold;}
-        .notes-list { max-height: 100px; overflow-y: auto; margin-top: 10px; border-top: 1px solid #475569; padding-top: 5px;}
-        .note-item { font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px; background: #1e293b; padding: 4px 6px; border-radius: 4px;}
+        
+        .notes-container { margin-top: 10px; background-color: #1e293b; border-radius: 6px; border: 1px solid #475569; display: flex; flex-direction: column; max-height: 150px; }
+        .notes-list { overflow-y: auto; padding: 8px; flex: 1; }
+        /* Scrollbar personalizado para las notas */
+        .notes-list::-webkit-scrollbar { width: 6px; }
+        .notes-list::-webkit-scrollbar-track { background: #334155; border-radius: 3px; }
+        .notes-list::-webkit-scrollbar-thumb { background: #64748b; border-radius: 3px; }
+        .notes-list::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .note-item { font-size: 0.8rem; color: #cbd5e1; margin-bottom: 6px; background: #334155; padding: 6px 8px; border-radius: 4px; border-left: 3px solid #3b82f6; word-wrap: break-word; }
 
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         .marker-critical { animation: pulse 1.5s infinite; }
 
-        /* ==========================================
-           RESPONSIVE DESIGN (MOVILES)
-           ========================================== */
         @media (max-width: 768px) {
-            /* Mostrar botón hamburguesa */
             #menu-toggle { display: flex; }
-            /* Mostrar botón X dentro del menú */
             #close-sidebar-btn { display: block; }
-            
-            /* Ocultar menú deslizándolo hacia la izquierda fuera de la pantalla */
-            #sidebar {
-                transform: translateX(-120%); 
-                width: 85vw; /* Ocupa el 85% del ancho del móvil */
-                max-width: 320px;
-            }
-            
-            /* Clase que se añade con JS para mostrar el menú */
-            #sidebar.sidebar-open {
-                transform: translateX(0);
-            }
-
-            /* Ajustar leyenda para que no tape el mapa innecesariamente */
-            #legend { bottom: 15px; right: 15px; padding: 10px; font-size: 0.8rem; }
-            .legend-item { margin-bottom: 4px; font-size: 0.75rem; }
-            .legend-color { width: 10px; height: 10px; }
+            #sidebar { transform: translateX(-120%); width: 85vw; max-width: 320px; }
+            #sidebar.sidebar-open { transform: translateX(0); }
+            #legend { bottom: 15px; right: 15px; width: 180px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Botón Hamburguesa (Solo visible en móviles) -->
     <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
-
     <div id="map"></div>
     
     <div class="top-right-panel">
@@ -174,12 +154,19 @@
         <div class="reports-list" id="reports-list"></div>
     </div>
 
+    <!-- LEYENDA COLAPSABLE -->
     <div id="legend">
-        <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div><span data-i18n="legend_critical">Punto Crítico</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #f97316;"></div><span data-i18n="legend_danger">Zona de Peligro</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div><span data-i18n="legend_help">Zona de Ayuda/Recursos</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div><span data-i18n="legend_info">Punto Informativo</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #9ca3af;">✓</div><span data-i18n="legend_solved">Solucionado</span></div>
+        <div class="legend-header" onclick="toggleLegend()">
+            <h3>Leyenda</h3>
+            <span class="legend-toggle-icon" id="legend-arrow">▼</span>
+        </div>
+        <div class="legend-body" id="legend-body">
+            <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div><span data-i18n="legend_critical">Punto Crítico</span></div>
+            <div class="legend-item"><div class="legend-color" style="background: #f97316;"></div><span data-i18n="legend_danger">Zona de Peligro</span></div>
+            <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div><span data-i18n="legend_help">Zona de Ayuda/Recursos</span></div>
+            <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div><span data-i18n="legend_info">Punto Informativo</span></div>
+            <div class="legend-item"><div class="legend-color" style="background: #9ca3af;">✓</div><span data-i18n="legend_solved">Solucionado</span></div>
+        </div>
     </div>
 
     <div id="context-menu">
@@ -197,7 +184,7 @@
                     <input type="hidden" id="report-lat"><input type="hidden" id="report-lng"><input type="hidden" id="report-type">
                     <div class="form-group">
                         <label data-i18n="lbl_title">Título del Reporte</label>
-                        <input type="text" id="inp-title" data-i18n-ph="ph_title" placeholder="Ej: Edificio colapsado en la calle 10" required>
+                        <input type="text" id="inp-title" data-i18n-ph="ph_title" placeholder="Ej: Edificio colapsado" required>
                     </div>
                     <div class="form-group">
                         <label data-i18n="lbl_desc">Descripción</label>
@@ -232,34 +219,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
     <script>
-        // Función para abrir/cerrar el menú en móviles
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('sidebar-open');
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('sidebar-open'); }
+        function toggleLegend() { 
+            document.getElementById('legend-body').classList.toggle('hidden'); 
+            document.getElementById('legend-arrow').classList.toggle('collapsed'); 
         }
+        document.getElementById('map').addEventListener('click', function() { if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('sidebar-open'); });
 
-        // Cerrar menú automáticamente si en móvil haces click en el mapa
-        document.getElementById('map').addEventListener('click', function() {
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('sidebar-open');
-            }
-        });
-
-        // --- FIREBASE ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5Ci95IFp8CcUwlRavELCgdvQ5iKsLdxY",
-            authDomain: "sismove-22ac2.firebaseapp.com",
-            databaseURL: "https://sismove-22ac2-default-rtdb.firebaseio.com",
-            projectId: "sismove-22ac2",
-            storageBucket: "sismove-22ac2.firebasestorage.app",
-            messagingSenderId: "994621466767",
-            appId: "1:994621466767:web:9983184c1b414f3015e8fa",
-            measurementId: "G-9RRMWMKY6Y"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyD5Ci95IFp8CcUwlRavELCgdvQ5iKsLdxY", authDomain: "sismove-22ac2.firebaseapp.com", databaseURL: "https://sismove-22ac2-default-rtdb.firebaseio.com", projectId: "sismove-22ac2", storageBucket: "sismove-22ac2.firebasestorage.app", messagingSenderId: "994621466767", appId: "1:994621466767:web:9983184c1b414f3015e8fa", measurementId: "G-9RRMWMKY6Y" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- TRADUCCIONES ---
         let currentLang = 'es';
         const translations = {
             es: { title: "🇻🇪 SismoVe Ayuda", lang_btn: "EN", search_placeholder: "Buscar calle o coordenadas...", search_btn: "Ir", filter_critical: "Crítico", filter_danger: "Peligro", filter_help: "Ayuda", filter_info: "Info", filter_solved: "Solucionado", legend_critical: "Punto Crítico", legend_danger: "Zona de Peligro", legend_help: "Zona de Ayuda/Recursos", legend_info: "Punto Informativo", legend_solved: "Solucionado", ctx_critical: "🚨 Reportar Emergencia Crítica", ctx_danger: "⚠️ Marcar Zona de Peligro", ctx_help: "🏥 Solicitar/Ofrecer Ayuda", ctx_info: "ℹ️ Reporte Informativo", modal_title_prefix: "Nuevo Reporte: ", lbl_title: "Título del Reporte", ph_title: "Ej: Edificio colapsado", lbl_desc: "Descripción", ph_desc: "Detalles adicionales...", lbl_level: "Nivel de Peligro / Prioridad", level_1: "Bajo", level_2: "Medio", level_3: "Alto", level_4: "Crítico", btn_submit: "Enviar al Mapa", btn_cancel: "Cancelar", popup_priority: "Prioridad", popup_type: "Tipo", popup_solved: "✅ Marcar como Solucionado", popup_add_note: "+ Añadir nota", popup_save_note: "Guardar", popup_delete: "🗑️ Eliminar aviso", sidebar_solved: "✅ SOLUCIONADO", type_critical: "Emergencia Crítica", type_danger: "Zona de Peligro", type_help: "Ayuda/Recurso", type_info: "Informativo", alert_no_results: "Sin resultados para:", modal_confirm_title: "¿Estás seguro?", modal_confirm_text: "Esta acción eliminará el aviso permanentemente y no se puede deshacer.", modal_btn_confirm_delete: "Sí, eliminar aviso" },
@@ -268,19 +238,16 @@
         function t(key) { return translations[currentLang][key] || key; }
         function toggleLanguage() { currentLang = currentLang === 'es' ? 'en' : 'es'; document.getElementById('lang-toggle').innerText = t('lang_btn'); document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (translations[currentLang][key]) el.innerText = translations[currentLang][key]; }); document.querySelectorAll('[data-i18n-ph]').forEach(el => { const key = el.getAttribute('data-i18n-ph'); if (translations[currentLang][key]) el.placeholder = translations[currentLang][key]; }); }
 
-        // --- MAPA ---
         const map = L.map('map', { zoomControl: false }).setView([8.5, -66.5], 6);
-        L.control.zoom({ position: 'bottomleft' }).addTo(map); // Poner zoom abajo a la izquierda en móvil para no tapar el buscador
+        L.control.zoom({ position: 'bottomleft' }).addTo(map);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
 
-        let markersData = []; let currentLatLng = null; let currentType = null; let selectedLevel = 1;
-        let markerToDeleteId = null; let searchPinMarker = null;
+        let markersData = []; let currentLatLng = null; let currentType = null; let selectedLevel = 1; let markerToDeleteId = null; let searchPinMarker = null;
         const colors = { critical: '#ef4444', danger: '#f97316', help: '#22c55e', info: '#3b82f6' };
 
         function createSearchPinIcon() { return L.divIcon({ className: 'search-pin-icon', html: `<div class="pin-bounce-inner"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="32" height="48"><path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#EF4444" stroke="#B91C1C" stroke-width="1"/><circle cx="12" cy="12" r="5" fill="white"/></svg></div>`, iconSize: [32, 48], iconAnchor: [16, 48], popupAnchor: [0, -45] }); }
         function goToLocation(lat, lng, zoom = 17) { if (searchPinMarker) { map.removeLayer(searchPinMarker); searchPinMarker = null; } map.flyTo([lat, lng], zoom, { duration: 1.5 }); setTimeout(() => { if (searchPinMarker) { map.removeLayer(searchPinMarker); } searchPinMarker = L.marker([lat, lng], { icon: createSearchPinIcon() }).addTo(map); }, 1600); }
 
-        // --- BUSCADOR ---
         const searchInput = document.getElementById('search-input');
         const searchResults = document.getElementById('search-results');
         let searchTimeout;
@@ -294,7 +261,6 @@
         function parseDMSToDecimal(dmsString) { const regex = /(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([NSns]).*?(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([EWew])/i; const match = dmsString.match(regex); if (match) { let lat = parseInt(match[1]) + (parseInt(match[2]) / 60) + (parseFloat(match[3].replace(',', '.')) / 3600); let lon = parseInt(match[5]) + (parseInt(match[6]) / 60) + (parseFloat(match[7].replace(',', '.')) / 3600); if (match[4].toUpperCase() === 'S') lat *= -1; if (match[8].toUpperCase() === 'W') lon *= -1; return { lat, lon }; } return null; }
         function performSearch() { const query = searchInput.value.trim(); if (!query) return; searchResults.style.display = 'none'; const dmsCoords = parseDMSToDecimal(query); if (dmsCoords) { goToLocation(dmsCoords.lat, dmsCoords.lon, 18); return; } const coordRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/; if (coordRegex.test(query)) { const [lat, lng] = query.split(',').map(Number); goToLocation(lat, lng); return; } const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${VZLA_VIEWBOX}&bounded=0&limit=1`; fetch(url).then(res => res.json()).then(data => { if (data.length > 0) { goToLocation(parseFloat(data[0].lat), parseFloat(data[0].lon)); } else { alert(t('alert_no_results') + " " + query); } }).catch(err => alert("Error de conexión.")); }
 
-        // --- MODALES ---
         map.on('contextmenu', function(e) { e.originalEvent.preventDefault(); currentLatLng = e.latlng; const menu = document.getElementById('context-menu'); menu.style.left = e.originalEvent.clientX + 'px'; menu.style.top = e.originalEvent.clientY + 'px'; menu.style.display = 'block'; });
         document.addEventListener('click', () => { document.getElementById('context-menu').style.display = 'none'; });
         document.querySelectorAll('.ctx-item').forEach(item => { item.addEventListener('click', function() { currentType = this.getAttribute('data-type'); document.getElementById('report-type').value = currentType; document.getElementById('report-lat').value = currentLatLng.lat; document.getElementById('report-lng').value = currentLatLng.lng; document.getElementById('modal-title').innerText = t('modal_title_prefix') + t('type_'+currentType); openCreateModal(); document.getElementById('context-menu').style.display = 'none'; }); });
@@ -311,7 +277,31 @@
         });
         function confirmDeleteMarker() { if (!markerToDeleteId) return; db.ref('reports/' + markerToDeleteId).remove().then(() => closeModal()).catch(err => alert("Error al eliminar: " + err)); }
         function updateSolvedInDB(markerId, isSolved) { db.ref('reports/' + markerId + '/solved').set(isSolved); }
-        function addNoteInDB(markerId, noteText) { const now = new Date(); const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`; db.ref('reports/' + markerId + '/notes').push({ text: noteText, time: time }); }
+        
+        // NUEVA FUNCIÓN PARA AÑADIR NOTAS SIN ROMPER EL MAPA
+        function addNoteInDB(markerId, noteText) {
+            const now = new Date(); const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            const noteRef = db.ref('reports/' + markerId + '/notes').push();
+            
+            noteRef.set({ text: noteText, time: time })
+                .then(() => {
+                    // Si se guardó bien en Firebase, añadimos visualmente en la pantalla SIN recargar
+                    const notesContainer = document.getElementById(`notes-${markerId}`);
+                    if (notesContainer) {
+                        const noteDiv = document.createElement('div');
+                        noteDiv.className = 'note-item';
+                        noteDiv.innerHTML = `<strong>[${time}]</strong> ${noteText}`;
+                        notesContainer.appendChild(noteDiv);
+                        // Hacer scroll automático hacia abajo para ver la nota nueva
+                        notesContainer.scrollTop = notesContainer.scrollHeight;
+                    }
+                    // Limpiar input y cerrar panel de nota
+                    const input = document.getElementById(`note-input-${markerId}`);
+                    if(input) input.value = '';
+                    toggleNoteInput(markerId);
+                })
+                .catch(err => alert("Error al guardar nota: " + err));
+        }
 
         function loadReportsFromDB() {
             db.ref('reports').on('value', (snapshot) => {
@@ -329,10 +319,15 @@
                     <p style="margin:0 0 10px; font-size:0.9rem;">${report.desc}</p>
                     <hr style="margin:10px 0; border-color:#475569;">
                     <small>${t('popup_priority')}: ${report.level}/4 | ${t('popup_type')}: ${t('type_'+report.type)}</small>
-                    <div class="notes-list" id="notes-${id}"></div>
-                    <div class="note-input-group" id="input-group-${id}" style="display: none;">
-                        <input type="text" id="note-input-${id}" placeholder="Nota...">
-                        <button onclick="saveNote('${id}')">${t('popup_save_note')}</button>
+                    
+                    <div class="notes-container" id="notes-container-${id}">
+                        <div class="notes-list" id="notes-${id}">
+                            <!-- Las notas se cargan aquí abajo -->
+                        </div>
+                        <div class="note-input-group" id="input-group-${id}" style="display: none;">
+                            <input type="text" id="note-input-${id}" placeholder="Nota...">
+                            <button onclick="saveNote('${id}')">${t('popup_save_note')}</button>
+                        </div>
                     </div>
                     <button class="btn-popup btn-add-note" id="btn-note-${id}" onclick="toggleNoteInput('${id}')">${t('popup_add_note')}</button>
                     ${!report.solved ? `<button class="btn-popup btn-solved" onclick="markAsSolved('${id}')">${t('popup_solved')}</button>` : ''}
@@ -342,15 +337,31 @@
             const marker = L.marker([report.lat, report.lng], { icon: icon }).addTo(map).bindPopup(popupContent, { maxWidth: 300 });
             markersData.push({ marker, type: report.type, id: id, solved: report.solved });
             addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved);
-            if (report.notes) { const notesContainer = document.getElementById(`notes-${id}`); if(notesContainer) { Object.values(report.notes).forEach(note => { notesContainer.innerHTML += `<div class="note-item"><strong>[${note.time}]</strong> ${note.text}</div>`; }); } }
+
+            // Cargar notas existentes desde la base de datos de forma segura
+            if (report.notes) {
+                const notesContainer = document.getElementById(`notes-${id}`);
+                if(notesContainer) {
+                    Object.values(report.notes).forEach(note => {
+                        const noteDiv = document.createElement('div');
+                        noteDiv.className = 'note-item';
+                        noteDiv.innerHTML = `<strong>[${note.time}]</strong> ${note.text}`;
+                        notesContainer.appendChild(noteDiv);
+                    });
+                }
+            }
         }
 
-        // --- LÓGICA INTERFAZ ---
         function createCustomIcon(type, level) { const size = (type === 'critical' || parseInt(level) >= 4) ? 20 : 14; const className = (type === 'critical') ? 'marker-critical' : ''; return L.divIcon({ className, html: `<div style="width:${size}px; height:${size}px; background-color:${colors[type]}; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.5);"></div>`, iconSize: [size, size], iconAnchor: [size/2, size/2] }); }
         function createSolvedIcon() { return L.divIcon({ className: '', html: `<div style="width:18px; height:18px; background-color:#9ca3af; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:bold;">✓</div>`, iconSize: [18, 18], iconAnchor: [9, 9] }); }
 
         function toggleNoteInput(markerId) { const inputGroup = document.getElementById(`input-group-${markerId}`); const btnNote = document.getElementById(`btn-note-${markerId}`); if (inputGroup.style.display === 'none') { inputGroup.style.display = 'flex'; btnNote.style.display = 'none'; document.getElementById(`note-input-${markerId}`).focus(); } else { inputGroup.style.display = 'none'; btnNote.style.display = 'block'; } }
-        function saveNote(markerId) { const input = document.getElementById(`note-input-${markerId}`); const text = input.value.trim(); if (!text) return; addNoteInDB(markerId, text); input.value = ''; toggleNoteInput(markerId); }
+        function saveNote(markerId) { 
+            const input = document.getElementById(`note-input-${markerId}`); 
+            const text = input.value.trim(); 
+            if (!text) return; 
+            addNoteInDB(markerId, text); // Esta función ahora se encarga de todo
+        }
         function markAsSolved(markerId) { updateSolvedInDB(markerId, true); const markerData = markersData.find(m => m.id === markerId); if (markerData) { markerData.solved = true; markerData.marker.setIcon(createSolvedIcon()); markerData.marker.closePopup(); const sidebarItem = document.querySelector(`.report-item[data-id="${markerId}"]`); if (sidebarItem) { sidebarItem.classList.add('solved-item'); sidebarItem.querySelector('.report-meta span:first-child').innerText = t('sidebar_solved'); } } }
         function addReportToSidebar(title, type, level, lat, lng, markerId, isSolved) { const list = document.getElementById('reports-list'); const item = document.createElement('div'); item.className = 'report-item' + (isSolved ? ' solved-item' : ''); item.style.borderLeftColor = colors[type]; item.setAttribute('data-id', markerId); item.innerHTML = `<div class="report-title">${title}</div><div class="report-meta"><span>${isSolved ? t('sidebar_solved') : `${t('type_'+type)} - ${t('popup_priority')} ${level}`}</span></div>`; item.addEventListener('click', () => { map.flyTo([lat, lng], 15, { duration: 1.5 }); const m = markersData.find(m => m.id === markerId); if(m) m.marker.openPopup(); if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('sidebar-open'); }); list.prepend(item); }
 
