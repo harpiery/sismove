@@ -65,7 +65,12 @@
         .report-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; display: flex; justify-content: space-between;}
         .report-meta { font-size: 0.8rem; opacity: 0.8; display: flex; justify-content: space-between; }
 
-        #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.9); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        /* Leyenda con funcionalidad Colapsar */
+        #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.9); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-width: 220px; }
+        .legend-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #475569; padding-bottom: 5px; }
+        .legend-header:hover { color: #3b82f6; }
+        .legend-toggle-icon { font-size: 0.8rem; }
+        #legend-content.collapsed { display: none; }
         .legend-item { display: flex; align-items: center; margin-bottom: 6px; font-size: 0.85rem; }
         .legend-color { width: 14px; height: 14px; border-radius: 50%; margin-right: 10px; }
 
@@ -93,10 +98,12 @@
         .note-input-group input { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #475569; background: #1e293b; color: white; font-size: 0.9rem;}
         .note-input-group button { background: #3b82f6; color: white; border: none; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: bold;}
         
-        /* Aumento de tamaño de interfaz de Notas y Scrollbar */
-        .notes-list { max-height: 250px; overflow-y: auto; margin-top: 15px; border-top: 1px solid #475569; padding-top: 10px; scrollbar-width: thin; scrollbar-color: #475569 #1e293b; }
-        .notes-list::-webkit-scrollbar { width: 6px; }
-        .notes-list::-webkit-scrollbar-thumb { background-color: #475569; border-radius: 3px; }
+        /* Scrollbar visualmente destacado para las notas */
+        .notes-list { max-height: 150px; overflow-y: auto; margin-top: 15px; border-top: 1px solid #475569; padding-top: 10px; scrollbar-width: auto; scrollbar-color: #64748b #1e293b; }
+        .notes-list::-webkit-scrollbar { width: 8px; }
+        .notes-list::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
+        .notes-list::-webkit-scrollbar-thumb { background-color: #64748b; border-radius: 4px; }
+        .notes-list::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
         .note-item { font-size: 0.95rem; color: #e2e8f0; margin-bottom: 8px; background: #1e293b; padding: 8px; border-radius: 4px; line-height: 1.4; }
 
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
@@ -108,7 +115,7 @@
             .top-right-buttons { justify-content: space-between; }
             #search-wrapper { width: 100%; }
             #sidebar { width: 100%; height: 40vh; top: auto; bottom: 0; left: 0; border-radius: 12px 12px 0 0; }
-            #legend { display: none; } 
+            #legend { bottom: 42vh; right: 10px; max-width: 180px; padding: 10px; } /* Ajuste para móvil */
             #modal { width: 95%; padding: 20px; }
         }
     </style>
@@ -144,11 +151,17 @@
     </div>
 
     <div id="legend">
-        <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div><span data-i18n="legend_critical">Punto Crítico</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #f97316;"></div><span data-i18n="legend_danger">Zona de Peligro</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div><span data-i18n="legend_help">Zona de Ayuda/Recursos</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div><span data-i18n="legend_info">Punto Informativo</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #9ca3af;">✓</div><span data-i18n="legend_solved">Solucionado</span></div>
+        <div class="legend-header" onclick="toggleLegend()">
+            <span data-i18n="legend_title">Leyenda</span>
+            <span class="legend-toggle-icon" id="legend-toggle-icon">➖</span>
+        </div>
+        <div id="legend-content">
+            <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div><span data-i18n="legend_critical">Punto Crítico</span></div>
+            <div class="legend-item"><div class="legend-color" style="background: #f97316;"></div><span data-i18n="legend_danger">Zona de Peligro</span></div>
+            <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div><span data-i18n="legend_help">Zona de Ayuda/Recursos</span></div>
+            <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div><span data-i18n="legend_info">Punto Informativo</span></div>
+            <div class="legend-item"><div class="legend-color" style="background: #9ca3af;">✓</div><span data-i18n="legend_solved">Solucionado</span></div>
+        </div>
     </div>
 
     <div id="context-menu">
@@ -232,8 +245,8 @@
         // ==========================================
         let currentLang = 'es';
         const translations = {
-            es: { title: "🇻🇪 SismoVe Ayuda", lang_btn: "EN", btn_add_report: "➕ Generar", search_placeholder: "Buscar calle o coordenadas...", search_btn: "Ir", filter_critical: "Crítico", filter_danger: "Peligro", filter_help: "Ayuda", filter_info: "Info", filter_solved: "Solucionado", legend_critical: "Punto Crítico", legend_danger: "Zona de Peligro", legend_help: "Zona de Ayuda/Recursos", legend_info: "Punto Informativo", legend_solved: "Solucionado", ctx_critical: "🚨 Reportar Emergencia Crítica", ctx_danger: "⚠️ Marcar Zona de Peligro", ctx_help: "🏥 Solicitar/Ofrecer Ayuda", ctx_info: "ℹ️ Reporte Informativo", modal_title_prefix: "Nuevo Reporte: ", lbl_title: "Título del Reporte", ph_title: "Ej: Edificio colapsado en la calle 10", lbl_desc: "Descripción", ph_desc: "Detalles adicionales...", lbl_level: "Nivel de Peligro / Prioridad", level_1: "Bajo", level_2: "Medio", level_3: "Alto", level_4: "Crítico", btn_submit: "Enviar al Mapa", btn_cancel: "Cancelar", popup_priority: "Prioridad", popup_type: "Tipo", popup_solved: "✅ Marcar como Solucionado", popup_add_note: "+ Añadir nota", popup_save_note: "Guardar", popup_delete: "🗑️ Eliminar aviso", sidebar_solved: "✅ SOLUCIONADO", type_critical: "Emergencia Crítica", type_danger: "Zona de Peligro", type_help: "Ayuda/Recurso", type_info: "Informativo", alert_no_results: "Sin resultados para:", modal_confirm_title: "¿Estás seguro?", modal_confirm_text: "Esta acción eliminará el aviso permanentemente y no se puede deshacer.", modal_btn_confirm_delete: "Sí, eliminar aviso" },
-            en: { title: "🇻🇪 SismoVe Help", lang_btn: "ES", btn_add_report: "➕ Create", search_placeholder: "Search street or coordinates...", search_btn: "Go", filter_critical: "Critical", filter_danger: "Danger", filter_help: "Help", filter_info: "Info", filter_solved: "Solved", legend_critical: "Critical Point", legend_danger: "Danger Zone", legend_help: "Help/Resources Zone", legend_info: "Info Point", legend_solved: "Solved", ctx_critical: "🚨 Report Critical Emergency", ctx_danger: "⚠️ Mark Danger Zone", ctx_help: "🏥 Request/Offer Help", ctx_info: "ℹ️ Info Report", modal_title_prefix: "New Report: ", lbl_title: "Report Title", ph_title: "Ex: Building collapsed on 10th street", lbl_desc: "Description", ph_desc: "Additional details...", lbl_level: "Danger Level / Priority", level_1: "Low", level_2: "Medium", level_3: "High", level_4: "Critical", btn_submit: "Send to Map", btn_cancel: "Cancel", popup_priority: "Priority", popup_type: "Type", popup_solved: "✅ Mark as Solved", popup_add_note: "+ Add note", popup_save_note: "Save", popup_delete: "🗑️ Delete alert", sidebar_solved: "✅ SOLVED", type_critical: "Critical Emergency", type_danger: "Danger Zone", type_help: "Help/Resource", type_info: "Informational", alert_no_results: "No results for:", modal_confirm_title: "Are you sure?", modal_confirm_text: "This action will delete the alert permanently and cannot be undone.", modal_btn_confirm_delete: "Yes, delete alert" }
+            es: { title: "🇻🇪 SismoVe Ayuda", legend_title: "Leyenda", lang_btn: "EN", btn_add_report: "➕ Generar", search_placeholder: "Buscar calle o coordenadas...", search_btn: "Ir", filter_critical: "Crítico", filter_danger: "Peligro", filter_help: "Ayuda", filter_info: "Info", filter_solved: "Solucionado", legend_critical: "Punto Crítico", legend_danger: "Zona de Peligro", legend_help: "Zona de Ayuda/Recursos", legend_info: "Punto Informativo", legend_solved: "Solucionado", ctx_critical: "🚨 Reportar Emergencia Crítica", ctx_danger: "⚠️ Marcar Zona de Peligro", ctx_help: "🏥 Solicitar/Ofrecer Ayuda", ctx_info: "ℹ️ Reporte Informativo", modal_title_prefix: "Nuevo Reporte: ", lbl_title: "Título del Reporte", ph_title: "Ej: Edificio colapsado en la calle 10", lbl_desc: "Descripción", ph_desc: "Detalles adicionales...", lbl_level: "Nivel de Peligro / Prioridad", level_1: "Bajo", level_2: "Medio", level_3: "Alto", level_4: "Crítico", btn_submit: "Enviar al Mapa", btn_cancel: "Cancelar", popup_priority: "Prioridad", popup_type: "Tipo", popup_solved: "✅ Marcar como Solucionado", popup_add_note: "+ Añadir nota", popup_save_note: "Guardar", popup_delete: "🗑️ Eliminar aviso", sidebar_solved: "✅ SOLUCIONADO", type_critical: "Emergencia Crítica", type_danger: "Zona de Peligro", type_help: "Ayuda/Recurso", type_info: "Informativo", alert_no_results: "Sin resultados para:", modal_confirm_title: "¿Estás seguro?", modal_confirm_text: "Esta acción eliminará el aviso permanentemente y no se puede deshacer.", modal_btn_confirm_delete: "Sí, eliminar aviso" },
+            en: { title: "🇻🇪 SismoVe Help", legend_title: "Legend", lang_btn: "ES", btn_add_report: "➕ Create", search_placeholder: "Search street or coordinates...", search_btn: "Go", filter_critical: "Critical", filter_danger: "Danger", filter_help: "Help", filter_info: "Info", filter_solved: "Solved", legend_critical: "Critical Point", legend_danger: "Danger Zone", legend_help: "Help/Resources Zone", legend_info: "Info Point", legend_solved: "Solved", ctx_critical: "🚨 Report Critical Emergency", ctx_danger: "⚠️ Mark Danger Zone", ctx_help: "🏥 Request/Offer Help", ctx_info: "ℹ️ Info Report", modal_title_prefix: "New Report: ", lbl_title: "Report Title", ph_title: "Ex: Building collapsed on 10th street", lbl_desc: "Description", ph_desc: "Additional details...", lbl_level: "Danger Level / Priority", level_1: "Low", level_2: "Medium", level_3: "High", level_4: "Critical", btn_submit: "Send to Map", btn_cancel: "Cancel", popup_priority: "Priority", popup_type: "Type", popup_solved: "✅ Mark as Solved", popup_add_note: "+ Add note", popup_save_note: "Save", popup_delete: "🗑️ Delete alert", sidebar_solved: "✅ SOLVED", type_critical: "Critical Emergency", type_danger: "Danger Zone", type_help: "Help/Resource", type_info: "Informational", alert_no_results: "No results for:", modal_confirm_title: "Are you sure?", modal_confirm_text: "This action will delete the alert permanently and cannot be undone.", modal_btn_confirm_delete: "Yes, delete alert" }
         };
         function t(key) { return translations[currentLang][key] || key; }
         function toggleLanguage() { 
@@ -272,6 +285,14 @@
         searchInput.addEventListener('keypress', function(e) { if(e.key === 'Enter') { e.preventDefault(); performSearch(); } });
         function parseDMSToDecimal(dmsString) { const regex = /(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([NSns]).*?(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([EWew])/i; const match = dmsString.match(regex); if (match) { let lat = parseInt(match[1]) + (parseInt(match[2]) / 60) + (parseFloat(match[3].replace(',', '.')) / 3600); let lon = parseInt(match[5]) + (parseInt(match[6]) / 60) + (parseFloat(match[7].replace(',', '.')) / 3600); if (match[4].toUpperCase() === 'S') lat *= -1; if (match[8].toUpperCase() === 'W') lon *= -1; return { lat, lon }; } return null; }
         function performSearch() { const query = searchInput.value.trim(); if (!query) return; searchResults.style.display = 'none'; const dmsCoords = parseDMSToDecimal(query); if (dmsCoords) { goToLocation(dmsCoords.lat, dmsCoords.lon, 18); return; } const coordRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/; if (coordRegex.test(query)) { const [lat, lng] = query.split(',').map(Number); goToLocation(lat, lng); return; } const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${VZLA_VIEWBOX}&bounded=0&limit=1`; fetch(url).then(res => res.json()).then(data => { if (data.length > 0) { goToLocation(parseFloat(data[0].lat), parseFloat(data[0].lon)); } else { alert(t('alert_no_results') + " " + query); } }).catch(err => alert("Error de conexión.")); }
+
+        // --- LEYENDA COLAPSABLE ---
+        function toggleLegend() {
+            const content = document.getElementById('legend-content');
+            const icon = document.getElementById('legend-toggle-icon');
+            content.classList.toggle('collapsed');
+            icon.innerText = content.classList.contains('collapsed') ? '➕' : '➖';
+        }
 
         // --- MODALES Y MENUS ---
         map.on('contextmenu', function(e) { e.originalEvent.preventDefault(); currentLatLng = e.latlng; const menu = document.getElementById('context-menu'); menu.style.left = e.originalEvent.clientX + 'px'; menu.style.top = e.originalEvent.clientY + 'px'; menu.style.display = 'block'; });
