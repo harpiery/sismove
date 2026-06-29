@@ -113,6 +113,12 @@
         .note-input-group input { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #475569; background: #1e293b; color: white; font-size: 0.9rem;}
         .note-input-group button { background: #3b82f6; color: white; border: none; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: bold;}
         
+        /* Estilos para el botón de copiar coordenadas */
+        .coords-container { display: flex; align-items: center; gap: 8px; margin-top: 5px; background: #1e293b; padding: 6px 8px; border-radius: 4px; border: 1px solid #475569; }
+        .coords-container small { opacity: 0.9; font-family: monospace; }
+        .btn-copy-coords { background: none; border: 1px solid #475569; color: #94a3b8; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; line-height: 1; transition: all 0.2s; }
+        .btn-copy-coords:hover { background: #3b82f6; color: white; border-color: #3b82f6; }
+
         .notes-list { max-height: 150px; overflow-y: auto; margin-top: 15px; border-top: 1px solid #475569; padding-top: 10px; scrollbar-width: auto; scrollbar-color: #64748b #1e293b; }
         .notes-list::-webkit-scrollbar { width: 8px; }
         .notes-list::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
@@ -356,6 +362,20 @@
             sidebar.classList.toggle('closed');
         }
 
+        // --- COPIAR COORDENADAS ---
+        function copyCoords(id, e) {
+            e.stopPropagation();
+            const coordsText = document.getElementById(`coords-${id}`).innerText;
+            navigator.clipboard.writeText(coordsText).then(() => {
+                const btn = e.currentTarget;
+                const originalText = btn.innerText;
+                btn.innerText = '✅';
+                setTimeout(() => { btn.innerText = originalText; }, 1500);
+            }).catch(err => {
+                alert('No se pudo copiar automáticamente. Cópialo manualmente: ' + coordsText);
+            });
+        }
+
         // --- MODALES Y MENUS ---
         map.on('contextmenu', function(e) { e.originalEvent.preventDefault(); currentLatLng = e.latlng; const menu = document.getElementById('context-menu'); menu.style.left = e.originalEvent.clientX + 'px'; menu.style.top = e.originalEvent.clientY + 'px'; menu.style.display = 'block'; });
         
@@ -458,12 +478,21 @@
                 });
             }
 
+            // Formatear coordenadas a 5 decimales para mejor lectura
+            const latFormatted = parseFloat(report.lat).toFixed(5);
+            const lngFormatted = parseFloat(report.lng).toFixed(5);
+
             const popupContent = `
                 <div style="min-width: 280px;">
                     <h3 style="margin:0 0 10px; color:${colors[report.type]};">${report.title}</h3>
                     <p style="margin:0 0 10px; font-size:0.95rem;">${report.desc}</p>
                     <hr style="margin:10px 0; border-color:#475569;">
                     <small>${t('popup_priority')}: ${report.level}/4 | ${t('popup_type')}: ${t('type_'+report.type)}</small>
+                    
+                    <div class="coords-container">
+                        <small>📍 <span id="coords-${id}">${latFormatted}, ${lngFormatted}</span></small>
+                        <button class="btn-copy-coords" onclick="copyCoords('${id}', event)" title="Copiar coordenadas">📋</button>
+                    </div>
                     
                     <div class="notes-list" id="notes-${id}">${notesHtml}</div>
                     
