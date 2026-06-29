@@ -52,30 +52,47 @@
         .search-no-results { padding: 15px; color: #94a3b8; text-align: center; font-size: 0.9rem; }
 
         /* Sidebar */
-        #sidebar { position: absolute; top: 10px; left: 10px; bottom: 10px; width: 280px; background-color: rgba(30, 41, 59, 0.95); border-radius: 12px; display: flex; flex-direction: column; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; transition: transform 0.3s ease-in-out; }
+        #sidebar { position: absolute; top: 10px; left: 10px; bottom: 10px; width: 290px; background-color: rgba(30, 41, 59, 0.95); border-radius: 12px; display: flex; flex-direction: column; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; transition: transform 0.3s ease-in-out; }
         .mobile-handle { display: none; width: 40px; height: 5px; background: #64748b; border-radius: 3px; margin: 8px auto 0; }
-        .sidebar-header { padding: 20px; background-color: #0f172a; border-bottom: 2px solid #ef4444; position: relative; }
+        .sidebar-header { padding: 20px; background-color: #0f172a; border-bottom: 2px solid #ef4444; position: relative; flex-shrink: 0; }
         .sidebar-header h1 { font-size: 1.3rem; display: flex; align-items: center; gap: 10px; padding-right: 60px; }
         
         /* Botones de cerrar/ocultar sidebar */
         .close-sidebar-mobile { display: none; position: absolute; top: 15px; right: 15px; background: none; border: none; color: #f87171; font-size: 1.5rem; cursor: pointer; }
         .toggle-sidebar-desktop { display: none; position: absolute; top: 20px; right: 15px; background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer; }
         
-        .filters { padding: 12px; display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #475569; }
+        .filters { padding: 12px; display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #475569; flex-shrink: 0; }
         .filter-btn { padding: 5px 10px; border: none; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: bold; transition: opacity 0.2s; }
         .filter-btn:hover { opacity: 0.8; } .filter-btn.active { box-shadow: 0 0 0 2px white; }
         .bg-critical { background-color: #ef4444; color: white; } .bg-danger { background-color: #f97316; color: white; }
         .bg-help { background-color: #22c55e; color: white; } .bg-info { background-color: #3b82f6; color: white; }
         .bg-solved { background-color: #64748b; color: white; }
 
+        /* Buscador interno de la sidebar */
+        .sidebar-search-container { padding: 10px; border-bottom: 1px solid #475569; flex-shrink: 0; }
+        #report-search { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #475569; background: #1e293b; color: white; font-size: 0.9rem; box-sizing: border-box; }
+
         .reports-list { flex: 1; overflow-y: auto; padding: 10px; scrollbar-width: thin; scrollbar-color: #475569 #1e293b; }
         .reports-list::-webkit-scrollbar { width: 6px; }
         .reports-list::-webkit-scrollbar-thumb { background-color: #475569; border-radius: 3px; }
-        .report-item { background-color: #475569; margin-bottom: 8px; padding: 12px; border-radius: 8px; cursor: pointer; border-left: 5px solid gray; transition: all 0.3s ease; }
+        
+        .report-item { background-color: #475569; margin-bottom: 8px; padding: 12px; border-radius: 8px; cursor: pointer; border-left: 5px solid gray; transition: all 0.2s ease; }
         .report-item:hover { background-color: #64748b; }
         .report-item.solved-item { opacity: 0.5; text-decoration: line-through; border-left-color: #9ca3af !important; }
-        .report-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; display: flex; justify-content: space-between;}
+        .report-item.dragging { opacity: 0.4; border: 2px dashed #3b82f6; }
+        
+        .report-item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+        .report-title { font-weight: bold; font-size: 0.95rem; flex: 1; word-break: break-word; }
+        .fav-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: #64748b; padding: 0; line-height: 1; transition: transform 0.1s; flex-shrink: 0; }
+        .fav-btn:hover { transform: scale(1.2); }
+        .fav-btn.active { color: #facc15; } /* Color amarillo para favoritos */
+        
         .report-meta { font-size: 0.8rem; opacity: 0.8; display: flex; justify-content: space-between; }
+
+        /* Contador inferior */
+        #reports-counter { display: flex; justify-content: space-around; padding: 10px 5px; background: #0f172a; border-top: 1px solid #475569; font-size: 0.75rem; flex-shrink: 0; }
+        .counter-badge { display: flex; align-items: center; gap: 4px; color: white; font-weight: bold; padding: 4px 6px; border-radius: 4px; text-align: center; }
+        .counter-badge span { font-size: 0.9rem; }
 
         /* Botón flotante para abrir en PC */
         #open-sidebar-desktop { position: absolute; top: 10px; left: 10px; z-index: 999; background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: none; }
@@ -92,6 +109,11 @@
         #context-menu, #add-report-menu { position: absolute; z-index: 2000; background: #334155; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); padding: 8px 0; display: none; min-width: 240px; }
         .ctx-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
         .ctx-item:hover { background-color: #475569; }
+
+        /* Botón de cerrar para el menú Generar */
+        .btn-close-menu { position: absolute; top: 8px; right: 12px; background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.1rem; font-weight: bold; z-index: 10; }
+        .btn-close-menu:hover { color: #f87171; }
+        #add-report-menu { padding-top: 30px; }
 
         #modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: none; justify-content: center; align-items: center; }
         #modal { background: #334155; padding: 30px; border-radius: 12px; width: 400px; max-width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.8); position: relative; }
@@ -207,7 +229,22 @@
             <button class="filter-btn bg-info active" data-filter="info" data-i18n="filter_info">Info</button>
             <button class="filter-btn bg-solved active" data-filter="solved" data-i18n="filter_solved">Solucionado</button>
         </div>
+        
+        <!-- Buscador interno de informes -->
+        <div class="sidebar-search-container">
+            <input type="text" id="report-search" placeholder="🔍 Buscar informe por título...">
+        </div>
+
         <div class="reports-list" id="reports-list"></div>
+
+        <!-- Barra contadora inferior -->
+        <div id="reports-counter">
+            <div class="counter-badge bg-critical">🚨 <span id="count-critical">0</span></div>
+            <div class="counter-badge bg-danger">⚠️ <span id="count-danger">0</span></div>
+            <div class="counter-badge bg-help">🏥 <span id="count-help">0</span></div>
+            <div class="counter-badge bg-info">ℹ️ <span id="count-info">0</span></div>
+            <div class="counter-badge bg-solved">✅ <span id="count-solved">0</span></div>
+        </div>
     </div>
     
     <!-- Botón flotante para volver a abrir el menú en PC -->
@@ -236,6 +273,7 @@
 
     <!-- Menú para el botón Generar -->
     <div id="add-report-menu">
+        <button class="btn-close-menu" onclick="closeAddReportMenu()" title="Cerrar">✖</button>
         <div class="ctx-item" data-type="critical" data-i18n="ctx_critical">🚨 Reportar Emergencia Crítica</div>
         <div class="ctx-item" data-type="danger" data-i18n="ctx_danger">⚠️ Marcar Zona de Peligro</div>
         <div class="ctx-item" data-type="help" data-i18n="ctx_help">🏥 Solicitar/Ofrecer Ayuda</div>
@@ -370,13 +408,21 @@
             sidebar.classList.toggle('closed');
         }
 
+        // --- BUSCADOR INTERNO DE INFORMES ---
+        document.getElementById('report-search').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
+            document.querySelectorAll('#reports-list .report-item').forEach(item => {
+                const title = item.querySelector('.report-title').innerText.toLowerCase();
+                item.style.display = title.includes(searchText) ? '' : 'none';
+            });
+        });
+
         // --- COPIAR COORDENADAS (Método robusto con respaldo) ---
         function copyCoords(id, e) {
             e.stopPropagation();
             e.preventDefault();
             const coordsText = document.getElementById(`coords-${id}`).innerText;
             
-            // Método moderno (HTTPS)
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(coordsText).then(() => {
                     showCopySuccess(e.currentTarget);
@@ -384,7 +430,6 @@
                     fallbackCopy(coordsText, e.currentTarget);
                 });
             } else {
-                // Respaldo para HTTP o navegadores antiguos
                 fallbackCopy(coordsText, e.currentTarget);
             }
         }
@@ -398,28 +443,16 @@
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
-            
             let successful = false;
-            try {
-                successful = document.execCommand('copy');
-            } catch (err) {
-                console.error('Error en fallback de copiado:', err);
-            }
+            try { successful = document.execCommand('copy'); } catch (err) { console.error('Error en fallback de copiado:', err); }
             document.body.removeChild(textArea);
-            
-            if (successful) {
-                showCopySuccess(btn);
-            } else {
-                alert('No se pudo copiar automáticamente. Por favor, cópialo manualmente: ' + text);
-            }
+            if (successful) { showCopySuccess(btn); } else { alert('No se pudo copiar automáticamente. Por favor, cópialo manualmente: ' + text); }
         }
 
         function showCopySuccess(btn) {
             const originalText = btn.innerText;
             btn.innerText = '✅';
-            setTimeout(() => { 
-                if (btn.innerText === '✅') btn.innerText = originalText; 
-            }, 1500);
+            setTimeout(() => { if (btn.innerText === '✅') btn.innerText = originalText; }, 1500);
         }
 
         // --- MODALES Y MENUS ---
@@ -433,7 +466,7 @@
                 if(this.closest('#add-report-menu')) {
                     const center = map.getCenter();
                     currentLatLng = { lat: center.lat, lng: center.lng };
-                    document.getElementById('add-report-menu').style.display = 'none';
+                    closeAddReportMenu();
                 } else {
                     document.getElementById('context-menu').style.display = 'none';
                 }
@@ -454,6 +487,10 @@
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
+        function closeAddReportMenu() {
+            document.getElementById('add-report-menu').style.display = 'none';
+        }
+
         document.querySelectorAll('.level-btn').forEach(btn => { btn.addEventListener('click', function() { document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)'); this.style.transform = 'scale(1.1)'; selectedLevel = this.getAttribute('data-level'); document.getElementById('report-level').value = selectedLevel; }); });
         function openCreateModal() { document.getElementById('modal-create-view').style.display = 'block'; document.getElementById('modal-delete-view').style.display = 'none'; document.getElementById('modal-overlay').style.display = 'flex'; }
         function openDeleteModal(id) { markerToDeleteId = id; document.getElementById('modal-create-view').style.display = 'none'; document.getElementById('modal-delete-view').style.display = 'block'; document.getElementById('modal-overlay').style.display = 'flex'; }
@@ -472,6 +509,7 @@
                 type: document.getElementById('report-type').value,
                 level: document.getElementById('report-level').value,
                 solved: false,
+                favorite: false,
                 notes: {}
             };
             db.ref('reports').push(reportData).then(() => closeModal()).catch(err => alert("Error al guardar: " + err));
@@ -483,6 +521,7 @@
         }
 
         function updateSolvedInDB(markerId, isSolved) { db.ref('reports/' + markerId + '/solved').set(isSolved); }
+        function toggleFavoriteDB(markerId, isFav) { db.ref('reports/' + markerId + '/favorite').set(isFav); }
         function addNoteInDB(markerId, noteText) {
             const now = new Date(); const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
             db.ref('reports/' + markerId + '/notes').push({ text: noteText, time: time });
@@ -494,23 +533,44 @@
         function loadReportsFromDB() {
             db.ref('reports').on('value', (snapshot) => {
                 let openPopupId = null;
-                markersData.forEach(m => {
-                    if (m.marker.isPopupOpen()) openPopupId = m.id;
-                });
+                markersData.forEach(m => { if (m.marker.isPopupOpen()) openPopupId = m.id; });
                 
                 markersData.forEach(m => map.removeLayer(m.marker));
                 markersData = [];
-                document.getElementById('reports-list').innerHTML = '';
+                
+                const list = document.getElementById('reports-list');
+                list.innerHTML = ''; // Limpiar lista para reordenar
+                
                 const data = snapshot.val();
+                let counts = { critical: 0, danger: 0, help: 0, info: 0, solved: 0 };
+                
                 if (data) {
-                    Object.keys(data).forEach(id => {
-                        renderMarkerOnMap(id, data[id]);
+                    // Ordenar: Favoritos primero, luego el resto
+                    let keys = Object.keys(data).sort((a, b) => {
+                        const favA = data[a].favorite ? 1 : 0;
+                        const favB = data[b].favorite ? 1 : 0;
+                        return favB - favA;
+                    });
+
+                    keys.forEach(id => {
+                        const report = data[id];
+                        if (report.solved) counts.solved++;
+                        else if (counts[report.type] !== undefined) counts[report.type]++;
+                        
+                        renderMarkerOnMap(id, report);
                         if (id === openPopupId) {
                             const m = markersData.find(m => m.id === id);
                             if (m) m.marker.openPopup();
                         }
                     });
                 }
+
+                // Actualbar contadores
+                document.getElementById('count-critical').innerText = counts.critical;
+                document.getElementById('count-danger').innerText = counts.danger;
+                document.getElementById('count-help').innerText = counts.help;
+                document.getElementById('count-info').innerText = counts.info;
+                document.getElementById('count-solved').innerText = counts.solved;
             });
         }
 
@@ -552,7 +612,8 @@
             const icon = report.solved ? createSolvedIcon() : createCustomIcon(report.type, report.level);
             const marker = L.marker([report.lat, report.lng], { icon: icon }).addTo(map).bindPopup(popupContent, { maxWidth: 350 });
             markersData.push({ marker, type: report.type, id: id, solved: report.solved });
-            addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved);
+            
+            addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved, report.favorite || false);
         }
 
         // --- LÓGICA INTERFAZ ---
@@ -576,9 +637,7 @@
             const input = document.getElementById(`note-input-${markerId}`);
             const text = input.value.trim();
             if (!text) return;
-            
             addNoteInDB(markerId, text);
-            
             const now = new Date();
             const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
             const notesContainer = document.getElementById(`notes-${markerId}`);
@@ -589,33 +648,113 @@
                 notesContainer.appendChild(newNote);
                 notesContainer.scrollTop = notesContainer.scrollHeight;
             }
-            
             input.value = '';
             toggleNoteInput(markerId);
         }
         
         function markAsSolved(markerId) { updateSolvedInDB(markerId, true); const markerData = markersData.find(m => m.id === markerId); if (markerData) { markerData.solved = true; markerData.marker.setIcon(createSolvedIcon()); markerData.marker.closePopup(); const sidebarItem = document.querySelector(`.report-item[data-id="${markerId}"]`); if (sidebarItem) { sidebarItem.classList.add('solved-item'); sidebarItem.querySelector('.report-meta span:first-child').innerText = t('sidebar_solved'); } } }
         
-        function addReportToSidebar(title, type, level, lat, lng, markerId, isSolved) { 
+        function toggleFavorite(e, id) {
+            e.stopPropagation();
+            const btn = e.currentTarget;
+            const isFav = btn.classList.contains('active');
+            toggleFavoriteDB(id, !isFav);
+        }
+
+        // --- DRAG AND DROP PARA REORDENAR ---
+        let draggedItem = null;
+
+        function handleDragStart(e) {
+            draggedItem = this;
+            setTimeout(() => this.classList.add('dragging'), 0);
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (draggedItem !== this) {
+                const list = document.getElementById('reports-list');
+                const allItems = Array.from(list.querySelectorAll('.report-item:not(.dragging)')).filter(i => i.style.display !== 'none');
+                let inserted = false;
+                for (let item of allItems) {
+                    if (e.clientY < item.getBoundingClientRect().top + item.offsetHeight / 2) {
+                        list.insertBefore(draggedItem, item);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) {
+                    list.appendChild(draggedItem);
+                }
+            }
+            return false;
+        }
+
+        function handleDragEnd() {
+            this.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function addReportToSidebar(title, type, level, lat, lng, markerId, isSolved, isFavorite) { 
             const list = document.getElementById('reports-list'); 
             const item = document.createElement('div'); 
             item.className = 'report-item' + (isSolved ? ' solved-item' : ''); 
             item.style.borderLeftColor = colors[type]; 
             item.setAttribute('data-id', markerId); 
-            item.innerHTML = `<div class="report-title">${title}</div><div class="report-meta"><span>${isSolved ? t('sidebar_solved') : `${t('type_'+type)} - ${t('popup_priority')} ${level}`}</span></div>`; 
+            item.draggable = true;
+
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('drop', handleDrop);
+            item.addEventListener('dragend', handleDragEnd);
+
+            const favClass = isFavorite ? 'active' : '';
+            const favIcon = isFavorite ? '⭐' : '☆';
+
+            item.innerHTML = `
+                <div class="report-item-header">
+                    <div class="report-title">${title}</div>
+                    <button class="fav-btn ${favClass}" onclick="toggleFavorite(event, '${markerId}')">${favIcon}</button>
+                </div>
+                <div class="report-meta">
+                    <span>${isSolved ? t('sidebar_solved') : `${t('type_'+type)} - ${t('popup_priority')} ${level}`}</span>
+                </div>
+            `; 
+
             item.addEventListener('click', () => { 
                 map.flyTo([lat, lng], 15, { duration: 1.5 }); 
                 const m = markersData.find(m => m.id === markerId); 
                 if(m) m.marker.openPopup(); 
-                
-                if (window.innerWidth <= 768) {
-                    toggleSidebarMobile();
-                }
+                if (window.innerWidth <= 768) { toggleSidebarMobile(); }
             }); 
-            list.prepend(item); 
+
+            // Insertar al principio si es favorito, si no, al final
+            if (isFavorite) {
+                list.prepend(item);
+            } else {
+                // Buscar el último favorito para insertar después
+                const items = list.querySelectorAll('.report-item');
+                let inserted = false;
+                for (let it of items) {
+                    if (!it.querySelector('.fav-btn.active')) {
+                        list.insertBefore(item, it);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) list.appendChild(item);
+            }
         }
 
-        document.querySelectorAll('.filter-btn').forEach(btn => { btn.addEventListener('click', function() { this.classList.toggle('active'); const filterType = this.getAttribute('data-filter'); const isActive = this.classList.contains('active'); markersData.forEach(m => { const isHidden = (filterType === 'solved') ? m.solved : (m.type === filterType); if (isHidden) { if (isActive) map.addLayer(m.marker); else map.removeLayer(m.marker); } }); document.querySelectorAll('.report-item').forEach(item => { const mData = markersData.find(m => m.id === item.getAttribute('data-id')); if(mData) { const shouldHide = (filterType === 'solved' && mData.solved) || (mData.type === filterType && !mData.solved); if(shouldHide) item.style.display = isActive ? 'block' : 'none'; } }); }); });
+        document.querySelectorAll('.filter-btn').forEach(btn => { btn.addEventListener('click', function() { this.classList.toggle('active'); const filterType = this.getAttribute('data-filter'); const isActive = this.classList.contains('active'); markersData.forEach(m => { const isHidden = (filterType === 'solved') ? m.solved : (m.type === filterType); if (isHidden) { if (isActive) map.addLayer(m.marker); else map.removeLayer(m.marker); } }); document.querySelectorAll('.report-item').forEach(item => { const mData = markersData.find(m => m.id === item.getAttribute('data-id')); if(mData) { const shouldHide = (filterType === 'solved' && mData.solved) || (mData.type === filterType && !mData.solved); if(shouldHide) item.style.display = isActive ? '' : 'none'; } }); }); });
 
         // Iniciar App
         loadReportsFromDB();
