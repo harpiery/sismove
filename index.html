@@ -159,27 +159,61 @@
         /* RESPONSIVE PARA MÓVILES */
         @media (max-width: 768px) {
             .top-right-panel { left: 10px; right: 10px; align-items: stretch; }
-            .top-right-buttons { justify-content: space-between; }
+            .top-right-buttons { justify-content: space-between; gap: 5px; }
+            #lang-toggle, #add-report-btn, #sidebar-toggle { padding: 8px 10px; font-size: 0.9rem; }
+            .zoom-controls button { padding: 6px 10px; font-size: 1rem; }
             #search-wrapper { width: 100%; }
-            
+            #search-container { padding: 8px; }
+            #search-input { padding: 8px; font-size: 0.85rem; }
+            #search-btn { padding: 0 10px; }
+
             /* Convertir Sidebar en panel inferior deslizable */
             #sidebar { 
                 width: 100%; 
-                height: 65vh; 
+                height: 70vh; 
                 top: auto; 
                 bottom: 0; 
                 left: 0; 
                 border-radius: 15px 15px 0 0; 
-                transform: translateY(100%); /* Oculto por defecto */
+                transform: translateY(100%); 
                 z-index: 2500;
             }
             #sidebar.mobile-open { transform: translateY(0); }
             
             .mobile-handle { display: block; }
-            .close-sidebar-mobile { display: block; }
-            #sidebar-toggle { display: flex; } /* Botón de menú visible en móvil */
+            .close-sidebar-mobile { display: block; top: 12px; right: 12px; font-size: 1.2rem; }
+            #sidebar-toggle { display: flex; } 
             
-            #legend { bottom: 20px; right: 10px; max-width: 180px; padding: 10px; } 
+            .sidebar-header { padding: 15px; }
+            .sidebar-header h1 { font-size: 1.1rem; padding-right: 40px; }
+            .filters { padding: 8px; gap: 5px; }
+            .filter-btn { padding: 4px 8px; font-size: 0.7rem; }
+            .sidebar-search-container { padding: 8px; }
+            #report-search { padding: 6px 8px; font-size: 0.85rem; }
+
+            .reports-list { padding: 8px; }
+            .report-item { padding: 10px; margin-bottom: 6px; }
+            .report-title { font-size: 0.85rem; }
+            .report-meta { font-size: 0.7rem; }
+            .fav-btn { font-size: 1rem; }
+
+            /* Ajustar contadores para que quepan horizontalmente */
+            #reports-counter { padding: 8px 2px; gap: 2px; }
+            .counter-badge { flex-direction: column; gap: 2px; padding: 4px 2px; font-size: 0.65rem; }
+            .counter-badge span { font-size: 0.8rem; }
+
+            /* Popups más pequeños en móvil */
+            .leaflet-popup-content { margin: 10px !important; width: auto !important; max-width: 80vw; }
+            .leaflet-popup-content-wrapper { max-width: 85vw; }
+            .btn-popup { font-size: 0.85rem; padding: 6px; margin-top: 6px; }
+            .note-item { font-size: 0.85rem; padding: 6px; }
+            .notes-list { max-height: 100px; margin-top: 10px; padding-top: 8px; }
+            .coords-container { padding: 4px 6px; }
+            .coords-container small { font-size: 0.75rem; }
+            .btn-copy-coords { padding: 2px 6px; font-size: 0.8rem; }
+
+            #legend { bottom: 10px; right: 10px; max-width: 140px; padding: 8px; font-size: 0.8rem; } 
+            .legend-item { margin-bottom: 4px; font-size: 0.75rem; }
             #modal { width: 95%; padding: 20px; }
         }
         
@@ -230,14 +264,12 @@
             <button class="filter-btn bg-solved active" data-filter="solved" data-i18n="filter_solved">Solucionado</button>
         </div>
         
-        <!-- Buscador interno de informes -->
         <div class="sidebar-search-container">
             <input type="text" id="report-search" placeholder="🔍 Buscar informe por título...">
         </div>
 
         <div class="reports-list" id="reports-list"></div>
 
-        <!-- Barra contadora inferior -->
         <div id="reports-counter">
             <div class="counter-badge bg-critical">🚨 <span id="count-critical">0</span></div>
             <div class="counter-badge bg-danger">⚠️ <span id="count-danger">0</span></div>
@@ -247,7 +279,6 @@
         </div>
     </div>
     
-    <!-- Botón flotante para volver a abrir el menú en PC -->
     <button id="open-sidebar-desktop" onclick="toggleSidebarDesktop()" title="Mostrar menú">☰</button>
 
     <div id="legend">
@@ -271,7 +302,6 @@
         <div class="ctx-item" data-type="info" data-i18n="ctx_info">ℹ️ Reporte Informativo</div>
     </div>
 
-    <!-- Menú para el botón Generar -->
     <div id="add-report-menu">
         <button class="btn-close-menu" onclick="closeAddReportMenu()" title="Cerrar">✖</button>
         <div class="ctx-item" data-type="critical" data-i18n="ctx_critical">🚨 Reportar Emergencia Crítica</div>
@@ -282,7 +312,6 @@
 
     <div id="modal-overlay">
         <div id="modal">
-            <!-- Botón rojo de cierre rápido -->
             <button class="btn-close-modal" onclick="closeModal()" title="Cerrar">✖</button>
             
             <div id="modal-create-view">
@@ -361,7 +390,7 @@
         }
 
         // ==========================================
-        // MAPA (Zoom desactivado por defecto, usaremos custom)
+        // MAPA
         // ==========================================
         const map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([8.5, -66.5], 6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
@@ -417,38 +446,24 @@
             });
         });
 
-        // --- COPIAR COORDENADAS (Método robusto con respaldo) ---
+        // --- COPIAR COORDENADAS ---
         function copyCoords(id, e) {
             e.stopPropagation();
             e.preventDefault();
             const coordsText = document.getElementById(`coords-${id}`).innerText;
-            
             if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(coordsText).then(() => {
-                    showCopySuccess(e.currentTarget);
-                }).catch(err => {
-                    fallbackCopy(coordsText, e.currentTarget);
-                });
-            } else {
-                fallbackCopy(coordsText, e.currentTarget);
-            }
+                navigator.clipboard.writeText(coordsText).then(() => showCopySuccess(e.currentTarget)).catch(err => fallbackCopy(coordsText, e.currentTarget));
+            } else { fallbackCopy(coordsText, e.currentTarget); }
         }
-
         function fallbackCopy(text, btn) {
             const textArea = document.createElement("textarea");
             textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.top = "-9999px";
-            textArea.style.left = "-9999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            let successful = false;
-            try { successful = document.execCommand('copy'); } catch (err) { console.error('Error en fallback de copiado:', err); }
+            textArea.style.position = "fixed"; textArea.style.top = "-9999px"; textArea.style.left = "-9999px";
+            document.body.appendChild(textArea); textArea.focus(); textArea.select();
+            let successful = false; try { successful = document.execCommand('copy'); } catch (err) { console.error('Error en fallback de copiado:', err); }
             document.body.removeChild(textArea);
             if (successful) { showCopySuccess(btn); } else { alert('No se pudo copiar automáticamente. Por favor, cópialo manualmente: ' + text); }
         }
-
         function showCopySuccess(btn) {
             const originalText = btn.innerText;
             btn.innerText = '✅';
@@ -462,7 +477,6 @@
             item.addEventListener('click', function() { 
                 currentType = this.getAttribute('data-type'); 
                 document.getElementById('report-type').value = currentType; 
-                
                 if(this.closest('#add-report-menu')) {
                     const center = map.getCenter();
                     currentLatLng = { lat: center.lat, lng: center.lng };
@@ -470,7 +484,6 @@
                 } else {
                     document.getElementById('context-menu').style.display = 'none';
                 }
-
                 document.getElementById('report-lat').value = currentLatLng.lat; 
                 document.getElementById('report-lng').value = currentLatLng.lng; 
                 document.getElementById('modal-title').innerText = t('modal_title_prefix') + t('type_'+currentType); 
@@ -486,10 +499,7 @@
             menu.style.top = (rect.bottom + 5) + 'px';
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
-
-        function closeAddReportMenu() {
-            document.getElementById('add-report-menu').style.display = 'none';
-        }
+        function closeAddReportMenu() { document.getElementById('add-report-menu').style.display = 'none'; }
 
         document.querySelectorAll('.level-btn').forEach(btn => { btn.addEventListener('click', function() { document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)'); this.style.transform = 'scale(1.1)'; selectedLevel = this.getAttribute('data-level'); document.getElementById('report-level').value = selectedLevel; }); });
         function openCreateModal() { document.getElementById('modal-create-view').style.display = 'block'; document.getElementById('modal-delete-view').style.display = 'none'; document.getElementById('modal-overlay').style.display = 'flex'; }
@@ -539,13 +549,12 @@
                 markersData = [];
                 
                 const list = document.getElementById('reports-list');
-                list.innerHTML = ''; // Limpiar lista para reordenar
+                list.innerHTML = '';
                 
                 const data = snapshot.val();
                 let counts = { critical: 0, danger: 0, help: 0, info: 0, solved: 0 };
                 
                 if (data) {
-                    // Ordenar: Favoritos primero, luego el resto
                     let keys = Object.keys(data).sort((a, b) => {
                         const favA = data[a].favorite ? 1 : 0;
                         const favB = data[b].favorite ? 1 : 0;
@@ -565,7 +574,6 @@
                     });
                 }
 
-                // Actualbar contadores
                 document.getElementById('count-critical').innerText = counts.critical;
                 document.getElementById('count-danger').innerText = counts.danger;
                 document.getElementById('count-help').innerText = counts.help;
@@ -586,7 +594,7 @@
             const lngFormatted = parseFloat(report.lng).toFixed(5);
 
             const popupContent = `
-                <div style="min-width: 280px;">
+                <div style="min-width: 240px; max-width: 85vw;">
                     <h3 style="margin:0 0 10px; color:${colors[report.type]};">${report.title}</h3>
                     <p style="margin:0 0 10px; font-size:0.95rem;">${report.desc}</p>
                     <hr style="margin:10px 0; border-color:#475569;">
@@ -736,11 +744,9 @@
                 if (window.innerWidth <= 768) { toggleSidebarMobile(); }
             }); 
 
-            // Insertar al principio si es favorito, si no, al final
             if (isFavorite) {
                 list.prepend(item);
             } else {
-                // Buscar el último favorito para insertar después
                 const items = list.querySelectorAll('.report-item');
                 let inserted = false;
                 for (let it of items) {
