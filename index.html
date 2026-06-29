@@ -25,10 +25,16 @@
         }
 
         .top-right-panel { position: absolute; top: 15px; right: 15px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
-        .top-right-buttons { display: flex; gap: 10px; }
+        .top-right-buttons { display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
         
-        #lang-toggle, #add-report-btn { background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        #lang-toggle:hover, #add-report-btn:hover { background: #475569; }
+        #lang-toggle, #add-report-btn, #sidebar-toggle { background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 5px; }
+        #lang-toggle:hover, #add-report-btn:hover, #sidebar-toggle:hover { background: #475569; }
+
+        /* Controles de Zoom personalizados (Horizontales) */
+        .zoom-controls { display: flex; flex-direction: row; background: rgba(30, 41, 59, 0.95); border: 1px solid #475569; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .zoom-controls button { background: none; border: none; color: white; padding: 8px 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold; line-height: 1; }
+        .zoom-controls button:first-child { border-right: 1px solid #475569; }
+        .zoom-controls button:hover { background: #475569; }
 
         #search-wrapper { position: relative; width: 320px; }
         #search-container { background: rgba(30, 41, 59, 0.95); padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; gap: 8px; }
@@ -45,10 +51,16 @@
         .search-result-text { overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .search-no-results { padding: 15px; color: #94a3b8; text-align: center; font-size: 0.9rem; }
 
-        /* Sidebar Reducido */
-        #sidebar { position: absolute; top: 10px; left: 10px; bottom: 10px; width: 280px; background-color: rgba(30, 41, 59, 0.95); border-radius: 12px; display: flex; flex-direction: column; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; }
-        .sidebar-header { padding: 20px; background-color: #0f172a; border-bottom: 2px solid #ef4444; }
-        .sidebar-header h1 { font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
+        /* Sidebar */
+        #sidebar { position: absolute; top: 10px; left: 10px; bottom: 10px; width: 280px; background-color: rgba(30, 41, 59, 0.95); border-radius: 12px; display: flex; flex-direction: column; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; transition: transform 0.3s ease-in-out; }
+        .mobile-handle { display: none; width: 40px; height: 5px; background: #64748b; border-radius: 3px; margin: 8px auto 0; }
+        .sidebar-header { padding: 20px; background-color: #0f172a; border-bottom: 2px solid #ef4444; position: relative; }
+        .sidebar-header h1 { font-size: 1.3rem; display: flex; align-items: center; gap: 10px; padding-right: 60px; }
+        
+        /* Botones de cerrar/ocultar sidebar */
+        .close-sidebar-mobile { display: none; position: absolute; top: 15px; right: 15px; background: none; border: none; color: #f87171; font-size: 1.5rem; cursor: pointer; }
+        .toggle-sidebar-desktop { display: none; position: absolute; top: 20px; right: 15px; background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer; }
+        
         .filters { padding: 12px; display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #475569; }
         .filter-btn { padding: 5px 10px; border: none; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: bold; transition: opacity 0.2s; }
         .filter-btn:hover { opacity: 0.8; } .filter-btn.active { box-shadow: 0 0 0 2px white; }
@@ -65,7 +77,10 @@
         .report-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; display: flex; justify-content: space-between;}
         .report-meta { font-size: 0.8rem; opacity: 0.8; display: flex; justify-content: space-between; }
 
-        /* Leyenda con funcionalidad Colapsar */
+        /* Botón flotante para abrir en PC */
+        #open-sidebar-desktop { position: absolute; top: 10px; left: 10px; z-index: 999; background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: none; }
+
+        /* Leyenda */
         #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.9); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-width: 220px; }
         .legend-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #475569; padding-bottom: 5px; }
         .legend-header:hover { color: #3b82f6; }
@@ -98,7 +113,6 @@
         .note-input-group input { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #475569; background: #1e293b; color: white; font-size: 0.9rem;}
         .note-input-group button { background: #3b82f6; color: white; border: none; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: bold;}
         
-        /* Scrollbar visualmente destacado para las notas */
         .notes-list { max-height: 150px; overflow-y: auto; margin-top: 15px; border-top: 1px solid #475569; padding-top: 10px; scrollbar-width: auto; scrollbar-color: #64748b #1e293b; }
         .notes-list::-webkit-scrollbar { width: 8px; }
         .notes-list::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
@@ -114,9 +128,34 @@
             .top-right-panel { left: 10px; right: 10px; align-items: stretch; }
             .top-right-buttons { justify-content: space-between; }
             #search-wrapper { width: 100%; }
-            #sidebar { width: 100%; height: 40vh; top: auto; bottom: 0; left: 0; border-radius: 12px 12px 0 0; }
-            #legend { bottom: 42vh; right: 10px; max-width: 180px; padding: 10px; } /* Ajuste para móvil */
+            
+            /* Convertir Sidebar en panel inferior deslizable */
+            #sidebar { 
+                width: 100%; 
+                height: 65vh; 
+                top: auto; 
+                bottom: 0; 
+                left: 0; 
+                border-radius: 15px 15px 0 0; 
+                transform: translateY(100%); /* Oculto por defecto */
+                z-index: 2500;
+            }
+            #sidebar.mobile-open { transform: translateY(0); }
+            
+            .mobile-handle { display: block; }
+            .close-sidebar-mobile { display: block; }
+            #sidebar-toggle { display: flex; } /* Botón de menú visible en móvil */
+            
+            #legend { bottom: 20px; right: 10px; max-width: 180px; padding: 10px; } 
             #modal { width: 95%; padding: 20px; }
+        }
+        
+        /* RESPONSIVE PARA PC */
+        @media (min-width: 769px) {
+            #sidebar-toggle { display: none; }
+            .toggle-sidebar-desktop { display: block; }
+            #sidebar.closed { transform: translateX(-110%); }
+            #sidebar.closed ~ #open-sidebar-desktop { display: block; }
         }
     </style>
 </head>
@@ -126,6 +165,11 @@
     
     <div class="top-right-panel">
         <div class="top-right-buttons">
+            <button id="sidebar-toggle" onclick="toggleSidebarMobile()" title="Abrir menú">☰</button>
+            <div class="zoom-controls">
+                <button onclick="map.zoomIn()">+</button>
+                <button onclick="map.zoomOut()">−</button>
+            </div>
             <button id="add-report-btn" onclick="toggleAddReportMenu(event)" data-i18n="btn_add_report">➕ Generar</button>
             <button id="lang-toggle" onclick="toggleLanguage()">EN</button>
         </div>
@@ -139,7 +183,12 @@
     </div>
 
     <div id="sidebar">
-        <div class="sidebar-header"><h1 data-i18n="title">🇻🇪 SismoVe Ayuda</h1></div>
+        <div class="mobile-handle"></div>
+        <div class="sidebar-header">
+            <h1 data-i18n="title">🇻🇪 SismoVe Ayuda</h1>
+            <button class="close-sidebar-mobile" onclick="toggleSidebarMobile()">✖</button>
+            <button class="toggle-sidebar-desktop" onclick="toggleSidebarDesktop()" title="Ocultar menú">◀</button>
+        </div>
         <div class="filters">
             <button class="filter-btn bg-critical active" data-filter="critical" data-i18n="filter_critical">Crítico</button>
             <button class="filter-btn bg-danger active" data-filter="danger" data-i18n="filter_danger">Peligro</button>
@@ -149,6 +198,9 @@
         </div>
         <div class="reports-list" id="reports-list"></div>
     </div>
+    
+    <!-- Botón flotante para volver a abrir el menú en PC -->
+    <button id="open-sidebar-desktop" onclick="toggleSidebarDesktop()" title="Mostrar menú">☰</button>
 
     <div id="legend">
         <div class="legend-header" onclick="toggleLegend()">
@@ -257,9 +309,9 @@
         }
 
         // ==========================================
-        // MAPA
+        // MAPA (Zoom desactivado por defecto, usaremos custom)
         // ==========================================
-        const map = L.map('map').setView([8.5, -66.5], 6);
+        const map = L.map('map', { zoomControl: false }).setView([8.5, -66.5], 6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
 
         let markersData = []; let currentLatLng = null; let currentType = null; let selectedLevel = 1;
@@ -292,6 +344,16 @@
             const icon = document.getElementById('legend-toggle-icon');
             content.classList.toggle('collapsed');
             icon.innerText = content.classList.contains('collapsed') ? '➕' : '➖';
+        }
+
+        // --- CONTROL MENÚ MÓVIL Y ESCRITORIO ---
+        function toggleSidebarMobile() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('mobile-open');
+        }
+        function toggleSidebarDesktop() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('closed');
         }
 
         // --- MODALES Y MENUS ---
@@ -464,7 +526,26 @@
         }
         
         function markAsSolved(markerId) { updateSolvedInDB(markerId, true); const markerData = markersData.find(m => m.id === markerId); if (markerData) { markerData.solved = true; markerData.marker.setIcon(createSolvedIcon()); markerData.marker.closePopup(); const sidebarItem = document.querySelector(`.report-item[data-id="${markerId}"]`); if (sidebarItem) { sidebarItem.classList.add('solved-item'); sidebarItem.querySelector('.report-meta span:first-child').innerText = t('sidebar_solved'); } } }
-        function addReportToSidebar(title, type, level, lat, lng, markerId, isSolved) { const list = document.getElementById('reports-list'); const item = document.createElement('div'); item.className = 'report-item' + (isSolved ? ' solved-item' : ''); item.style.borderLeftColor = colors[type]; item.setAttribute('data-id', markerId); item.innerHTML = `<div class="report-title">${title}</div><div class="report-meta"><span>${isSolved ? t('sidebar_solved') : `${t('type_'+type)} - ${t('popup_priority')} ${level}`}</span></div>`; item.addEventListener('click', () => { map.flyTo([lat, lng], 15, { duration: 1.5 }); const m = markersData.find(m => m.id === markerId); if(m) m.marker.openPopup(); }); list.prepend(item); }
+        
+        function addReportToSidebar(title, type, level, lat, lng, markerId, isSolved) { 
+            const list = document.getElementById('reports-list'); 
+            const item = document.createElement('div'); 
+            item.className = 'report-item' + (isSolved ? ' solved-item' : ''); 
+            item.style.borderLeftColor = colors[type]; 
+            item.setAttribute('data-id', markerId); 
+            item.innerHTML = `<div class="report-title">${title}</div><div class="report-meta"><span>${isSolved ? t('sidebar_solved') : `${t('type_'+type)} - ${t('popup_priority')} ${level}`}</span></div>`; 
+            item.addEventListener('click', () => { 
+                map.flyTo([lat, lng], 15, { duration: 1.5 }); 
+                const m = markersData.find(m => m.id === markerId); 
+                if(m) m.marker.openPopup(); 
+                
+                // Cerrar el menú lateral en la versión móvil tras hacer clic
+                if (window.innerWidth <= 768) {
+                    toggleSidebarMobile();
+                }
+            }); 
+            list.prepend(item); 
+        }
 
         document.querySelectorAll('.filter-btn').forEach(btn => { btn.addEventListener('click', function() { this.classList.toggle('active'); const filterType = this.getAttribute('data-filter'); const isActive = this.classList.contains('active'); markersData.forEach(m => { const isHidden = (filterType === 'solved') ? m.solved : (m.type === filterType); if (isHidden) { if (isActive) map.addLayer(m.marker); else map.removeLayer(m.marker); } }); document.querySelectorAll('.report-item').forEach(item => { const mData = markersData.find(m => m.id === item.getAttribute('data-id')); if(mData) { const shouldHide = (filterType === 'solved' && mData.solved) || (mData.type === filterType && !mData.solved); if(shouldHide) item.style.display = isActive ? 'block' : 'none'; } }); }); });
 
