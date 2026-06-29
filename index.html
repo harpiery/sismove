@@ -269,7 +269,7 @@
         </div>
         
         <div class="sidebar-search-container">
-            <input type="text" id="report-search" placeholder="🔍 Buscar informe por título...">
+            <input type="text" id="report-search" placeholder="🔍 Buscar por título o código...">
         </div>
 
         <div class="reports-list" id="reports-list"></div>
@@ -451,12 +451,14 @@
             sidebar.classList.toggle('closed');
         }
 
-        // --- BUSCADOR INTERNO DE INFORMES ---
+        // --- BUSCADOR INTERNO DE INFORMES (TÍTULO O CÓDIGO) ---
         document.getElementById('report-search').addEventListener('input', function(e) {
-            const searchText = e.target.value.toLowerCase();
+            const searchText = e.target.value.toLowerCase().trim();
             document.querySelectorAll('#reports-list .report-item').forEach(item => {
                 const title = item.querySelector('.report-title').innerText.toLowerCase();
-                item.style.display = title.includes(searchText) ? '' : 'none';
+                const code = item.getAttribute('data-code') || ''; // Obtiene el código oculto
+                // Muestra el elemento si el texto coincide con el título O con el código
+                item.style.display = (title.includes(searchText) || code.includes(searchText)) ? '' : 'none';
             });
         });
 
@@ -535,7 +537,7 @@
                 desc: document.getElementById('inp-desc').value,
                 type: document.getElementById('report-type').value,
                 level: document.getElementById('report-level').value,
-                code: generarCodigo(parseFloat(lat), parseFloat(lng)), // Generar código
+                code: generarCodigo(parseFloat(lat), parseFloat(lng)),
                 solved: false,
                 favorite: false,
                 notes: {}
@@ -646,7 +648,8 @@
             const marker = L.marker([report.lat, report.lng], { icon: icon }).addTo(map).bindPopup(popupContent, { maxWidth: 350 });
             markersData.push({ marker, type: report.type, id: id, solved: report.solved });
             
-            addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved, report.favorite || false);
+            // Pasamos el reportCode a la barra lateral para que pueda ser buscado
+            addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved, report.favorite || false, reportCode);
         }
 
         // --- LÓGICA INTERFAZ ---
@@ -736,12 +739,14 @@
             draggedItem = null;
         }
 
-        function addReportToSidebar(title, type, level, lat, lng, markerId, isSolved, isFavorite) { 
+        // Añadido el parámetro 'code' para poder usarlo en el buscador
+        function addReportToSidebar(title, type, level, lat, lng, markerId, isSolved, isFavorite, code) { 
             const list = document.getElementById('reports-list'); 
             const item = document.createElement('div'); 
             item.className = 'report-item' + (isSolved ? ' solved-item' : ''); 
             item.style.borderLeftColor = colors[type]; 
             item.setAttribute('data-id', markerId); 
+            item.setAttribute('data-code', code ? code.toLowerCase() : ''); // Guardamos el código en minúsculas para el buscador
             item.draggable = true;
 
             item.addEventListener('dragstart', handleDragStart);
