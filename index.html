@@ -10,6 +10,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: #1e293b; color: #f1f5f9; overflow: hidden; }
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; }
+        #map.drawing-mode { cursor: crosshair !important; }
 
         .leaflet-popup-content-wrapper { background: #334155; color: #f1f5f9; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .leaflet-popup-tip { background: #334155; }
@@ -29,7 +30,6 @@
         .user-pulse { width: 16px; height: 16px; background: rgba(59, 130, 246, 0.4); border-radius: 50%; position: absolute; top: 2px; left: 2px; animation: userPulse 1.5s infinite; }
         @keyframes userPulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(3.5); opacity: 0; } }
 
-        /* Contenedor de Alarmas Cercanas */
         #alarm-container { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 5000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; pointer-events: none; }
         .alarm-banner { padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-weight: bold; display: flex; align-items: center; gap: 10px; animation: slideDown 0.5s ease-out; color: white; text-align: left; }
         .alarm-critical { background: #ef4444; border: 2px solid #fca5a5; }
@@ -40,8 +40,8 @@
         .top-right-panel { position: absolute; top: 15px; right: 15px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
         .top-right-buttons { display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
         
-        #lang-toggle, #add-report-btn, #sidebar-toggle, #gps-btn { background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 5px; }
-        #lang-toggle:hover, #add-report-btn:hover, #sidebar-toggle:hover, #gps-btn:hover { background: #475569; }
+        #lang-toggle, #add-report-btn, #sidebar-toggle, #gps-btn, #sync-maps-btn { background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 5px; }
+        #lang-toggle:hover, #add-report-btn:hover, #sidebar-toggle:hover, #gps-btn:hover, #sync-maps-btn:hover { background: #475569; }
 
         .zoom-controls { display: flex; flex-direction: row; background: rgba(30, 41, 59, 0.95); border: 1px solid #475569; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .zoom-controls button { background: none; border: none; color: white; padding: 8px 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold; line-height: 1; }
@@ -198,7 +198,7 @@
         @media (max-width: 768px) {
             .top-right-panel { left: 10px; right: 10px; align-items: stretch; }
             .top-right-buttons { justify-content: space-between; gap: 5px; }
-            #lang-toggle, #add-report-btn, #sidebar-toggle, #gps-btn { padding: 8px 10px; font-size: 0.9rem; }
+            #lang-toggle, #add-report-btn, #sidebar-toggle, #gps-btn, #sync-maps-btn { padding: 8px 10px; font-size: 0.9rem; }
             .zoom-controls button { padding: 6px 10px; font-size: 1rem; }
             #search-wrapper, #disaster-panel { width: 100%; }
 
@@ -256,6 +256,7 @@
     <div class="top-right-panel">
         <div class="top-right-buttons">
             <button id="sidebar-toggle" onclick="toggleSidebarMobile()" title="Abrir menú">☰</button>
+            <button id="sync-maps-btn" onclick="loadExternalMaps()" title="Sincronizar Mapas Externos">🗄️</button>
             <button id="gps-btn" onclick="locateUser()" title="Mi ubicación GPS">📍</button>
             <div class="zoom-controls">
                 <button onclick="map.zoomIn()">+</button>
@@ -307,6 +308,13 @@
                             <span class="slider"></span>
                         </div>
                         Tsunamis (GDACS)
+                    </label>
+                    <label class="disaster-control">
+                        <div class="switch">
+                            <input type="checkbox" id="toggle-draw" onchange="toggleDrawingMode(this.checked)">
+                            <span class="slider"></span>
+                        </div>
+                        🏚️ Dibujar Zona Colapsada
                     </label>
 
                     <div id="disaster-status"></div>
@@ -526,6 +534,66 @@
         }
 
         // ==========================================
+        // FUENTES DE MAPAS EXTERNOS (KML)
+        // ==========================================
+        const externalSources = [
+            { name: "La Guaira 2026", url: "https://www.google.com/maps/d/kml?mid=1rlt3k8joPC2IeBBaIPgqmUd1oXcYgKc&forcekml=1", type: "danger", level: "3" }
+            // Puedes añadir más URLs aquí en el futuro siguiendo la misma estructura
+        ];
+
+        async function loadExternalMaps() {
+            const btn = document.getElementById('sync-maps-btn');
+            btn.innerText = "⏳";
+            let importedCount = 0;
+
+            for (const source of externalSources) {
+                try {
+                    const text = await fetchWithFallback(source.url, false);
+                    const parser = new DOMParser();
+                    const kml = parser.parseFromString(text, "text/xml");
+                    const placemarks = kml.querySelectorAll("Placemark");
+                    
+                    placemarks.forEach(pm => {
+                        const name = pm.querySelector("name")?.textContent || "Sin nombre";
+                        const desc = pm.querySelector("description")?.textContent || `Importado de ${source.name}`;
+                        const point = pm.querySelector("Point > coordinates");
+                        const polygon = pm.querySelector("Polygon > outerBoundaryIs > LinearRing > coordinates");
+
+                        if (point) {
+                            const [lng, lat] = point.textContent.trim().split(',').map(Number);
+                            const reportData = {
+                                lat: lat.toString(), lng: lng.toString(),
+                                title: name,
+                                desc: desc,
+                                type: source.type, level: source.level,
+                                code: generarCodigo(),
+                                solved: false, notes: {}
+                            };
+                            db.ref('reports').push(reportData);
+                            importedCount++;
+                        } else if (polygon) {
+                            const coordsText = polygon.textContent.trim().split(' ');
+                            const latlngs = coordsText.map(c => {
+                                const [lng, lat] = c.split(',').map(Number);
+                                return [lat, lng];
+                            }).filter(c => !isNaN(c[0]) && !isNaN(c[1]));
+                            
+                            if (latlngs.length > 2) {
+                                const zoneData = { type: 'collapsed', coords: latlngs, name: name };
+                                db.ref('zones').push(zoneData);
+                                importedCount++;
+                            }
+                        }
+                    });
+                } catch (e) {
+                    console.error(`Error cargando ${source.name}:`, e);
+                }
+            }
+            btn.innerText = "🗄️";
+            alert(`Sincronización completada. ${importedCount} elementos importados a SismoVe.`);
+        }
+
+        // ==========================================
         // MAPA Y GUARDADO DE UBICACIÓN
         // ==========================================
         const savedPos = JSON.parse(localStorage.getItem("lastMapPosition"));
@@ -546,7 +614,89 @@
         let markersData = []; let currentLatLng = null; let currentType = null; let selectedLevel = 1;
         let markerToDeleteId = null; let searchPinMarker = null; let userMarker = null;
         let disasterLayers = { quake: null, flood: null, fire: null, tsunami: null };
+        let zonesLayer = L.layerGroup().addTo(map);
         const colors = { critical: '#ef4444', danger: '#f97316', help: '#22c55e', info: '#3b82f6' };
+
+        // ==========================================
+        // DIBUJO DE ZONAS COLAPSADAS
+        // ==========================================
+        let drawingMode = false;
+        let currentPolygonPoints = [];
+        let tempPolyline = null;
+
+        function toggleDrawingMode(isChecked) {
+            drawingMode = isChecked;
+            if (drawingMode) {
+                map.getContainer().classList.add('drawing-mode');
+                map.on('click', addDrawPoint);
+                map.on('mousemove', updateDrawLine);
+                map.on('dblclick', finishDrawPolygon);
+            } else {
+                map.getContainer().classList.remove('drawing-mode');
+                map.off('click', addDrawPoint);
+                map.off('mousemove', updateDrawLine);
+                map.off('dblclick', finishDrawPolygon);
+                if (tempPolyline) { map.removeLayer(tempPolyline); tempPolyline = null; }
+                currentPolygonPoints = [];
+            }
+        }
+
+        function addDrawPoint(e) {
+            currentPolygonPoints.push(e.latlng);
+            if (!tempPolyline) {
+                tempPolyline = L.polyline([e.latlng], { color: '#ef4444', dashArray: '5, 5' }).addTo(map);
+            } else {
+                tempPolyline.addLatLng(e.latlng);
+            }
+        }
+
+        function updateDrawLine(e) {
+            if (currentPolygonPoints.length > 0) {
+                let tempPoints = [...currentPolygonPoints, e.latlng];
+                if (!tempPolyline) {
+                    tempPolyline = L.polyline(tempPoints, { color: '#ef4444', dashArray: '5, 5' }).addTo(map);
+                } else {
+                    tempPolyline.setLatLngs(tempPoints);
+                }
+            }
+        }
+
+        function finishDrawPolygon() {
+            if (currentPolygonPoints.length > 2) {
+                // Guardar en Firebase
+                const zoneData = {
+                    type: 'collapsed',
+                    coords: currentPolygonPoints.map(p => [p.lat, p.lng]),
+                    name: `Zona Colapsada ${new Date().toLocaleTimeString()}`
+                };
+                db.ref('zones').push(zoneData);
+            }
+            // Limpiar dibujo temporal
+            if (tempPolyline) { map.removeLayer(tempPolyline); tempPolyline = null; }
+            currentPolygonPoints = [];
+            document.getElementById('toggle-draw').checked = false;
+            toggleDrawingMode(false);
+        }
+
+        function loadZones() {
+            db.ref('zones').on('value', (snapshot) => {
+                zonesLayer.clearLayers();
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach(id => {
+                        const zone = data[id];
+                        if (zone.coords && zone.coords.length > 2) {
+                            L.polygon(zone.coords, {
+                                color: '#ef4444',
+                                fillColor: '#f97316',
+                                fillOpacity: 0.4,
+                                weight: 2
+                            }).bindPopup(`<b>🏚️ ${zone.name}</b>`).addTo(zonesLayer);
+                        }
+                    });
+                }
+            });
+        }
 
         // ==========================================
         // SISTEMA DE ALARMA DE PROXIMIDAD Y AUDIO
@@ -558,11 +708,14 @@
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 } catch(e) { console.warn("AudioContext no soportado"); }
             }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
         }
 
         let userLocation = null;
         let proximityInterval = null;
-        const triggeredAlarms = new Map(); // Usamos Map para guardar el timestamp
+        const triggeredAlarms = new Map();
 
         function checkNearbyDisasters() {
             if (!userLocation) return;
@@ -583,38 +736,50 @@
                     let severity = null;
                     let icon = '';
                     
-                    if (distance < 20000) { // 20 km
-                        severity = "CRÍTICO";
-                        icon = "🔴";
-                    } else if (distance < 50000) { // 50 km
-                        severity = "ALERTA";
-                        icon = "🟠";
-                    } else if (distance < 100000) { // 100 km
-                        severity = "INFORMACIÓN";
-                        icon = "🟡";
-                    }
+                    if (distance < 20000) { severity = "CRÍTICO"; icon = "🔴"; }
+                    else if (distance < 50000) { severity = "ALERTA"; icon = "🟠"; }
+                    else if (distance < 100000) { severity = "INFORMACIÓN"; icon = "🟡"; }
 
                     if (severity) {
                         const key = `${latlng.lat.toFixed(2)}_${latlng.lng.toFixed(2)}_${severity}`;
                         if (!triggeredAlarms.has(key)) {
-                            triggeredAlarms.set(key, Date.now()); // Guardar momento de la alarma
+                            triggeredAlarms.set(key, Date.now());
                             let props = layer.feature?.properties || {};
                             triggerAlarm(severity, icon, props, distance);
                         }
                     }
                 });
             });
+            
+            // Revisar también las zonas colapsadas
+            zonesLayer.eachLayer(layer => {
+                let latlng = layer.getBounds().getCenter();
+                const distance = map.distance(userLocation, latlng);
+                let severity = null;
+                let icon = '';
+                
+                if (distance < 20000) { severity = "CRÍTICO"; icon = "🔴"; }
+                else if (distance < 50000) { severity = "ALERTA"; icon = "🟠"; }
+                else if (distance < 100000) { severity = "INFORMACIÓN"; icon = "🟡"; }
+
+                if (severity) {
+                    const key = `zone_${latlng.lat.toFixed(2)}_${latlng.lng.toFixed(2)}_${severity}`;
+                    if (!triggeredAlarms.has(key)) {
+                        triggeredAlarms.set(key, Date.now());
+                        triggerAlarm(severity, icon, { name: 'Zona Colapsada' }, distance);
+                    }
+                }
+            });
         }
 
-        // Limpiar alarmas antiguas cada 10 minutos (para volver a alertar si persiste)
         setInterval(() => {
             const now = Date.now();
             for (const [key, time] of triggeredAlarms) {
-                if (now - time > 3600000) { // 1 hora (3600000 ms)
+                if (now - time > 3600000) {
                     triggeredAlarms.delete(key);
                 }
             }
-        }, 600000); // 10 minutos (600000 ms)
+        }, 600000);
 
         function triggerAlarm(severity, icon, props, distance) {
             const distKm = Math.round(distance / 1000);
@@ -625,15 +790,14 @@
             
             let msgText = `Alerta ${severity}. ${disasterType} detectado a ${distKm} kilómetros de tu ubicación.`;
             
-            // 1. Speech Synthesis (Voz)
             if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(msgText);
                 utterance.lang = 'es-ES';
-                utterance.rate = 1.0;
+                utterance.rate = 1.1;
                 speechSynthesis.speak(utterance);
             }
 
-            // 2. Sonido de Alarma (Beep) usando el audioCtx global
             if (audioCtx) {
                 try {
                     const oscillator = audioCtx.createOscillator();
@@ -649,14 +813,12 @@
                 } catch(e) { console.warn("Error reproduciendo audio"); }
             }
 
-            // 3. Notificación Visual (Banner)
             const container = document.getElementById('alarm-container');
             const banner = document.createElement('div');
             banner.className = `alarm-banner alarm-${severity.toLowerCase()}`;
             banner.innerHTML = `<span style="font-size: 1.5rem;">${icon}</span> <div>${msgText}</div>`;
             container.appendChild(banner);
 
-            // Eliminar el banner después de 15 segundos
             setTimeout(() => {
                 banner.style.opacity = '0';
                 banner.style.transform = 'translateY(-20px)';
@@ -703,7 +865,7 @@
             fire: { data: null, time: 0 },
             tsunami: { data: null, time: 0 }
         };
-        const CACHE_DURATION = 10 * 60 * 1000; // 10 minutos
+        const CACHE_DURATION = 10 * 60 * 1000;
 
         // ==========================================
         // SELECTOR DE REGIÓN
@@ -763,7 +925,7 @@
         // LOCALIZACIÓN GPS USUARIO
         // ==========================================
         function locateUser() {
-            initAudio(); // Inicializar audio tras interacción del usuario
+            initAudio();
             if (!navigator.geolocation) { alert('La geolocalización no es soportada por tu navegador.'); return; }
             navigator.geolocation.getCurrentPosition(
                 position => {
@@ -925,7 +1087,7 @@
                 const text = await fetchWithFallback(url, false);
                 if (!text || text.includes('Invalid')) throw new Error("Invalid API Key or response");
                 
-                localStorage.setItem("last_fire_data", text); // Guardar respaldo
+                localStorage.setItem("last_fire_data", text);
                 cache.fire = { data: text, time: Date.now() };
                 renderNASAFires(text);
                 status.innerText = "✅ Incendios actualizados";
@@ -1064,7 +1226,15 @@
         // ==========================================
         // MODALES Y MENUS
         // ==========================================
-        map.on('contextmenu', function(e) { e.originalEvent.preventDefault(); currentLatLng = e.latlng; const menu = document.getElementById('context-menu'); menu.style.left = e.originalEvent.clientX + 'px'; menu.style.top = e.originalEvent.clientY + 'px'; menu.style.display = 'block'; });
+        map.on('contextmenu', function(e) { 
+            if (drawingMode) return; // Evitar menú si está dibujando
+            e.originalEvent.preventDefault(); 
+            currentLatLng = e.latlng; 
+            const menu = document.getElementById('context-menu'); 
+            menu.style.left = e.originalEvent.clientX + 'px'; 
+            menu.style.top = e.originalEvent.clientY + 'px'; 
+            menu.style.display = 'block'; 
+        });
         
         document.querySelectorAll('#context-menu .ctx-item, #add-report-menu .ctx-item').forEach(item => { 
             item.addEventListener('click', function() { 
@@ -1390,6 +1560,7 @@
         map.fitBounds(r.bounds);
 
         loadReportsFromDB();
+        loadZones();
         
         if (document.getElementById('toggle-quake').checked) loadEarthquakes();
         if (document.getElementById('toggle-flood').checked) loadGDACS('FL', 'flood', 'Inundaciones');
