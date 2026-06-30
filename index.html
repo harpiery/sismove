@@ -545,6 +545,7 @@
             const btn = document.getElementById('sync-maps-btn');
             btn.innerText = "⏳";
             let importedCount = 0;
+            let skippedDuplicates = 0;
 
             for (const source of externalSources) {
                 try {
@@ -561,16 +562,28 @@
 
                         if (point) {
                             const [lng, lat] = point.textContent.trim().split(',').map(Number);
-                            const reportData = {
-                                lat: lat.toString(), lng: lng.toString(),
-                                title: name,
-                                desc: desc,
-                                type: source.type, level: source.level,
-                                code: generarCodigo(),
-                                solved: false, notes: {}
-                            };
-                            db.ref('reports').push(reportData);
-                            importedCount++;
+                            
+                            // Evitar duplicados: comprobar si ya hay un informe activo en esta ubicación
+                            const exists = markersData.some(m => 
+                                !m.solved && 
+                                parseFloat(m.marker.getLatLng().lat).toFixed(5) === lat.toFixed(5) && 
+                                parseFloat(m.marker.getLatLng().lng).toFixed(5) === lng.toFixed(5)
+                            );
+                            
+                            if (!exists) {
+                                const reportData = {
+                                    lat: lat.toString(), lng: lng.toString(),
+                                    title: name,
+                                    desc: desc,
+                                    type: source.type, level: source.level,
+                                    code: generarCodigo(),
+                                    solved: false, notes: {}
+                                };
+                                db.ref('reports').push(reportData);
+                                importedCount++;
+                            } else {
+                                skippedDuplicates++;
+                            }
                         } else if (polygon) {
                             const coordsText = polygon.textContent.trim().split(' ');
                             const latlngs = coordsText.map(c => {
@@ -579,9 +592,20 @@
                             }).filter(c => !isNaN(c[0]) && !isNaN(c[1]));
                             
                             if (latlngs.length > 2) {
-                                const zoneData = { type: 'collapsed', coords: latlngs, name: name };
-                                db.ref('zones').push(zoneData);
-                                importedCount++;
+                                // Evitar duplicados de zonas (usando la primera coordenada como referencia)
+                                const zoneExists = zonesData.some(z => {
+                                    if (!z.coords || z.coords.length === 0) return false;
+                                    return z.coords[0][0].toFixed(5) === latlngs[0][0].toFixed(5) &&
+                                           z.coords[0][1].toFixed(5) === latlngs[0][1].toFixed(5);
+                                });
+
+                                if (!zoneExists) {
+                                    const zoneData = { type: 'collapsed', coords: latlngs, name: name };
+                                    db.ref('zones').push(zoneData);
+                                    importedCount++;
+                                } else {
+                                    skippedDuplicates++;
+                                }
                             }
                         }
                     });
@@ -590,7 +614,7 @@
                 }
             }
             btn.innerText = "🗄️";
-            alert(`Sincronización completada. ${importedCount} elementos importados a SismoVe.`);
+            alert(`Sincronización completada. ${importedCount} elementos importados. ${skippedDuplicates} duplicados evitados.`);
         }
 
         // ==========================================
@@ -615,6 +639,7 @@
         let markerToDeleteId = null; let searchPinMarker = null; let userMarker = null;
         let disasterLayers = { quake: null, flood: null, fire: null, tsunami: null };
         let zonesLayer = L.layerGroup().addTo(map);
+        let zonesData = []; // Array local para comprobar duplicados de zonas
         const colors = { critical: '#ef4444', danger: '#f97316', help: '#22c55e', info: '#3b82f6' };
 
         // ==========================================
@@ -682,9 +707,11 @@
             db.ref('zones').on('value', (snapshot) => {
                 zonesLayer.clearLayers();
                 const data = snapshot.val();
+                zonesData = []; // Resetear array local
                 if (data) {
                     Object.keys(data).forEach(id => {
                         const zone = data[id];
+                        zonesData.push(zone); // Guardar referencia local
                         if (zone.coords && zone.coords.length > 2) {
                             L.polygon(zone.coords, {
                                 color: '#ef4444',
@@ -1270,15 +1297,28 @@
         function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; document.getElementById('report-form').reset(); document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)'); markerToDeleteId = null; }
 
         // ==========================================
-        // BASE DE DATOS: CREAR, ELIMINAR, ACTUALIZAR
+        // BASE DE DATOS: CREAR, ELIMINAR, ACTUALIZAR (CON VALIDACIÓN DE DUPLICADOS)
         // ==========================================
         document.getElementById('report-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            const lat = document.getElementById('report-lat').value;
-            const lng = document.getElementById('report-lng').value;
+            const lat = parseFloat(document.getElementById('report-lat').value);
+            const lng = parseFloat(document.getElementById('report-lng').value);
+            
+            // Comprobar si ya existe un informe activo en las mismas coordenadas
+            const exists = markersData.some(m => 
+                !m.solved && 
+                parseFloat(m.marker.getLatLng().lat).toFixed(5) === lat.toFixed(5) && 
+                parseFloat(m.marker.getLatLng().lng).toFixed(5) === lng.toFixed(5)
+            );
+
+            if (exists) {
+                alert('⚠️ Ya existe un informe activo en estas coordenadas. No se pueden generar duplicados.');
+                return;
+            }
             
             const reportData = {
-                lat: lat, lng: lng,
+                lat: lat.toString(), 
+                lng: lng.toString(),
                 title: document.getElementById('inp-title').value,
                 desc: document.getElementById('inp-desc').value,
                 type: document.getElementById('report-type').value,
