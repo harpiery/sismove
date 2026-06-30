@@ -24,7 +24,6 @@
             100% { transform: translateY(0); }
         }
 
-        /* Marcador de Usuario GPS */
         .user-location-icon { position: relative; }
         .user-dot { width: 16px; height: 16px; background: #3b82f6; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 10px rgba(59, 130, 246, 0.8); position: absolute; top: 2px; left: 2px; }
         .user-pulse { width: 16px; height: 16px; background: rgba(59, 130, 246, 0.4); border-radius: 50%; position: absolute; top: 2px; left: 2px; animation: userPulse 1.5s infinite; }
@@ -56,7 +55,6 @@
         .search-result-text { overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .search-no-results { padding: 15px; color: #94a3b8; text-align: center; font-size: 0.9rem; }
 
-        /* Panel de Catástrofes (Acordeón) */
         #disaster-panel { width: 320px; background: rgba(30, 41, 59, 0.95); border: 1px solid #475569; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); overflow: hidden; }
         .disaster-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; padding: 10px 12px; background: #0f172a; border-bottom: 1px solid #475569; }
         .disaster-header:hover { color: #3b82f6; }
@@ -77,11 +75,27 @@
         /* Sidebar Izquierda */
         #sidebar { position: absolute; top: 10px; left: 10px; bottom: 10px; width: 290px; background-color: rgba(30, 41, 59, 0.95); border-radius: 12px; display: flex; flex-direction: column; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; transition: transform 0.3s ease-in-out; }
         .mobile-handle { display: none; width: 40px; height: 5px; background: #64748b; border-radius: 3px; margin: 8px auto 0; }
-        .sidebar-header { padding: 20px; background-color: #0f172a; border-bottom: 2px solid #ef4444; position: relative; flex-shrink: 0; }
-        .sidebar-header h1 { font-size: 1.3rem; display: flex; align-items: center; gap: 10px; padding-right: 60px; }
         
+        /* Ajuste Cabecera Sidebar y Z-Index */
+        .sidebar-header { padding: 15px; background-color: #0f172a; border-bottom: 2px solid #ef4444; position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; z-index: 20; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        
+        /* Selector de Región Minimalista */
+        .region-selector { position: relative; }
+        #region-btn { background: none; border: none; cursor: pointer; padding: 0; font-size: 1.8rem; line-height: 1; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+        #region-btn:hover { opacity: 0.8; }
+        #region-menu { position: absolute; top: 110%; left: 0; background: #1e293b; border: 1px solid #475569; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 2000; display: none; max-height: 300px; overflow-y: auto; min-width: 200px; scrollbar-width: thin; scrollbar-color: #475569 #1e293b; }
+        #region-menu::-webkit-scrollbar { width: 6px; }
+        #region-menu::-webkit-scrollbar-track { background: #1e293b; }
+        #region-menu::-webkit-scrollbar-thumb { background-color: #475569; border-radius: 3px; }
+        #region-menu.show { display: block; }
+        .region-item { padding: 10px 15px; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 8px; color: #e2e8f0; }
+        .region-item:last-child { border-bottom: none; }
+        .region-item:hover { background: #334155; }
+        .region-item span.flag { font-size: 1.2rem; }
+
         .close-sidebar-mobile { display: none; position: absolute; top: 15px; right: 15px; background: none; border: none; color: #f87171; font-size: 1.5rem; cursor: pointer; }
-        .toggle-sidebar-desktop { display: none; position: absolute; top: 20px; right: 15px; background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer; }
+        .toggle-sidebar-desktop { display: none; background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer; position: absolute; top: 15px; right: 15px; }
         
         .filters { padding: 12px; display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #475569; flex-shrink: 0; }
         .filter-btn { padding: 5px 10px; border: none; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: bold; transition: opacity 0.2s; }
@@ -116,7 +130,6 @@
 
         #open-sidebar-desktop { position: absolute; top: 10px; left: 10px; z-index: 999; background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: none; }
 
-        /* Leyenda */
         #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.9); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-width: 220px; }
         .legend-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #475569; padding-bottom: 5px; }
         .legend-header:hover { color: #3b82f6; }
@@ -175,7 +188,6 @@
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         .marker-critical { animation: pulse 1.5s infinite; }
 
-        /* RESPONSIVE */
         @media (max-width: 768px) {
             .top-right-panel { left: 10px; right: 10px; align-items: stretch; }
             .top-right-buttons { justify-content: space-between; gap: 5px; }
@@ -190,8 +202,7 @@
             .close-sidebar-mobile { display: block; top: 12px; right: 12px; font-size: 1.2rem; }
             #sidebar-toggle { display: flex; } 
             
-            .sidebar-header { padding: 15px; }
-            .sidebar-header h1 { font-size: 1.1rem; padding-right: 40px; }
+            .sidebar-header { padding: 12px; }
             .filters { padding: 8px; gap: 5px; }
             .filter-btn { padding: 4px 8px; font-size: 0.7rem; }
             .sidebar-search-container { padding: 8px; }
@@ -305,7 +316,35 @@
     <div id="sidebar">
         <div class="mobile-handle"></div>
         <div class="sidebar-header">
-            <h1 data-i18n="title">🇻🇪 SismoVe Ayuda</h1>
+            <div class="header-left">
+                <div class="region-selector">
+                    <button id="region-btn" onclick="toggleRegionMenu(event)" title="Seleccionar Región">
+                        <span id="region-flag">🌍</span>
+                    </button>
+                    <div id="region-menu">
+                        <div class="region-item" onclick="selectRegion(event, 'global')"><span class="flag">🌍</span> Global</div>
+                        <div class="region-item" onclick="detectMyCountry(event)"><span class="flag">📍</span> Detectar mi País</div>
+                        <div class="region-item" onclick="selectRegion(event, 'VE')"><span class="flag">🇻🇪</span> Venezuela</div>
+                        <div class="region-item" onclick="selectRegion(event, 'CO')"><span class="flag">🇨🇴</span> Colombia</div>
+                        <div class="region-item" onclick="selectRegion(event, 'BR')"><span class="flag">🇧🇷</span> Brasil</div>
+                        <div class="region-item" onclick="selectRegion(event, 'AR')"><span class="flag">🇦🇷</span> Argentina</div>
+                        <div class="region-item" onclick="selectRegion(event, 'EC')"><span class="flag">🇪🇨</span> Ecuador</div>
+                        <div class="region-item" onclick="selectRegion(event, 'PE')"><span class="flag">🇵🇪</span> Perú</div>
+                        <div class="region-item" onclick="selectRegion(event, 'CL')"><span class="flag">🇨🇱</span> Chile</div>
+                        <div class="region-item" onclick="selectRegion(event, 'BO')"><span class="flag">🇧🇴</span> Bolivia</div>
+                        <div class="region-item" onclick="selectRegion(event, 'UY')"><span class="flag">🇺🇾</span> Uruguay</div>
+                        <div class="region-item" onclick="selectRegion(event, 'PY')"><span class="flag">🇵🇾</span> Paraguay</div>
+                        <div class="region-item" onclick="selectRegion(event, 'MX')"><span class="flag">🇲🇽</span> México</div>
+                        <div class="region-item" onclick="selectRegion(event, 'ES')"><span class="flag">🇪🇸</span> España</div>
+                        <div class="region-item" onclick="selectRegion(event, 'PT')"><span class="flag">🇵🇹</span> Portugal</div>
+                        <div class="region-item" onclick="selectRegion(event, 'FR')"><span class="flag">🇫🇷</span> Francia</div>
+                        <div class="region-item" onclick="selectRegion(event, 'IT')"><span class="flag">🇮🇹</span> Italia</div>
+                        <div class="region-item" onclick="selectRegion(event, 'US')"><span class="flag">🇺🇸</span> USA</div>
+                        <div class="region-item" onclick="selectRegion(event, 'CA')"><span class="flag">🇨🇦</span> Canadá</div>
+                    </div>
+                </div>
+                <h1 style="font-size: 1.2rem; margin: 0; font-weight: 700; letter-spacing: 0.5px;">SismoVe</h1>
+            </div>
             <button class="close-sidebar-mobile" onclick="toggleSidebarMobile()">✖</button>
             <button class="toggle-sidebar-desktop" onclick="toggleSidebarDesktop()" title="Ocultar menú">◀</button>
         </div>
@@ -443,19 +482,33 @@
         }
 
         // ==========================================
-        // PREFERENCIAS LOCALES (CACHE)
+        // PREFERENCIAS LOCALES Y REGIONES
         // ==========================================
-        function getFavorites() {
-            try { return JSON.parse(localStorage.getItem('sismove_favorites')) || []; }
-            catch(e) { return []; }
-        }
-        function saveFavorites(favs) {
-            localStorage.setItem('sismove_favorites', JSON.stringify(favs));
-        }
-        function getOrder() {
-            try { return JSON.parse(localStorage.getItem('sismove_order')) || []; }
-            catch(e) { return []; }
-        }
+        const regions = {
+            'global': { flag: '🌍', name: 'Global', bounds: [[-90, -180], [90, 180]] },
+            'VE': { flag: '🇻🇪', name: 'Venezuela', bounds: [[-2, -73], [12, -59]] },
+            'CO': { flag: '🇨🇴', name: 'Colombia', bounds: [[-5, -80], [13, -66]] },
+            'BR': { flag: '🇧🇷', name: 'Brasil', bounds: [[-35, -75], [5, -35]] },
+            'AR': { flag: '🇦🇷', name: 'Argentina', bounds: [[-55, -75], [-20, -50]] },
+            'EC': { flag: '🇪🇨', name: 'Ecuador', bounds: [[-6, -82], [2, -74]] },
+            'PE': { flag: '🇵🇪', name: 'Perú', bounds: [[-20, -82], [0, -68]] },
+            'CL': { flag: '🇨🇱', name: 'Chile', bounds: [[-56, -76], [-17, -66]] },
+            'BO': { flag: '🇧🇴', name: 'Bolivia', bounds: [[-23, -70], [-10, -57]] },
+            'UY': { flag: '🇺🇾', name: 'Uruguay', bounds: [[-36, -58], [-30, -53]] },
+            'PY': { flag: '🇵🇾', name: 'Paraguay', bounds: [[-27, -62], [-19, -54]] },
+            'MX': { flag: '🇲🇽', name: 'México', bounds: [[14, -118], [33, -86]] },
+            'ES': { flag: '🇪🇸', name: 'España', bounds: [[35, -10], [45, 5]] },
+            'PT': { flag: '🇵🇹', name: 'Portugal', bounds: [[36, -10], [42, -6]] },
+            'FR': { flag: '🇫🇷', name: 'Francia', bounds: [[41, -5], [51, 10]] },
+            'IT': { flag: '🇮🇹', name: 'Italia', bounds: [[35, 6], [47, 19]] },
+            'US': { flag: '🇺🇸', name: 'USA', bounds: [[25, -125], [50, -65]] },
+            'CA': { flag: '🇨🇦', name: 'Canadá', bounds: [[45, -140], [75, -50]] }
+        };
+        let currentRegion = localStorage.getItem('sismove_region') || 'global';
+
+        function getFavorites() { try { return JSON.parse(localStorage.getItem('sismove_favorites')) || []; } catch(e) { return []; } }
+        function saveFavorites(favs) { localStorage.setItem('sismove_favorites', JSON.stringify(favs)); }
+        function getOrder() { try { return JSON.parse(localStorage.getItem('sismove_order')) || []; } catch(e) { return []; } }
         function saveOrder() {
             const items = document.querySelectorAll('#reports-list .report-item');
             const order = Array.from(items).map(i => i.getAttribute('data-id'));
@@ -466,20 +519,16 @@
         // MAPA Y GUARDADO DE UBICACIÓN
         // ==========================================
         const savedPos = JSON.parse(localStorage.getItem("lastMapPosition"));
-        const initialLat = savedPos ? savedPos.lat : 8.5;
-        const initialLng = savedPos ? savedPos.lng : -66.5;
-        const initialZoom = savedPos ? savedPos.zoom : 6;
+        const initialLat = savedPos ? savedPos.lat : 20;
+        const initialLng = savedPos ? savedPos.lng : 0;
+        const initialZoom = savedPos ? savedPos.zoom : 2;
 
         const map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([initialLat, initialLng], initialZoom);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
 
         function saveMapPosition() {
             const center = map.getCenter();
-            localStorage.setItem("lastMapPosition", JSON.stringify({
-                lat: center.lat,
-                lng: center.lng,
-                zoom: map.getZoom()
-            }));
+            localStorage.setItem("lastMapPosition", JSON.stringify({ lat: center.lat, lng: center.lng, zoom: map.getZoom() }));
         }
         map.on('moveend', saveMapPosition);
         map.on('zoomend', saveMapPosition);
@@ -489,6 +538,59 @@
         let disasterLayers = { quake: null, flood: null, fire: null, tsunami: null };
         const colors = { critical: '#ef4444', danger: '#f97316', help: '#22c55e', info: '#3b82f6' };
         const corsProxy = 'https://api.allorigins.win/raw?url=';
+
+        // --- SELECTOR DE REGIÓN ---
+        function toggleRegionMenu(e) {
+            e.stopPropagation();
+            document.getElementById('region-menu').classList.toggle('show');
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.region-selector')) {
+                document.getElementById('region-menu').classList.remove('show');
+            }
+        });
+
+        function selectRegion(e, code) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            currentRegion = code;
+            localStorage.setItem('sismove_region', code);
+            const r = regions[code];
+            document.getElementById('region-flag').innerText = r.flag;
+            map.flyToBounds(r.bounds, { padding: [20, 20] });
+            document.getElementById('region-menu').classList.remove('show');
+            loadReportsFromDB(); // Filtra informes
+            
+            // Recargar catástrofes si están activas para aplicar filtro de región
+            if (document.getElementById('toggle-quake').checked) { if (disasterLayers.quake) map.removeLayer(disasterLayers.quake); disasterLayers.quake = null; loadEarthquakes(); }
+            if (document.getElementById('toggle-flood').checked) { if (disasterLayers.flood) map.removeLayer(disasterLayers.flood); disasterLayers.flood = null; loadGDACS('FL', 'flood'); }
+            if (document.getElementById('toggle-fire').checked) { if (disasterLayers.fire) map.removeLayer(disasterLayers.fire); disasterLayers.fire = null; loadNASAFires(); }
+            if (document.getElementById('toggle-tsunami').checked) { if (disasterLayers.tsunami) map.removeLayer(disasterLayers.tsunami); disasterLayers.tsunami = null; loadNOAA(); }
+        }
+
+        function detectMyCountry(e) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            if (!navigator.geolocation) { alert('Geolocalización no soportada.'); return; }
+            navigator.geolocation.getCurrentPosition(pos => {
+                const { latitude, longitude } = pos.coords;
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const cc = data.address.country_code.toUpperCase();
+                        if (regions[cc]) {
+                            selectRegion(null, cc);
+                        } else {
+                            alert('País no predefinido en la lista. Mostrando vista global.');
+                            selectRegion(null, 'global');
+                        }
+                    }).catch(() => alert('No se pudo determinar tu país.'));
+            }, () => alert('Permiso de ubicación denegado.'));
+        }
+
+        function isInRegionBounds(lat, lng) {
+            if (currentRegion === 'global') return true;
+            const b = regions[currentRegion].bounds;
+            return lat >= b[0][0] && lat <= b[1][0] && lng >= b[0][1] && lng <= b[1][1];
+        }
 
         // --- LOCALIZACIÓN GPS USUARIO ---
         function locateUser() {
@@ -538,6 +640,8 @@
                 disasterLayers.quake = L.layerGroup();
                 data.features.forEach(feature => {
                     const [lon, lat, depth] = feature.geometry.coordinates;
+                    if (!isInRegionBounds(lat, lon)) return; // Filtrar por región
+
                     const mag = feature.properties.mag || 0;
                     let color = '#22c55e', radius = 5000;
                     if (mag >= 6.0) { color = '#ef4444'; radius = 60000; }
@@ -576,6 +680,14 @@
                         if (alertLevel === 'Red' || alertLevel === 3) color = '#ef4444';
 
                         if (f.geometry) {
+                            let centroid = null;
+                            if (f.geometry.type === 'Point') {
+                                centroid = f.geometry.coordinates;
+                            } else if (f.geometry.type === 'Polygon') {
+                                centroid = f.geometry.coordinates[0][0];
+                            }
+                            if (centroid && !isInRegionBounds(centroid[1], centroid[0])) return;
+
                             L.geoJSON(f, {
                                 style: { color: color, fillColor: color, fillOpacity: 0.4, weight: 2 },
                                 pointToLayer: (feature, latlng) => L.circle(latlng, { radius: 50000, color: color, fillColor: color, fillOpacity: 0.4 })
@@ -590,9 +702,7 @@
 
         // 3. Incendios (NASA FIRMS)
         function loadNASAFires() {
-            // NASA FIRMS requiere un MAP_KEY gratuito. Regístrate en https://firms.modaps.eosdis.nasa.gov/api/area/ para obtenerlo.
-            // Si no hay clave, hace fallback a GDACS WF (Wildfires).
-            const apiKey = 'be41bd312c91f171946a830be39c9a95'; 
+            const apiKey = 'YOUR_NASA_FIRMS_KEY'; 
             const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/-180,-90,180,90/2/`;
             
             if (apiKey === 'YOUR_NASA_FIRMS_KEY') {
@@ -612,7 +722,7 @@
                             const lat = parseFloat(cols[0]);
                             const lng = parseFloat(cols[1]);
                             const brightness = parseFloat(cols[2]);
-                            if (!isNaN(lat) && !isNaN(lng)) {
+                            if (!isNaN(lat) && !isNaN(lng) && isInRegionBounds(lat, lng)) {
                                 L.circle([lat, lng], {
                                     radius: 15000,
                                     color: '#ef4444',
@@ -641,6 +751,14 @@
                     if (data.features) {
                         data.features.forEach(f => {
                             if (f.geometry) {
+                                let centroid = null;
+                                if (f.geometry.type === 'Point') {
+                                    centroid = f.geometry.coordinates;
+                                } else if (f.geometry.type === 'Polygon') {
+                                    centroid = f.geometry.coordinates[0][0];
+                                }
+                                if (centroid && !isInRegionBounds(centroid[1], centroid[0])) return;
+
                                 L.geoJSON(f, {
                                     style: { color: '#06b6d4', fillColor: '#06b6d4', fillOpacity: 0.4, weight: 2 }
                                 }).bindPopup(`<b>${f.properties.event}</b><br>${f.properties.headline || ''}`).addTo(disasterLayers.tsunami);
@@ -833,6 +951,12 @@
 
                     keys.forEach(id => {
                         const report = data[id];
+                        
+                        // Filtrar por región
+                        if (!isInRegionBounds(parseFloat(report.lat), parseFloat(report.lng))) {
+                            return;
+                        }
+
                         if (report.solved) counts.solved++;
                         else if (counts[report.type] !== undefined) counts[report.type]++;
                         
@@ -1035,6 +1159,12 @@
         document.querySelectorAll('.filter-btn').forEach(btn => { btn.addEventListener('click', function() { this.classList.toggle('active'); const filterType = this.getAttribute('data-filter'); const isActive = this.classList.contains('active'); markersData.forEach(m => { const isHidden = (filterType === 'solved') ? m.solved : (m.type === filterType); if (isHidden) { if (isActive) map.addLayer(m.marker); else map.removeLayer(m.marker); } }); document.querySelectorAll('.report-item').forEach(item => { const mData = markersData.find(m => m.id === item.getAttribute('data-id')); if(mData) { const shouldHide = (filterType === 'solved' && mData.solved) || (mData.type === filterType && !mData.solved); if(shouldHide) item.style.display = isActive ? '' : 'none'; } }); }); });
 
         // Iniciar App
+        const savedRegion = localStorage.getItem('sismove_region') || 'global';
+        currentRegion = savedRegion;
+        const r = regions[currentRegion];
+        document.getElementById('region-flag').innerText = r.flag;
+        map.fitBounds(r.bounds);
+
         loadReportsFromDB();
         loadEarthquakes(); 
     </script>
