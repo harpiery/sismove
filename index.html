@@ -36,7 +36,6 @@
         #lang-toggle, #add-report-btn, #sidebar-toggle, #gps-btn { background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 5px; }
         #lang-toggle:hover, #add-report-btn:hover, #sidebar-toggle:hover, #gps-btn:hover { background: #475569; }
 
-        /* Controles de Zoom personalizados (Horizontales) */
         .zoom-controls { display: flex; flex-direction: row; background: rgba(30, 41, 59, 0.95); border: 1px solid #475569; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .zoom-controls button { background: none; border: none; color: white; padding: 8px 12px; cursor: pointer; font-size: 1.2rem; font-weight: bold; line-height: 1; }
         .zoom-controls button:first-child { border-right: 1px solid #475569; }
@@ -57,7 +56,7 @@
         .search-result-text { overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .search-no-results { padding: 15px; color: #94a3b8; text-align: center; font-size: 0.9rem; }
 
-        /* Panel de Catástrofes (Debajo del buscador) */
+        /* Panel de Catástrofes (Acordeón) */
         #disaster-panel { width: 320px; background: rgba(30, 41, 59, 0.95); border: 1px solid #475569; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); overflow: hidden; }
         .disaster-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; padding: 10px 12px; background: #0f172a; border-bottom: 1px solid #475569; }
         .disaster-header:hover { color: #3b82f6; }
@@ -117,7 +116,7 @@
 
         #open-sidebar-desktop { position: absolute; top: 10px; left: 10px; z-index: 999; background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: none; }
 
-        /* Leyenda Inferior Derecha */
+        /* Leyenda */
         #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.9); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-width: 220px; }
         .legend-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #475569; padding-bottom: 5px; }
         .legend-header:hover { color: #3b82f6; }
@@ -176,7 +175,7 @@
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         .marker-critical { animation: pulse 1.5s infinite; }
 
-        /* RESPONSIVE PARA MÓVILES */
+        /* RESPONSIVE */
         @media (max-width: 768px) {
             .top-right-panel { left: 10px; right: 10px; align-items: stretch; }
             .top-right-buttons { justify-content: space-between; gap: 5px; }
@@ -255,10 +254,9 @@
             <div id="search-results"></div>
         </div>
 
-        <!-- Menú de Catástrofes Naturales (Acorón) -->
         <div id="disaster-panel">
             <div class="disaster-header" onclick="toggleDisasterPanel()">
-                <span>🌍 Catástrofes Naturales</span>
+                <span>🌍 Catástrofes Naturales (Tiempo Real)</span>
                 <span id="disaster-toggle-icon">➖</span>
             </div>
             <div id="disaster-content">
@@ -275,21 +273,21 @@
                             <input type="checkbox" id="toggle-flood" onchange="toggleDisasterLayer('flood', this.checked)">
                             <span class="slider"></span>
                         </div>
-                        Inundaciones
+                        Inundaciones (GDACS)
                     </label>
                     <label class="disaster-control">
                         <div class="switch">
                             <input type="checkbox" id="toggle-fire" onchange="toggleDisasterLayer('fire', this.checked)">
                             <span class="slider"></span>
                         </div>
-                        Incendios
+                        Incendios (NASA FIRMS)
                     </label>
                     <label class="disaster-control">
                         <div class="switch">
                             <input type="checkbox" id="toggle-tsunami" onchange="toggleDisasterLayer('tsunami', this.checked)">
                             <span class="slider"></span>
                         </div>
-                        Tsunamis
+                        Tsunamis / Tormentas (NOAA)
                     </label>
 
                     <div class="scale-container">
@@ -465,15 +463,32 @@
         }
 
         // ==========================================
-        // MAPA
+        // MAPA Y GUARDADO DE UBICACIÓN
         // ==========================================
-        const map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([8.5, -66.5], 6);
+        const savedPos = JSON.parse(localStorage.getItem("lastMapPosition"));
+        const initialLat = savedPos ? savedPos.lat : 8.5;
+        const initialLng = savedPos ? savedPos.lng : -66.5;
+        const initialZoom = savedPos ? savedPos.zoom : 6;
+
+        const map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([initialLat, initialLng], initialZoom);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
+
+        function saveMapPosition() {
+            const center = map.getCenter();
+            localStorage.setItem("lastMapPosition", JSON.stringify({
+                lat: center.lat,
+                lng: center.lng,
+                zoom: map.getZoom()
+            }));
+        }
+        map.on('moveend', saveMapPosition);
+        map.on('zoomend', saveMapPosition);
 
         let markersData = []; let currentLatLng = null; let currentType = null; let selectedLevel = 1;
         let markerToDeleteId = null; let searchPinMarker = null; let userMarker = null;
         let disasterLayers = { quake: null, flood: null, fire: null, tsunami: null };
         const colors = { critical: '#ef4444', danger: '#f97316', help: '#22c55e', info: '#3b82f6' };
+        const corsProxy = 'https://api.allorigins.win/raw?url=';
 
         // --- LOCALIZACIÓN GPS USUARIO ---
         function locateUser() {
@@ -505,9 +520,9 @@
             if (isChecked) {
                 if (!disasterLayers[type]) {
                     if (type === 'quake') loadEarthquakes();
-                    else if (type === 'flood') loadFloods();
-                    else if (type === 'fire') loadFires();
-                    else if (type === 'tsunami') loadTsunamis();
+                    else if (type === 'flood') loadGDACS('FL', 'flood');
+                    else if (type === 'fire') loadNASAFires();
+                    else if (type === 'tsunami') loadNOAA();
                 } else {
                     disasterLayers[type].addTo(map);
                 }
@@ -516,7 +531,7 @@
             }
         }
 
-        // 1. Sismos (USGS GeoJSON API) - Dibujados como círculos de impacto
+        // 1. Sismos (USGS)
         function loadEarthquakes() {
             const url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
             fetch(url).then(res => res.json()).then(data => {
@@ -545,31 +560,97 @@
             }).catch(err => console.error('Error al cargar sismos:', err));
         }
 
-        // 2. Inundaciones (Polígonos de Demostración)
-        function loadFloods() {
-            disasterLayers.flood = L.layerGroup([
-                L.polygon([ [8.1, -66.5], [8.3, -66.4], [8.2, -66.2], [8.0, -66.3] ], { color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.4, weight: 2 }).bindPopup('🌊 <b>Zona Inundada</b><br>Río desbordado afectando viviendas.'),
-                L.polygon([ [10.5, -71.5], [10.7, -71.4], [10.6, -71.2], [10.4, -71.3] ], { color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.4, weight: 2 }).bindPopup('🌊 <b>Zona Inundada</b><br>Calles principales bloqueadas.')
-            ]);
-            disasterLayers.flood.addTo(map);
+        // 2. Inundaciones y otras Alertas Globales (GDACS)
+        function loadGDACS(type, layerKey) {
+            const url = `https://www.gdacs.org/gdacs/api/api/geteventlist/SEARCH?eventlist=${type}&limit=50`;
+            fetch(corsProxy + encodeURIComponent(url))
+                .then(res => res.json())
+                .then(data => {
+                    disasterLayers[layerKey] = L.layerGroup();
+                    const features = data.features || [];
+                    features.forEach(f => {
+                        const props = f.properties || {};
+                        const alertLevel = props.alertlevel || props.alertscore || 'Green';
+                        let color = '#22c55e';
+                        if (alertLevel === 'Orange' || alertLevel === 2) color = '#f97316';
+                        if (alertLevel === 'Red' || alertLevel === 3) color = '#ef4444';
+
+                        if (f.geometry) {
+                            L.geoJSON(f, {
+                                style: { color: color, fillColor: color, fillOpacity: 0.4, weight: 2 },
+                                pointToLayer: (feature, latlng) => L.circle(latlng, { radius: 50000, color: color, fillColor: color, fillOpacity: 0.4 })
+                            }).bindPopup(`<b>${props.name || type}</b><br>Alerta: ${alertLevel}<br>${props.description || ''}`).addTo(disasterLayers[layerKey]);
+                        }
+                    });
+                    if (disasterLayers[layerKey].getLayers().length > 0) {
+                        disasterLayers[layerKey].addTo(map);
+                    }
+                }).catch(err => console.error(`Error loading GDACS (${type}):`, err));
         }
 
-        // 3. Incendios (Polígonos de Demostración)
-        function loadFires() {
-            disasterLayers.fire = L.layerGroup([
-                L.polygon([ [7.5, -65.5], [7.6, -65.4], [7.5, -65.2], [7.4, -65.3] ], { color: '#ef4444', fillColor: '#f97316', fillOpacity: 0.4, weight: 2 }).bindPopup('🔥 <b>Incendio Forestal Activo</b><br>Área afectada: 500 hectáreas.'),
-                L.polygon([ [9.5, -70.5], [9.6, -70.4], [9.5, -70.2], [9.4, -70.3] ], { color: '#ef4444', fillColor: '#f97316', fillOpacity: 0.4, weight: 2 }).bindPopup('🔥 <b>Incendio Forestal Activo</b><br>Combate en progreso.')
-            ]);
-            disasterLayers.fire.addTo(map);
+        // 3. Incendios (NASA FIRMS)
+        function loadNASAFires() {
+            // NASA FIRMS requiere un MAP_KEY gratuito. Regístrate en https://firms.modaps.eosdis.nasa.gov/api/area/ para obtenerlo.
+            // Si no hay clave, hace fallback a GDACS WF (Wildfires).
+            const apiKey = 'be41bd312c91f171946a830be39c9a95'; 
+            const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/-180,-90,180,90/2/`;
+            
+            if (apiKey === 'YOUR_NASA_FIRMS_KEY') {
+                console.warn("NASA FIRMS API Key missing. Falling back to GDACS Wildfires (WF).");
+                loadGDACS('WF', 'fire');
+                return;
+            }
+
+            fetch(corsProxy + encodeURIComponent(url))
+                .then(res => res.text())
+                .then(text => {
+                    const lines = text.split('\n');
+                    disasterLayers.fire = L.layerGroup();
+                    for (let i = 1; i < lines.length; i++) {
+                        const cols = lines[i].split(',');
+                        if (cols.length >= 3) {
+                            const lat = parseFloat(cols[0]);
+                            const lng = parseFloat(cols[1]);
+                            const brightness = parseFloat(cols[2]);
+                            if (!isNaN(lat) && !isNaN(lng)) {
+                                L.circle([lat, lng], {
+                                    radius: 15000,
+                                    color: '#ef4444',
+                                    fillColor: '#f97316',
+                                    fillOpacity: 0.5
+                                }).bindPopup(`🔥 Incendio Activo (NASA FIRMS)<br>Brillo: ${brightness}`).addTo(disasterLayers.fire);
+                            }
+                        }
+                    }
+                    if (disasterLayers.fire.getLayers().length > 0) {
+                        disasterLayers.fire.addTo(map);
+                    }
+                }).catch(err => { 
+                    console.error('Error loading NASA Fires, fallback to GDACS', err); 
+                    loadGDACS('WF', 'fire'); 
+                });
         }
 
-        // 4. Tsunamis (Polígonos Costeros de Demostración)
-        function loadTsunamis() {
-            disasterLayers.tsunami = L.layerGroup([
-                L.polygon([ [11.0, -64.0], [11.2, -63.8], [11.0, -63.5], [10.8, -63.8] ], { color: '#06b6d4', fillColor: '#06b6d4', fillOpacity: 0.4, weight: 2 }).bindPopup('🌊 <b>Alerta de Tsunami</b><br>Zona costera de evacuación.'),
-                L.polygon([ [8.0, -72.0], [8.2, -71.8], [8.0, -71.5], [7.8, -71.8] ], { color: '#06b6d4', fillColor: '#06b6d4', fillOpacity: 0.4, weight: 2 }).bindPopup('🌊 <b>Alerta de Tsunami</b><br>Riesgo de oleaje anómalo.')
-            ]);
-            disasterLayers.tsunami.addTo(map);
+        // 4. Tsunamis y Tormentas (NOAA)
+        function loadNOAA() {
+            const url = 'https://api.weather.gov/alerts/active?event=Tsunami%20Warning,Tsunami%20Advisory,Tsunami%20Watch,Tsunami%20Message,Severe%20Thunderstorm%20Warning,Tornado%20Warning';
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    disasterLayers.tsunami = L.layerGroup();
+                    if (data.features) {
+                        data.features.forEach(f => {
+                            if (f.geometry) {
+                                L.geoJSON(f, {
+                                    style: { color: '#06b6d4', fillColor: '#06b6d4', fillOpacity: 0.4, weight: 2 }
+                                }).bindPopup(`<b>${f.properties.event}</b><br>${f.properties.headline || ''}`).addTo(disasterLayers.tsunami);
+                            }
+                        });
+                    }
+                    if (disasterLayers.tsunami.getLayers().length > 0) {
+                        disasterLayers.tsunami.addTo(map);
+                    }
+                }).catch(err => console.error('Error loading NOAA:', err));
         }
 
         // --- GENERACIÓN DE CÓDIGO DE REGISTRO ---
@@ -732,13 +813,10 @@
                 let counts = { critical: 0, danger: 0, help: 0, info: 0, solved: 0 };
                 
                 if (data) {
-                    // Obtener preferencias locales
                     const favs = getFavorites();
                     const order = getOrder();
-
                     let keys = Object.keys(data);
 
-                    // Ordenar basado en favoritos locales y luego en el orden guardado local
                     keys.sort((a, b) => {
                         const aFav = favs.includes(a);
                         const bFav = favs.includes(b);
@@ -747,10 +825,10 @@
 
                         const aIdx = order.indexOf(a);
                         const bIdx = order.indexOf(b);
-                        if (aIdx === -1 && bIdx === -1) return 0; // Mantener orden cronológico
-                        if (aIdx === -1) return -1; // Nuevos elementos van arriba
+                        if (aIdx === -1 && bIdx === -1) return 0;
+                        if (aIdx === -1) return -1; 
                         if (bIdx === -1) return 1;
-                        return aIdx - bIdx; // Respetar orden guardado
+                        return aIdx - bIdx; 
                     });
 
                     keys.forEach(id => {
@@ -873,17 +951,14 @@
             }
             saveFavorites(favs);
 
-            // Actualizar UI
             btn.classList.toggle('active');
             btn.innerText = btn.classList.contains('active') ? '⭐' : '☆';
             
-            // Reorder DOM element
             const item = btn.closest('.report-item');
             const list = document.getElementById('reports-list');
             if (btn.classList.contains('active')) {
                 list.prepend(item);
             } else {
-                // Moverlo debajo de todos los favoritos
                 const items = list.querySelectorAll('.report-item');
                 let inserted = false;
                 for (let it of items) {
@@ -895,7 +970,7 @@
                 }
                 if (!inserted) list.appendChild(item);
             }
-            saveOrder(); // Guardar el nuevo orden tras mover
+            saveOrder(); 
         }
 
         // --- DRAG AND DROP PARA REORDENAR ---
@@ -914,7 +989,7 @@
                     }
                 }
                 if (!inserted) { list.appendChild(draggedItem); }
-                saveOrder(); // Guardar el nuevo orden al soltar
+                saveOrder(); 
             }
             return false;
         }
@@ -954,7 +1029,6 @@
                 if (window.innerWidth <= 768) { toggleSidebarMobile(); }
             }); 
 
-            // El appendChild se ejecuta en el orden en que se llama, que ya está ordenado según el LocalStorage en loadReportsFromDB
             list.appendChild(item);
         }
 
@@ -962,7 +1036,7 @@
 
         // Iniciar App
         loadReportsFromDB();
-        loadEarthquakes(); // Cargar sismos reales al iniciar
+        loadEarthquakes(); 
     </script>
 </body>
 </html>
