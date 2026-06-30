@@ -24,11 +24,17 @@
             100% { transform: translateY(0); }
         }
 
+        /* Marcador de Usuario GPS */
+        .user-location-icon { position: relative; }
+        .user-dot { width: 16px; height: 16px; background: #3b82f6; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 10px rgba(59, 130, 246, 0.8); position: absolute; top: 2px; left: 2px; }
+        .user-pulse { width: 16px; height: 16px; background: rgba(59, 130, 246, 0.4); border-radius: 50%; position: absolute; top: 2px; left: 2px; animation: userPulse 1.5s infinite; }
+        @keyframes userPulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(3.5); opacity: 0; } }
+
         .top-right-panel { position: absolute; top: 15px; right: 15px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
         .top-right-buttons { display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
         
-        #lang-toggle, #add-report-btn, #sidebar-toggle { background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 5px; }
-        #lang-toggle:hover, #add-report-btn:hover, #sidebar-toggle:hover { background: #475569; }
+        #lang-toggle, #add-report-btn, #sidebar-toggle, #gps-btn { background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 5px; }
+        #lang-toggle:hover, #add-report-btn:hover, #sidebar-toggle:hover, #gps-btn:hover { background: #475569; }
 
         /* Controles de Zoom personalizados (Horizontales) */
         .zoom-controls { display: flex; flex-direction: row; background: rgba(30, 41, 59, 0.95); border: 1px solid #475569; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
@@ -51,13 +57,30 @@
         .search-result-text { overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .search-no-results { padding: 15px; color: #94a3b8; text-align: center; font-size: 0.9rem; }
 
-        /* Sidebar */
+        /* Panel de Catástrofes (Debajo del buscador) */
+        #disaster-panel { width: 320px; background: rgba(30, 41, 59, 0.95); border: 1px solid #475569; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); overflow: hidden; }
+        .disaster-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; padding: 10px 12px; background: #0f172a; border-bottom: 1px solid #475569; }
+        .disaster-header:hover { color: #3b82f6; }
+        #disaster-content.collapsed { display: none; }
+        .disaster-body { padding: 12px; }
+        .disaster-control { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; margin-bottom: 12px; cursor: pointer; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #3b82f6; }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .scale-container { margin-top: 15px; padding-top: 10px; border-top: 1px solid #475569; }
+        .scale-title { font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; color: #94a3b8; }
+        .scale-item { display: flex; align-items: center; font-size: 0.75rem; margin-bottom: 5px; color: #cbd5e1; }
+        .scale-color { width: 12px; height: 12px; border-radius: 3px; margin-right: 8px; border: 1px solid rgba(255,255,255,0.3); }
+
+        /* Sidebar Izquierda */
         #sidebar { position: absolute; top: 10px; left: 10px; bottom: 10px; width: 290px; background-color: rgba(30, 41, 59, 0.95); border-radius: 12px; display: flex; flex-direction: column; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; transition: transform 0.3s ease-in-out; }
         .mobile-handle { display: none; width: 40px; height: 5px; background: #64748b; border-radius: 3px; margin: 8px auto 0; }
         .sidebar-header { padding: 20px; background-color: #0f172a; border-bottom: 2px solid #ef4444; position: relative; flex-shrink: 0; }
         .sidebar-header h1 { font-size: 1.3rem; display: flex; align-items: center; gap: 10px; padding-right: 60px; }
         
-        /* Botones de cerrar/ocultar sidebar */
         .close-sidebar-mobile { display: none; position: absolute; top: 15px; right: 15px; background: none; border: none; color: #f87171; font-size: 1.5rem; cursor: pointer; }
         .toggle-sidebar-desktop { display: none; position: absolute; top: 20px; right: 15px; background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer; }
         
@@ -68,7 +91,6 @@
         .bg-help { background-color: #22c55e; color: white; } .bg-info { background-color: #3b82f6; color: white; }
         .bg-solved { background-color: #64748b; color: white; }
 
-        /* Buscador interno de la sidebar */
         .sidebar-search-container { padding: 10px; border-bottom: 1px solid #475569; flex-shrink: 0; }
         #report-search { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #475569; background: #1e293b; color: white; font-size: 0.9rem; box-sizing: border-box; }
 
@@ -85,19 +107,17 @@
         .report-title { font-weight: bold; font-size: 0.95rem; flex: 1; word-break: break-word; }
         .fav-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: #64748b; padding: 0; line-height: 1; transition: transform 0.1s; flex-shrink: 0; }
         .fav-btn:hover { transform: scale(1.2); }
-        .fav-btn.active { color: #facc15; } /* Color amarillo para favoritos */
+        .fav-btn.active { color: #facc15; } 
         
         .report-meta { font-size: 0.8rem; opacity: 0.8; display: flex; justify-content: space-between; }
 
-        /* Contador inferior */
         #reports-counter { display: flex; justify-content: space-around; padding: 10px 5px; background: #0f172a; border-top: 1px solid #475569; font-size: 0.75rem; flex-shrink: 0; }
         .counter-badge { display: flex; align-items: center; gap: 4px; color: white; font-weight: bold; padding: 4px 6px; border-radius: 4px; text-align: center; }
         .counter-badge span { font-size: 0.9rem; }
 
-        /* Botón flotante para abrir en PC */
         #open-sidebar-desktop { position: absolute; top: 10px; left: 10px; z-index: 999; background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: none; }
 
-        /* Leyenda */
+        /* Leyenda Inferior Derecha */
         #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.9); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-width: 220px; }
         .legend-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #475569; padding-bottom: 5px; }
         .legend-header:hover { color: #3b82f6; }
@@ -110,7 +130,6 @@
         .ctx-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
         .ctx-item:hover { background-color: #475569; }
 
-        /* Botón de cerrar para el menú Generar */
         .btn-close-menu { position: absolute; top: 8px; right: 12px; background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.1rem; font-weight: bold; z-index: 10; }
         .btn-close-menu:hover { color: #f87171; }
         #add-report-menu { padding-top: 30px; }
@@ -118,7 +137,6 @@
         #modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: none; justify-content: center; align-items: center; }
         #modal { background: #334155; padding: 30px; border-radius: 12px; width: 400px; max-width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.8); position: relative; }
         
-        /* Botón Rojo de Cierre Modal */
         .btn-close-modal { position: absolute; top: 15px; right: 15px; background: #991b1b; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.5); transition: background 0.2s; }
         .btn-close-modal:hover { background: #dc2626; }
 
@@ -140,7 +158,6 @@
         .note-input-group input { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #475569; background: #1e293b; color: white; font-size: 0.9rem;}
         .note-input-group button { background: #3b82f6; color: white; border: none; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: bold;}
         
-        /* Estilos para el botón de copiar coordenadas */
         .coords-container { display: flex; align-items: center; gap: 8px; margin-top: 5px; background: #1e293b; padding: 6px 8px; border-radius: 4px; border: 1px solid #475569; }
         .coords-container small { opacity: 0.9; font-family: monospace; }
         .btn-copy-coords { background: none; border: 1px solid #475569; color: #94a3b8; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; line-height: 1; transition: all 0.2s; }
@@ -153,7 +170,6 @@
         .notes-list::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
         .note-item { font-size: 0.95rem; color: #e2e8f0; margin-bottom: 8px; background: #1e293b; padding: 8px; border-radius: 4px; line-height: 1.4; }
 
-        /* Estilos para el código de registro */
         .report-code { margin-top: 15px; padding-top: 10px; border-top: 1px solid #475569; text-align: center; }
         .report-code small { font-family: 'Courier New', Courier, monospace; color: #64748b; font-size: 0.75rem; word-break: break-all; }
 
@@ -164,24 +180,11 @@
         @media (max-width: 768px) {
             .top-right-panel { left: 10px; right: 10px; align-items: stretch; }
             .top-right-buttons { justify-content: space-between; gap: 5px; }
-            #lang-toggle, #add-report-btn, #sidebar-toggle { padding: 8px 10px; font-size: 0.9rem; }
+            #lang-toggle, #add-report-btn, #sidebar-toggle, #gps-btn { padding: 8px 10px; font-size: 0.9rem; }
             .zoom-controls button { padding: 6px 10px; font-size: 1rem; }
-            #search-wrapper { width: 100%; }
-            #search-container { padding: 8px; }
-            #search-input { padding: 8px; font-size: 0.85rem; }
-            #search-btn { padding: 0 10px; }
+            #search-wrapper, #disaster-panel { width: 100%; }
 
-            /* Convertir Sidebar en panel inferior deslizable */
-            #sidebar { 
-                width: 100%; 
-                height: 70vh; 
-                top: auto; 
-                bottom: 0; 
-                left: 0; 
-                border-radius: 15px 15px 0 0; 
-                transform: translateY(100%); 
-                z-index: 2500;
-            }
+            #sidebar { width: 100%; height: 70vh; top: auto; bottom: 0; left: 0; border-radius: 15px 15px 0 0; transform: translateY(100%); z-index: 2500; }
             #sidebar.mobile-open { transform: translateY(0); }
             
             .mobile-handle { display: block; }
@@ -201,12 +204,10 @@
             .report-meta { font-size: 0.7rem; }
             .fav-btn { font-size: 1rem; }
 
-            /* Ajustar contadores para que quepan horizontalmente */
             #reports-counter { padding: 8px 2px; gap: 2px; }
             .counter-badge { flex-direction: column; gap: 2px; padding: 4px 2px; font-size: 0.65rem; }
             .counter-badge span { font-size: 0.8rem; }
 
-            /* Popups más pequeños en móvil */
             .leaflet-popup-content { margin: 10px !important; width: auto !important; max-width: 80vw; }
             .leaflet-popup-content-wrapper { max-width: 85vw; }
             .btn-popup { font-size: 0.85rem; padding: 6px; margin-top: 6px; }
@@ -218,10 +219,10 @@
 
             #legend { bottom: 10px; right: 10px; max-width: 140px; padding: 8px; font-size: 0.8rem; } 
             .legend-item { margin-bottom: 4px; font-size: 0.75rem; }
+            
             #modal { width: 95%; padding: 20px; }
         }
         
-        /* RESPONSIVE PARA PC */
         @media (min-width: 769px) {
             #sidebar-toggle { display: none; }
             .toggle-sidebar-desktop { display: block; }
@@ -237,6 +238,7 @@
     <div class="top-right-panel">
         <div class="top-right-buttons">
             <button id="sidebar-toggle" onclick="toggleSidebarMobile()" title="Abrir menú">☰</button>
+            <button id="gps-btn" onclick="locateUser()" title="Mi ubicación GPS">📍</button>
             <div class="zoom-controls">
                 <button onclick="map.zoomIn()">+</button>
                 <button onclick="map.zoomOut()">−</button>
@@ -244,12 +246,61 @@
             <button id="add-report-btn" onclick="toggleAddReportMenu(event)" data-i18n="btn_add_report">➕ Generar</button>
             <button id="lang-toggle" onclick="toggleLanguage()">EN</button>
         </div>
+        
         <div id="search-wrapper">
             <div id="search-container">
                 <input type="text" id="search-input" data-i18n-ph="search_placeholder" placeholder="Buscar calle o coordenadas...">
                 <button id="search-btn" data-i18n="search_btn">Ir</button>
             </div>
             <div id="search-results"></div>
+        </div>
+
+        <!-- Menú de Catástrofes Naturales (Acorón) -->
+        <div id="disaster-panel">
+            <div class="disaster-header" onclick="toggleDisasterPanel()">
+                <span>🌍 Catástrofes Naturales</span>
+                <span id="disaster-toggle-icon">➖</span>
+            </div>
+            <div id="disaster-content">
+                <div class="disaster-body">
+                    <label class="disaster-control">
+                        <div class="switch">
+                            <input type="checkbox" id="toggle-quake" onchange="toggleDisasterLayer('quake', this.checked)" checked>
+                            <span class="slider"></span>
+                        </div>
+                        Sismos (USGS)
+                    </label>
+                    <label class="disaster-control">
+                        <div class="switch">
+                            <input type="checkbox" id="toggle-flood" onchange="toggleDisasterLayer('flood', this.checked)">
+                            <span class="slider"></span>
+                        </div>
+                        Inundaciones
+                    </label>
+                    <label class="disaster-control">
+                        <div class="switch">
+                            <input type="checkbox" id="toggle-fire" onchange="toggleDisasterLayer('fire', this.checked)">
+                            <span class="slider"></span>
+                        </div>
+                        Incendios
+                    </label>
+                    <label class="disaster-control">
+                        <div class="switch">
+                            <input type="checkbox" id="toggle-tsunami" onchange="toggleDisasterLayer('tsunami', this.checked)">
+                            <span class="slider"></span>
+                        </div>
+                        Tsunamis
+                    </label>
+
+                    <div class="scale-container">
+                        <div class="scale-title">Escala de Impacto:</div>
+                        <div class="scale-item"><span class="scale-color" style="background:#ef4444"></span> Crítico (Rojo)</div>
+                        <div class="scale-item"><span class="scale-color" style="background:#f97316"></span> Fuerte (Naranja)</div>
+                        <div class="scale-item"><span class="scale-color" style="background:#eab308"></span> Moderado (Amarillo)</div>
+                        <div class="scale-item"><span class="scale-color" style="background:#3b82f6"></span> Informativo (Azul)</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -394,14 +445,132 @@
         }
 
         // ==========================================
+        // PREFERENCIAS LOCALES (CACHE)
+        // ==========================================
+        function getFavorites() {
+            try { return JSON.parse(localStorage.getItem('sismove_favorites')) || []; }
+            catch(e) { return []; }
+        }
+        function saveFavorites(favs) {
+            localStorage.setItem('sismove_favorites', JSON.stringify(favs));
+        }
+        function getOrder() {
+            try { return JSON.parse(localStorage.getItem('sismove_order')) || []; }
+            catch(e) { return []; }
+        }
+        function saveOrder() {
+            const items = document.querySelectorAll('#reports-list .report-item');
+            const order = Array.from(items).map(i => i.getAttribute('data-id'));
+            localStorage.setItem('sismove_order', JSON.stringify(order));
+        }
+
+        // ==========================================
         // MAPA
         // ==========================================
         const map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([8.5, -66.5], 6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
 
         let markersData = []; let currentLatLng = null; let currentType = null; let selectedLevel = 1;
-        let markerToDeleteId = null; let searchPinMarker = null;
+        let markerToDeleteId = null; let searchPinMarker = null; let userMarker = null;
+        let disasterLayers = { quake: null, flood: null, fire: null, tsunami: null };
         const colors = { critical: '#ef4444', danger: '#f97316', help: '#22c55e', info: '#3b82f6' };
+
+        // --- LOCALIZACIÓN GPS USUARIO ---
+        function locateUser() {
+            if (!navigator.geolocation) { alert('La geolocalización no es soportada por tu navegador.'); return; }
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const lat = position.coords.latitude, lng = position.coords.longitude;
+                    if (userMarker) map.removeLayer(userMarker);
+                    userMarker = L.marker([lat, lng], { icon: createUserIcon() }).addTo(map);
+                    userMarker.bindPopup('📍 Tu ubicación actual').openPopup();
+                    map.flyTo([lat, lng], 15, { duration: 1.2 });
+                },
+                error => { alert('No se pudo obtener tu ubicación. Verifica los permisos de ubicación en tu navegador.'); }
+            );
+        }
+        function createUserIcon() {
+            return L.divIcon({ className: 'user-location-icon', html: `<div class="user-pulse"></div><div class="user-dot"></div>`, iconSize: [20, 20], iconAnchor: [10, 10] });
+        }
+
+        // --- MONITOREO DE CATÁSTROFES NATURALES ---
+        function toggleDisasterPanel() {
+            const content = document.getElementById('disaster-content');
+            const icon = document.getElementById('disaster-toggle-icon');
+            content.classList.toggle('collapsed');
+            icon.innerText = content.classList.contains('collapsed') ? '➕' : '➖';
+        }
+
+        function toggleDisasterLayer(type, isChecked) {
+            if (isChecked) {
+                if (!disasterLayers[type]) {
+                    if (type === 'quake') loadEarthquakes();
+                    else if (type === 'flood') loadFloods();
+                    else if (type === 'fire') loadFires();
+                    else if (type === 'tsunami') loadTsunamis();
+                } else {
+                    disasterLayers[type].addTo(map);
+                }
+            } else {
+                if (disasterLayers[type]) map.removeLayer(disasterLayers[type]);
+            }
+        }
+
+        // 1. Sismos (USGS GeoJSON API) - Dibujados como círculos de impacto
+        function loadEarthquakes() {
+            const url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
+            fetch(url).then(res => res.json()).then(data => {
+                disasterLayers.quake = L.layerGroup();
+                data.features.forEach(feature => {
+                    const [lon, lat, depth] = feature.geometry.coordinates;
+                    const mag = feature.properties.mag || 0;
+                    let color = '#22c55e', radius = 5000;
+                    if (mag >= 6.0) { color = '#ef4444'; radius = 60000; }
+                    else if (mag >= 4.5) { color = '#f97316'; radius = 30000; }
+                    else if (mag >= 2.5) { color = '#eab308'; radius = 15000; }
+                    
+                    L.circle([lat, lon], {
+                        radius: radius, color: color, fillColor: color, fillOpacity: 0.3, weight: 2
+                    }).bindPopup(`
+                        <div style="min-width: 150px;">
+                            <h3 style="margin:0 0 5px; color:${color};">🌍 Sismo Detectado</h3>
+                            <b>Magnitud:</b> ${mag}<br>
+                            <b>Profundidad:</b> ${depth} km<br>
+                            <b>Lugar:</b> ${feature.properties.place || 'Desconocido'}<br>
+                            <b>Fecha:</b> ${new Date(feature.properties.time).toLocaleString()}
+                        </div>
+                    `).addTo(disasterLayers.quake);
+                });
+                disasterLayers.quake.addTo(map);
+            }).catch(err => console.error('Error al cargar sismos:', err));
+        }
+
+        // 2. Inundaciones (Polígonos de Demostración)
+        function loadFloods() {
+            disasterLayers.flood = L.layerGroup([
+                L.polygon([ [8.1, -66.5], [8.3, -66.4], [8.2, -66.2], [8.0, -66.3] ], { color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.4, weight: 2 }).bindPopup('🌊 <b>Zona Inundada</b><br>Río desbordado afectando viviendas.'),
+                L.polygon([ [10.5, -71.5], [10.7, -71.4], [10.6, -71.2], [10.4, -71.3] ], { color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.4, weight: 2 }).bindPopup('🌊 <b>Zona Inundada</b><br>Calles principales bloqueadas.')
+            ]);
+            disasterLayers.flood.addTo(map);
+        }
+
+        // 3. Incendios (Polígonos de Demostración)
+        function loadFires() {
+            disasterLayers.fire = L.layerGroup([
+                L.polygon([ [7.5, -65.5], [7.6, -65.4], [7.5, -65.2], [7.4, -65.3] ], { color: '#ef4444', fillColor: '#f97316', fillOpacity: 0.4, weight: 2 }).bindPopup('🔥 <b>Incendio Forestal Activo</b><br>Área afectada: 500 hectáreas.'),
+                L.polygon([ [9.5, -70.5], [9.6, -70.4], [9.5, -70.2], [9.4, -70.3] ], { color: '#ef4444', fillColor: '#f97316', fillOpacity: 0.4, weight: 2 }).bindPopup('🔥 <b>Incendio Forestal Activo</b><br>Combate en progreso.')
+            ]);
+            disasterLayers.fire.addTo(map);
+        }
+
+        // 4. Tsunamis (Polígonos Costeros de Demostración)
+        function loadTsunamis() {
+            disasterLayers.tsunami = L.layerGroup([
+                L.polygon([ [11.0, -64.0], [11.2, -63.8], [11.0, -63.5], [10.8, -63.8] ], { color: '#06b6d4', fillColor: '#06b6d4', fillOpacity: 0.4, weight: 2 }).bindPopup('🌊 <b>Alerta de Tsunami</b><br>Zona costera de evacuación.'),
+                L.polygon([ [8.0, -72.0], [8.2, -71.8], [8.0, -71.5], [7.8, -71.8] ], { color: '#06b6d4', fillColor: '#06b6d4', fillOpacity: 0.4, weight: 2 }).bindPopup('🌊 <b>Alerta de Tsunami</b><br>Riesgo de oleaje anómalo.')
+            ]);
+            disasterLayers.tsunami.addTo(map);
+        }
 
         // --- GENERACIÓN DE CÓDIGO DE REGISTRO ---
         function generarCodigo(lat, lon) {
@@ -442,30 +611,22 @@
         }
 
         // --- CONTROL MENÚ MÓVIL Y ESCRITORIO ---
-        function toggleSidebarMobile() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('mobile-open');
-        }
-        function toggleSidebarDesktop() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('closed');
-        }
+        function toggleSidebarMobile() { document.getElementById('sidebar').classList.toggle('mobile-open'); }
+        function toggleSidebarDesktop() { document.getElementById('sidebar').classList.toggle('closed'); }
 
-        // --- BUSCADOR INTERNO DE INFORMES (TÍTULO O CÓDIGO) ---
+        // --- BUSCADOR INTERNO DE INFORMES ---
         document.getElementById('report-search').addEventListener('input', function(e) {
             const searchText = e.target.value.toLowerCase().trim();
             document.querySelectorAll('#reports-list .report-item').forEach(item => {
                 const title = item.querySelector('.report-title').innerText.toLowerCase();
-                const code = item.getAttribute('data-code') || ''; // Obtiene el código oculto
-                // Muestra el elemento si el texto coincide con el título O con el código
+                const code = item.getAttribute('data-code') || ''; 
                 item.style.display = (title.includes(searchText) || code.includes(searchText)) ? '' : 'none';
             });
         });
 
         // --- COPIAR COORDENADAS ---
         function copyCoords(id, e) {
-            e.stopPropagation();
-            e.preventDefault();
+            e.stopPropagation(); e.preventDefault();
             const coordsText = document.getElementById(`coords-${id}`).innerText;
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(coordsText).then(() => showCopySuccess(e.currentTarget)).catch(err => fallbackCopy(coordsText, e.currentTarget));
@@ -531,16 +692,13 @@
             const lng = document.getElementById('report-lng').value;
             
             const reportData = {
-                lat: lat,
-                lng: lng,
+                lat: lat, lng: lng,
                 title: document.getElementById('inp-title').value,
                 desc: document.getElementById('inp-desc').value,
                 type: document.getElementById('report-type').value,
                 level: document.getElementById('report-level').value,
                 code: generarCodigo(parseFloat(lat), parseFloat(lng)),
-                solved: false,
-                favorite: false,
-                notes: {}
+                solved: false, notes: {}
             };
             db.ref('reports').push(reportData).then(() => closeModal()).catch(err => alert("Error al guardar: " + err));
         });
@@ -551,7 +709,6 @@
         }
 
         function updateSolvedInDB(markerId, isSolved) { db.ref('reports/' + markerId + '/solved').set(isSolved); }
-        function toggleFavoriteDB(markerId, isFav) { db.ref('reports/' + markerId + '/favorite').set(isFav); }
         function addNoteInDB(markerId, noteText) {
             const now = new Date(); const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
             db.ref('reports/' + markerId + '/notes').push({ text: noteText, time: time });
@@ -575,10 +732,25 @@
                 let counts = { critical: 0, danger: 0, help: 0, info: 0, solved: 0 };
                 
                 if (data) {
-                    let keys = Object.keys(data).sort((a, b) => {
-                        const favA = data[a].favorite ? 1 : 0;
-                        const favB = data[b].favorite ? 1 : 0;
-                        return favB - favA;
+                    // Obtener preferencias locales
+                    const favs = getFavorites();
+                    const order = getOrder();
+
+                    let keys = Object.keys(data);
+
+                    // Ordenar basado en favoritos locales y luego en el orden guardado local
+                    keys.sort((a, b) => {
+                        const aFav = favs.includes(a);
+                        const bFav = favs.includes(b);
+                        if (aFav && !bFav) return -1;
+                        if (!aFav && bFav) return 1;
+
+                        const aIdx = order.indexOf(a);
+                        const bIdx = order.indexOf(b);
+                        if (aIdx === -1 && bIdx === -1) return 0; // Mantener orden cronológico
+                        if (aIdx === -1) return -1; // Nuevos elementos van arriba
+                        if (bIdx === -1) return 1;
+                        return aIdx - bIdx; // Respetar orden guardado
                     });
 
                     keys.forEach(id => {
@@ -586,7 +758,7 @@
                         if (report.solved) counts.solved++;
                         else if (counts[report.type] !== undefined) counts[report.type]++;
                         
-                        renderMarkerOnMap(id, report);
+                        renderMarkerOnMap(id, report, favs.includes(id));
                         if (id === openPopupId) {
                             const m = markersData.find(m => m.id === id);
                             if (m) m.marker.openPopup();
@@ -602,7 +774,7 @@
             });
         }
 
-        function renderMarkerOnMap(id, report) {
+        function renderMarkerOnMap(id, report, isFavorite) {
             let notesHtml = '';
             if (report.notes) {
                 Object.values(report.notes).forEach(note => {
@@ -612,8 +784,6 @@
 
             const latFormatted = parseFloat(report.lat).toFixed(5);
             const lngFormatted = parseFloat(report.lng).toFixed(5);
-            
-            // Asegurar que exista un código (para informes antiguos)
             const reportCode = report.code || generarCodigo(parseFloat(report.lat), parseFloat(report.lng));
 
             const popupContent = `
@@ -648,8 +818,7 @@
             const marker = L.marker([report.lat, report.lng], { icon: icon }).addTo(map).bindPopup(popupContent, { maxWidth: 350 });
             markersData.push({ marker, type: report.type, id: id, solved: report.solved });
             
-            // Pasamos el reportCode a la barra lateral para que pueda ser buscado
-            addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved, report.favorite || false, reportCode);
+            addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved, isFavorite, reportCode);
         }
 
         // --- LÓGICA INTERFAZ ---
@@ -690,63 +859,74 @@
         
         function markAsSolved(markerId) { updateSolvedInDB(markerId, true); const markerData = markersData.find(m => m.id === markerId); if (markerData) { markerData.solved = true; markerData.marker.setIcon(createSolvedIcon()); markerData.marker.closePopup(); const sidebarItem = document.querySelector(`.report-item[data-id="${markerId}"]`); if (sidebarItem) { sidebarItem.classList.add('solved-item'); sidebarItem.querySelector('.report-meta span:first-child').innerText = t('sidebar_solved'); } } }
         
+        // --- FAVORITOS (LOCAL) ---
         function toggleFavorite(e, id) {
             e.stopPropagation();
             const btn = e.currentTarget;
             const isFav = btn.classList.contains('active');
-            toggleFavoriteDB(id, !isFav);
+            
+            let favs = getFavorites();
+            if (isFav) {
+                favs = favs.filter(f => f !== id);
+            } else {
+                favs.push(id);
+            }
+            saveFavorites(favs);
+
+            // Actualizar UI
+            btn.classList.toggle('active');
+            btn.innerText = btn.classList.contains('active') ? '⭐' : '☆';
+            
+            // Reorder DOM element
+            const item = btn.closest('.report-item');
+            const list = document.getElementById('reports-list');
+            if (btn.classList.contains('active')) {
+                list.prepend(item);
+            } else {
+                // Moverlo debajo de todos los favoritos
+                const items = list.querySelectorAll('.report-item');
+                let inserted = false;
+                for (let it of items) {
+                    if (!it.querySelector('.fav-btn.active')) {
+                        list.insertBefore(item, it);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) list.appendChild(item);
+            }
+            saveOrder(); // Guardar el nuevo orden tras mover
         }
 
         // --- DRAG AND DROP PARA REORDENAR ---
         let draggedItem = null;
-
-        function handleDragStart(e) {
-            draggedItem = this;
-            setTimeout(() => this.classList.add('dragging'), 0);
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', this.innerHTML);
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            return false;
-        }
-
+        function handleDragStart(e) { draggedItem = this; setTimeout(() => this.classList.add('dragging'), 0); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/html', this.innerHTML); }
+        function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
         function handleDrop(e) {
-            e.preventDefault();
-            e.stopPropagation();
+            e.preventDefault(); e.stopPropagation();
             if (draggedItem !== this) {
                 const list = document.getElementById('reports-list');
                 const allItems = Array.from(list.querySelectorAll('.report-item:not(.dragging)')).filter(i => i.style.display !== 'none');
                 let inserted = false;
                 for (let item of allItems) {
                     if (e.clientY < item.getBoundingClientRect().top + item.offsetHeight / 2) {
-                        list.insertBefore(draggedItem, item);
-                        inserted = true;
-                        break;
+                        list.insertBefore(draggedItem, item); inserted = true; break;
                     }
                 }
-                if (!inserted) {
-                    list.appendChild(draggedItem);
-                }
+                if (!inserted) { list.appendChild(draggedItem); }
+                saveOrder(); // Guardar el nuevo orden al soltar
             }
             return false;
         }
+        function handleDragEnd() { this.classList.remove('dragging'); draggedItem = null; }
 
-        function handleDragEnd() {
-            this.classList.remove('dragging');
-            draggedItem = null;
-        }
-
-        // Añadido el parámetro 'code' para poder usarlo en el buscador
         function addReportToSidebar(title, type, level, lat, lng, markerId, isSolved, isFavorite, code) { 
             const list = document.getElementById('reports-list'); 
             const item = document.createElement('div'); 
             item.className = 'report-item' + (isSolved ? ' solved-item' : ''); 
             item.style.borderLeftColor = colors[type]; 
             item.setAttribute('data-id', markerId); 
-            item.setAttribute('data-code', code ? code.toLowerCase() : ''); // Guardamos el código en minúsculas para el buscador
+            item.setAttribute('data-code', code ? code.toLowerCase() : ''); 
             item.draggable = true;
 
             item.addEventListener('dragstart', handleDragStart);
@@ -774,26 +954,15 @@
                 if (window.innerWidth <= 768) { toggleSidebarMobile(); }
             }); 
 
-            if (isFavorite) {
-                list.prepend(item);
-            } else {
-                const items = list.querySelectorAll('.report-item');
-                let inserted = false;
-                for (let it of items) {
-                    if (!it.querySelector('.fav-btn.active')) {
-                        list.insertBefore(item, it);
-                        inserted = true;
-                        break;
-                    }
-                }
-                if (!inserted) list.appendChild(item);
-            }
+            // El appendChild se ejecuta en el orden en que se llama, que ya está ordenado según el LocalStorage en loadReportsFromDB
+            list.appendChild(item);
         }
 
         document.querySelectorAll('.filter-btn').forEach(btn => { btn.addEventListener('click', function() { this.classList.toggle('active'); const filterType = this.getAttribute('data-filter'); const isActive = this.classList.contains('active'); markersData.forEach(m => { const isHidden = (filterType === 'solved') ? m.solved : (m.type === filterType); if (isHidden) { if (isActive) map.addLayer(m.marker); else map.removeLayer(m.marker); } }); document.querySelectorAll('.report-item').forEach(item => { const mData = markersData.find(m => m.id === item.getAttribute('data-id')); if(mData) { const shouldHide = (filterType === 'solved' && mData.solved) || (mData.type === filterType && !mData.solved); if(shouldHide) item.style.display = isActive ? '' : 'none'; } }); }); });
 
         // Iniciar App
         loadReportsFromDB();
+        loadEarthquakes(); // Cargar sismos reales al iniciar
     </script>
 </body>
 </html>
