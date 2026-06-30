@@ -29,6 +29,14 @@
         .user-pulse { width: 16px; height: 16px; background: rgba(59, 130, 246, 0.4); border-radius: 50%; position: absolute; top: 2px; left: 2px; animation: userPulse 1.5s infinite; }
         @keyframes userPulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(3.5); opacity: 0; } }
 
+        /* Contenedor de Alarmas Cercanas */
+        #alarm-container { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 5000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; pointer-events: none; }
+        .alarm-banner { padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-weight: bold; display: flex; align-items: center; gap: 10px; animation: slideDown 0.5s ease-out; color: white; text-align: left; }
+        .alarm-critical { background: #ef4444; border: 2px solid #fca5a5; }
+        .alarm-alert { background: #f97316; border: 2px solid #fdba74; }
+        .alarm-info { background: #eab308; color: #1e293b; border: 2px solid #fde047; }
+        @keyframes slideDown { from { transform: translateY(-100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
         .top-right-panel { position: absolute; top: 15px; right: 15px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
         .top-right-buttons { display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
         
@@ -74,7 +82,6 @@
         .scale-item { display: flex; align-items: center; font-size: 0.75rem; margin-bottom: 5px; color: #cbd5e1; }
         .scale-color { width: 12px; height: 12px; border-radius: 3px; margin-right: 8px; border: 1px solid rgba(255,255,255,0.3); }
 
-        /* Sidebar Izquierda */
         #sidebar { position: absolute; top: 10px; left: 10px; bottom: 10px; width: 290px; background-color: rgba(30, 41, 59, 0.95); border-radius: 12px; display: flex; flex-direction: column; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; transition: transform 0.3s ease-in-out; }
         .mobile-handle { display: none; width: 40px; height: 5px; background: #64748b; border-radius: 3px; margin: 8px auto 0; }
         
@@ -244,6 +251,7 @@
 <body>
 
     <div id="map"></div>
+    <div id="alarm-container"></div>
     
     <div class="top-right-panel">
         <div class="top-right-buttons">
@@ -541,6 +549,123 @@
         const colors = { critical: '#ef4444', danger: '#f97316', help: '#22c55e', info: '#3b82f6' };
 
         // ==========================================
+        // SISTEMA DE ALARMA DE PROXIMIDAD Y AUDIO
+        // ==========================================
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                } catch(e) { console.warn("AudioContext no soportado"); }
+            }
+        }
+
+        let userLocation = null;
+        let proximityInterval = null;
+        const triggeredAlarms = new Map(); // Usamos Map para guardar el timestamp
+
+        function checkNearbyDisasters() {
+            if (!userLocation) return;
+
+            Object.values(disasterLayers).forEach(layerGroup => {
+                if (!layerGroup) return;
+                layerGroup.eachLayer(layer => {
+                    let latlng;
+                    if (layer.getLatLng) {
+                        latlng = layer.getLatLng();
+                    } else if (layer.getBounds) {
+                        latlng = layer.getBounds().getCenter();
+                    } else {
+                        return;
+                    }
+
+                    const distance = map.distance(userLocation, latlng);
+                    let severity = null;
+                    let icon = '';
+                    
+                    if (distance < 20000) { // 20 km
+                        severity = "CRÍTICO";
+                        icon = "🔴";
+                    } else if (distance < 50000) { // 50 km
+                        severity = "ALERTA";
+                        icon = "🟠";
+                    } else if (distance < 100000) { // 100 km
+                        severity = "INFORMACIÓN";
+                        icon = "🟡";
+                    }
+
+                    if (severity) {
+                        const key = `${latlng.lat.toFixed(2)}_${latlng.lng.toFixed(2)}_${severity}`;
+                        if (!triggeredAlarms.has(key)) {
+                            triggeredAlarms.set(key, Date.now()); // Guardar momento de la alarma
+                            let props = layer.feature?.properties || {};
+                            triggerAlarm(severity, icon, props, distance);
+                        }
+                    }
+                });
+            });
+        }
+
+        // Limpiar alarmas antiguas cada 10 minutos (para volver a alertar si persiste)
+        setInterval(() => {
+            const now = Date.now();
+            for (const [key, time] of triggeredAlarms) {
+                if (now - time > 3600000) { // 1 hora (3600000 ms)
+                    triggeredAlarms.delete(key);
+                }
+            }
+        }, 600000); // 10 minutos (600000 ms)
+
+        function triggerAlarm(severity, icon, props, distance) {
+            const distKm = Math.round(distance / 1000);
+            let disasterType = "Catástrofe";
+            if (props.mag) disasterType = `Sismo Magnitud ${props.mag}`;
+            else if (props.event) disasterType = props.event;
+            else if (props.name) disasterType = props.name;
+            
+            let msgText = `Alerta ${severity}. ${disasterType} detectado a ${distKm} kilómetros de tu ubicación.`;
+            
+            // 1. Speech Synthesis (Voz)
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(msgText);
+                utterance.lang = 'es-ES';
+                utterance.rate = 1.0;
+                speechSynthesis.speak(utterance);
+            }
+
+            // 2. Sonido de Alarma (Beep) usando el audioCtx global
+            if (audioCtx) {
+                try {
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.type = 'square';
+                    oscillator.frequency.value = severity === "CRÍTICO" ? 880 : 440;
+                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.5);
+                } catch(e) { console.warn("Error reproduciendo audio"); }
+            }
+
+            // 3. Notificación Visual (Banner)
+            const container = document.getElementById('alarm-container');
+            const banner = document.createElement('div');
+            banner.className = `alarm-banner alarm-${severity.toLowerCase()}`;
+            banner.innerHTML = `<span style="font-size: 1.5rem;">${icon}</span> <div>${msgText}</div>`;
+            container.appendChild(banner);
+
+            // Eliminar el banner después de 15 segundos
+            setTimeout(() => {
+                banner.style.opacity = '0';
+                banner.style.transform = 'translateY(-20px)';
+                banner.style.transition = 'all 0.5s ease';
+                setTimeout(() => banner.remove(), 500);
+            }, 15000);
+        }
+
+        // ==========================================
         // FETCH SEGURO CON TIMEOUT Y PROXY FALLBACK
         // ==========================================
         async function fetchTimeout(url, timeout = 10000) {
@@ -573,7 +698,7 @@
         // SISTEMA DE CACHÉ PARA CATÁSTROFES
         // ==========================================
         const cache = {
-            earthquakes: { data: null, time: 0 },
+            quake: { data: null, time: 0 },
             flood: { data: null, time: 0 },
             fire: { data: null, time: 0 },
             tsunami: { data: null, time: 0 }
@@ -601,10 +726,9 @@
             document.getElementById('region-flag').innerText = r.flag;
             map.flyToBounds(r.bounds, { padding: [20, 20] });
             document.getElementById('region-menu').classList.remove('show');
-            loadReportsFromDB(); // Filtra informes
+            loadReportsFromDB(); 
             
-            // Invalidar caché y recargar catástrofes si están activas
-            if (document.getElementById('toggle-quake').checked) { if (disasterLayers.quake) map.removeLayer(disasterLayers.quake); disasterLayers.quake = null; cache.earthquakes.time = 0; loadEarthquakes(); }
+            if (document.getElementById('toggle-quake').checked) { if (disasterLayers.quake) map.removeLayer(disasterLayers.quake); disasterLayers.quake = null; cache.quake.time = 0; loadEarthquakes(); }
             if (document.getElementById('toggle-flood').checked) { if (disasterLayers.flood) map.removeLayer(disasterLayers.flood); disasterLayers.flood = null; cache.flood.time = 0; loadGDACS('FL', 'flood', 'Inundaciones'); }
             if (document.getElementById('toggle-fire').checked) { if (disasterLayers.fire) map.removeLayer(disasterLayers.fire); disasterLayers.fire = null; cache.fire.time = 0; loadNASAFires(); }
             if (document.getElementById('toggle-tsunami').checked) { if (disasterLayers.tsunami) map.removeLayer(disasterLayers.tsunami); disasterLayers.tsunami = null; cache.tsunami.time = 0; loadGDACS('TS', 'tsunami', 'Tsunamis'); }
@@ -639,14 +763,22 @@
         // LOCALIZACIÓN GPS USUARIO
         // ==========================================
         function locateUser() {
+            initAudio(); // Inicializar audio tras interacción del usuario
             if (!navigator.geolocation) { alert('La geolocalización no es soportada por tu navegador.'); return; }
             navigator.geolocation.getCurrentPosition(
                 position => {
                     const lat = position.coords.latitude, lng = position.coords.longitude;
+                    userLocation = L.latLng(lat, lng); 
+                    
                     if (userMarker) map.removeLayer(userMarker);
                     userMarker = L.marker([lat, lng], { icon: createUserIcon() }).addTo(map);
                     userMarker.bindPopup('📍 Tu ubicación actual').openPopup();
                     map.flyTo([lat, lng], 15, { duration: 1.2 });
+                    
+                    if (!proximityInterval) {
+                        checkNearbyDisasters(); 
+                        proximityInterval = setInterval(checkNearbyDisasters, 60000); 
+                    }
                 },
                 error => { alert('No se pudo obtener tu ubicación. Verifica los permisos de ubicación en tu navegador.'); }
             );
@@ -683,8 +815,8 @@
         // 1. Sismos (USGS)
         async function loadEarthquakes() {
             const status = document.getElementById('disaster-status');
-            if (cache.earthquakes.data && Date.now() - cache.earthquakes.time < CACHE_DURATION) {
-                renderEarthquakes(cache.earthquakes.data);
+            if (cache.quake.data && Date.now() - cache.quake.time < CACHE_DURATION) {
+                renderEarthquakes(cache.quake.data);
                 return;
             }
             
@@ -692,7 +824,7 @@
             const url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
             try {
                 const data = await fetchWithFallback(url, true);
-                cache.earthquakes = { data, time: Date.now() };
+                cache.quake = { data, time: Date.now() };
                 renderEarthquakes(data);
                 status.innerText = "✅ Sismos actualizados";
             } catch(e) {
@@ -777,32 +909,36 @@
             }
         }
 
-        // 3. Incendios (NASA FIRMS)
+        // 3. Incendios (NASA FIRMS) con Respaldo Local
         async function loadNASAFires() {
             const status = document.getElementById('disaster-status');
-            if (cache.fires.data && Date.now() - cache.fires.time < CACHE_DURATION) {
-                renderNASAFires(cache.fires.data);
+            if (cache.fire.data && Date.now() - cache.fire.time < CACHE_DURATION) {
+                renderNASAFires(cache.fire.data);
                 return;
             }
 
-            const apiKey = 'YOUR_NASA_FIRMS_KEY'; 
+            const apiKey = 'be41bd312c91f171946a830be39c9a95'; 
             const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/-180,-90,180,90/2/`;
             
-            if (apiKey === 'YOUR_NASA_FIRMS_KEY') {
-                status.innerText = "🔥 Cargando incendios (GDACS)...";
-                await loadGDACS('WF', 'fire', 'Incendios');
-                return;
-            }
-
             status.innerText = "🔥 Cargando incendios (NASA)...";
             try {
                 const text = await fetchWithFallback(url, false);
-                cache.fires = { data: text, time: Date.now() };
+                if (!text || text.includes('Invalid')) throw new Error("Invalid API Key or response");
+                
+                localStorage.setItem("last_fire_data", text); // Guardar respaldo
+                cache.fire = { data: text, time: Date.now() };
                 renderNASAFires(text);
                 status.innerText = "✅ Incendios actualizados";
             } catch(e) {
-                status.innerText = "❌ Error NASA, fallback a GDACS";
-                await loadGDACS('WF', 'fire', 'Incendios');
+                console.error("Error loading NASA Fires", e);
+                const backup = localStorage.getItem("last_fire_data");
+                if (backup) {
+                    status.innerText = "⚠️ Mostrando últimos incendios guardados";
+                    renderNASAFires(backup);
+                } else {
+                    status.innerText = "❌ Error NASA, fallback a GDACS";
+                    await loadGDACS('WF', 'fire', 'Incendios');
+                }
             }
         }
 
@@ -977,7 +1113,7 @@
                 desc: document.getElementById('inp-desc').value,
                 type: document.getElementById('report-type').value,
                 level: document.getElementById('report-level').value,
-                code: generarCodigo(), // Código robusto
+                code: generarCodigo(),
                 solved: false, notes: {}
             };
             db.ref('reports').push(reportData).then(() => closeModal()).catch(err => alert("Error al guardar: " + err));
@@ -1255,7 +1391,6 @@
 
         loadReportsFromDB();
         
-        // Carga diferida: solo carga si el toggle está activado al iniciar
         if (document.getElementById('toggle-quake').checked) loadEarthquakes();
         if (document.getElementById('toggle-flood').checked) loadGDACS('FL', 'flood', 'Inundaciones');
         if (document.getElementById('toggle-fire').checked) loadNASAFires();
