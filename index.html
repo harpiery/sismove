@@ -171,6 +171,7 @@
 
         .btn-popup { border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; font-size: 0.9rem; margin-top: 8px; color: white; }
         .btn-solved { background: #22c55e; } .btn-solved:hover { background: #16a34a; }
+        .btn-edit-report { background: #3b82f6; } .btn-edit-report:hover { background: #2563eb; }
         .btn-add-note { background: #64748b; } .btn-add-note:hover { background: #475569; }
         .btn-delete-popup { background: #991b1b; } .btn-delete-popup:hover { background: #7f1d1d; }
         .note-input-group { display: flex; gap: 5px; margin-top: 8px;}
@@ -427,6 +428,7 @@
             <div id="modal-create-view">
                 <h2 style="margin-bottom: 20px;" id="modal-title">Nuevo Reporte</h2>
                 <form id="report-form">
+                    <input type="hidden" id="report-edit-id">
                     <input type="hidden" id="report-lat"><input type="hidden" id="report-lng"><input type="hidden" id="report-type">
                     <div class="form-group">
                         <label data-i18n="lbl_title">Título del Reporte</label>
@@ -446,7 +448,7 @@
                         </div>
                         <input type="hidden" id="report-level" value="1">
                     </div>
-                    <button type="submit" class="btn-submit btn-create" data-i18n="btn_submit">Enviar al Mapa</button>
+                    <button type="submit" id="btn-submit-report" class="btn-submit btn-create" data-i18n="btn_submit">Enviar al Mapa</button>
                     <button type="button" class="btn-submit btn-cancel-modal" onclick="closeModal()" data-i18n="btn_cancel">Cancelar</button>
                 </form>
             </div>
@@ -1291,42 +1293,109 @@
         }
         function closeAddReportMenu() { document.getElementById('add-report-menu').style.display = 'none'; }
 
-        document.querySelectorAll('.level-btn').forEach(btn => { btn.addEventListener('click', function() { document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)'); this.style.transform = 'scale(1.1)'; selectedLevel = this.getAttribute('data-level'); document.getElementById('report-level').value = selectedLevel; }); });
-        function openCreateModal() { document.getElementById('modal-create-view').style.display = 'block'; document.getElementById('modal-delete-view').style.display = 'none'; document.getElementById('modal-overlay').style.display = 'flex'; }
+        document.querySelectorAll('.level-btn').forEach(btn => { 
+            btn.addEventListener('click', function() { 
+                document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)'); 
+                this.style.transform = 'scale(1.1)'; 
+                selectedLevel = this.getAttribute('data-level'); 
+                document.getElementById('report-level').value = selectedLevel; 
+            }); 
+        });
+
+        function openCreateModal() { 
+            document.getElementById('report-edit-id').value = ''; // Limpiar ID de edición
+            document.getElementById('btn-submit-report').innerText = "Enviar al Mapa"; // Restaurar texto del botón
+            document.getElementById('modal-create-view').style.display = 'block'; 
+            document.getElementById('modal-delete-view').style.display = 'none'; 
+            document.getElementById('modal-overlay').style.display = 'flex'; 
+        }
+
+        function openEditModal(id) {
+            const report = markersData.find(m => m.id === id);
+            if (!report || !report.data) return;
+            
+            // Rellenar formulario
+            document.getElementById('report-edit-id').value = id;
+            document.getElementById('inp-title').value = report.data.title || '';
+            document.getElementById('inp-desc').value = report.data.desc || '';
+            document.getElementById('report-type').value = report.data.type || 'info';
+            document.getElementById('report-level').value = report.data.level || '1';
+            
+            // Actualizar UI de nivel
+            selectedLevel = report.data.level || '1';
+            document.querySelectorAll('.level-btn').forEach(b => {
+                b.style.transform = 'scale(1)';
+                if (b.getAttribute('data-level') === String(selectedLevel)) {
+                    b.style.transform = 'scale(1.1)';
+                }
+            });
+
+            // Cambiar título y botón
+            document.getElementById('modal-title').innerText = "Editar Reporte";
+            document.getElementById('btn-submit-report').innerText = "Guardar Cambios";
+            
+            document.getElementById('modal-create-view').style.display = 'block';
+            document.getElementById('modal-delete-view').style.display = 'none';
+            document.getElementById('modal-overlay').style.display = 'flex';
+        }
+
         function openDeleteModal(id) { markerToDeleteId = id; document.getElementById('modal-create-view').style.display = 'none'; document.getElementById('modal-delete-view').style.display = 'block'; document.getElementById('modal-overlay').style.display = 'flex'; }
-        function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; document.getElementById('report-form').reset(); document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)'); markerToDeleteId = null; }
+        
+        function closeModal() { 
+            document.getElementById('modal-overlay').style.display = 'none'; 
+            document.getElementById('report-form').reset(); 
+            document.getElementById('report-edit-id').value = ''; // Limpiar ID de edición
+            document.getElementById('btn-submit-report').innerText = "Enviar al Mapa"; // Restaurar texto
+            document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)'); 
+            markerToDeleteId = null; 
+        }
 
         // ==========================================
-        // BASE DE DATOS: CREAR, ELIMINAR, ACTUALIZAR (CON VALIDACIÓN DE DUPLICADOS)
+        // BASE DE DATOS: CREAR, EDITAR, ELIMINAR
         // ==========================================
         document.getElementById('report-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            const lat = parseFloat(document.getElementById('report-lat').value);
-            const lng = parseFloat(document.getElementById('report-lng').value);
+            const editId = document.getElementById('report-edit-id').value;
             
-            // Comprobar si ya existe un informe activo en las mismas coordenadas
-            const exists = markersData.some(m => 
-                !m.solved && 
-                parseFloat(m.marker.getLatLng().lat).toFixed(5) === lat.toFixed(5) && 
-                parseFloat(m.marker.getLatLng().lng).toFixed(5) === lng.toFixed(5)
-            );
-
-            if (exists) {
-                alert('⚠️ Ya existe un informe activo en estas coordenadas. No se pueden generar duplicados.');
-                return;
-            }
-            
-            const reportData = {
-                lat: lat.toString(), 
-                lng: lng.toString(),
+            const formData = {
                 title: document.getElementById('inp-title').value,
                 desc: document.getElementById('inp-desc').value,
                 type: document.getElementById('report-type').value,
-                level: document.getElementById('report-level').value,
-                code: generarCodigo(),
-                solved: false, notes: {}
+                level: document.getElementById('report-level').value
             };
-            db.ref('reports').push(reportData).then(() => closeModal()).catch(err => alert("Error al guardar: " + err));
+
+            if (editId) {
+                // Modo Edición
+                db.ref('reports/' + editId).update(formData)
+                    .then(() => closeModal())
+                    .catch(err => alert("Error al actualizar: " + err));
+            } else {
+                // Modo Creación
+                const lat = parseFloat(document.getElementById('report-lat').value);
+                const lng = parseFloat(document.getElementById('report-lng').value);
+                
+                // Evitar duplicados
+                const exists = markersData.some(m => 
+                    !m.solved && 
+                    parseFloat(m.marker.getLatLng().lat).toFixed(5) === lat.toFixed(5) && 
+                    parseFloat(m.marker.getLatLng().lng).toFixed(5) === lng.toFixed(5)
+                );
+
+                if (exists) {
+                    alert('⚠️ Ya existe un informe activo en estas coordenadas. No se pueden generar duplicados.');
+                    return;
+                }
+                
+                const reportData = {
+                    ...formData,
+                    lat: lat.toString(), 
+                    lng: lng.toString(),
+                    code: generarCodigo(),
+                    solved: false, 
+                    notes: {}
+                };
+                db.ref('reports').push(reportData).then(() => closeModal()).catch(err => alert("Error al guardar: " + err));
+            }
         });
 
         function confirmDeleteMarker() {
@@ -1434,6 +1503,7 @@
                     </div>
                     
                     <button class="btn-popup btn-add-note" id="btn-note-${id}" onclick="toggleNoteInput('${id}')">${t('popup_add_note')}</button>
+                    <button class="btn-popup btn-edit-report" onclick="openEditModal('${id}')">✏️ Editar Reporte</button>
                     ${!report.solved ? `<button class="btn-popup btn-solved" onclick="markAsSolved('${id}')">${t('popup_solved')}</button>` : ''}
                     <button class="btn-popup btn-delete-popup" onclick="openDeleteModal('${id}')">${t('popup_delete')}</button>
                     
@@ -1444,7 +1514,8 @@
                 
             const icon = report.solved ? createSolvedIcon() : createCustomIcon(report.type, report.level);
             const marker = L.marker([report.lat, report.lng], { icon: icon }).addTo(map).bindPopup(popupContent, { maxWidth: 350 });
-            markersData.push({ marker, type: report.type, id: id, solved: report.solved });
+            // Guardar los datos completos en markersData para acceder a ellos al editar
+            markersData.push({ marker, type: report.type, id: id, solved: report.solved, data: report });
             
             addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved, isFavorite, reportCode);
         }
