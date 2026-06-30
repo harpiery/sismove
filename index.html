@@ -167,7 +167,6 @@
         .btn-cancel-modal { background: #64748b; margin-top: 10px; } .btn-cancel-modal:hover { background: #475569; }
         .btn-danger-confirm { background: #991b1b; } .btn-danger-confirm:hover { background: #7f1d1d; }
 
-        /* Selectores de Tipo y Nivel en el Formulario */
         .type-level, .danger-level { display: flex; gap: 5px; margin-top: 5px; }
         .type-btn, .level-btn { flex: 1; padding: 10px; border: none; text-align: center; cursor: pointer; font-weight: bold; border-radius: 4px; color: white; transition: all 0.2s; opacity: 0.6; font-size: 0.85rem; }
         .type-btn:hover, .level-btn:hover { opacity: 0.9; }
@@ -553,7 +552,6 @@
         // ==========================================
         const externalSources = [
             { name: "La Guaira 2026", url: "https://www.google.com/maps/d/kml?mid=1rlt3k8joPC2IeBBaIPgqmUd1oXcYgKc&forcekml=1", type: "danger", level: "3" }
-            // Puedes añadir más URLs aquí en el futuro siguiendo la misma estructura
         ];
 
         async function loadExternalMaps() {
@@ -578,7 +576,6 @@
                         if (point) {
                             const [lng, lat] = point.textContent.trim().split(',').map(Number);
                             
-                            // Evitar duplicados: comprobar si ya hay un informe activo en esta ubicación
                             const exists = markersData.some(m => 
                                 !m.solved && 
                                 parseFloat(m.marker.getLatLng().lat).toFixed(5) === lat.toFixed(5) && 
@@ -607,7 +604,6 @@
                             }).filter(c => !isNaN(c[0]) && !isNaN(c[1]));
                             
                             if (latlngs.length > 2) {
-                                // Evitar duplicados de zonas (usando la primera coordenada como referencia)
                                 const zoneExists = zonesData.some(z => {
                                     if (!z.coords || z.coords.length === 0) return false;
                                     return z.coords[0][0].toFixed(5) === latlngs[0][0].toFixed(5) &&
@@ -640,8 +636,22 @@
         const initialLng = savedPos ? savedPos.lng : 0;
         const initialZoom = savedPos ? savedPos.zoom : 2;
 
-        const map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([initialLat, initialLng], initialZoom);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
+        // Configuración de maxBounds para evitar el "espacio gris infinito"
+        const worldBounds = [[-90, -180], [90, 180]];
+        
+        const map = L.map('map', { 
+            zoomControl: false, 
+            doubleClickZoom: false,
+            maxBounds: worldBounds, 
+            maxBoundsViscosity: 0.8 // Rebote suave al llegar al borde del mundo
+        }).setView([initialLat, initialLng], initialZoom);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { 
+            attribution: '&copy; OpenStreetMap', 
+            subdomains: 'abcd', 
+            maxZoom: 19,
+            noWrap: true // Evita que el mapa se repita horizontalmente
+        }).addTo(map);
 
         function saveMapPosition() {
             const center = map.getCenter();
@@ -654,7 +664,7 @@
         let markerToDeleteId = null; let searchPinMarker = null; let userMarker = null;
         let disasterLayers = { quake: null, flood: null, fire: null, tsunami: null };
         let zonesLayer = L.layerGroup().addTo(map);
-        let zonesData = []; // Array local para comprobar duplicados de zonas
+        let zonesData = []; 
         const colors = { critical: '#ef4444', danger: '#f97316', help: '#22c55e', info: '#3b82f6' };
 
         // ==========================================
@@ -703,7 +713,6 @@
 
         function finishDrawPolygon() {
             if (currentPolygonPoints.length > 2) {
-                // Guardar en Firebase
                 const zoneData = {
                     type: 'collapsed',
                     coords: currentPolygonPoints.map(p => [p.lat, p.lng]),
@@ -711,7 +720,6 @@
                 };
                 db.ref('zones').push(zoneData);
             }
-            // Limpiar dibujo temporal
             if (tempPolyline) { map.removeLayer(tempPolyline); tempPolyline = null; }
             currentPolygonPoints = [];
             document.getElementById('toggle-draw').checked = false;
@@ -722,11 +730,11 @@
             db.ref('zones').on('value', (snapshot) => {
                 zonesLayer.clearLayers();
                 const data = snapshot.val();
-                zonesData = []; // Resetear array local
+                zonesData = []; 
                 if (data) {
                     Object.keys(data).forEach(id => {
                         const zone = data[id];
-                        zonesData.push(zone); // Guardar referencia local
+                        zonesData.push(zone); 
                         if (zone.coords && zone.coords.length > 2) {
                             L.polygon(zone.coords, {
                                 color: '#ef4444',
@@ -793,7 +801,6 @@
                 });
             });
             
-            // Revisar también las zonas colapsadas
             zonesLayer.eachLayer(layer => {
                 let latlng = layer.getBounds().getCenter();
                 const distance = map.distance(userLocation, latlng);
@@ -1269,7 +1276,7 @@
         // MODALES Y MENUS
         // ==========================================
         map.on('contextmenu', function(e) { 
-            if (drawingMode) return; // Evitar menú si está dibujando
+            if (drawingMode) return; 
             e.originalEvent.preventDefault(); 
             currentLatLng = e.latlng; 
             const menu = document.getElementById('context-menu'); 
@@ -1283,7 +1290,6 @@
                 currentType = this.getAttribute('data-type'); 
                 document.getElementById('report-type').value = currentType; 
                 
-                // Sincronizar botones de tipo en el formulario
                 document.querySelectorAll('.type-btn').forEach(b => {
                     b.classList.toggle('active', b.getAttribute('data-type') === currentType);
                 });
@@ -1312,7 +1318,6 @@
         }
         function closeAddReportMenu() { document.getElementById('add-report-menu').style.display = 'none'; }
 
-        // Listeners para botones de Tipo y Nivel en el formulario
         document.querySelectorAll('.type-btn').forEach(btn => { 
             btn.addEventListener('click', function() { 
                 document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); 
@@ -1331,10 +1336,9 @@
         });
 
         function openCreateModal() { 
-            document.getElementById('report-edit-id').value = ''; // Limpiar ID de edición
-            document.getElementById('btn-submit-report').innerText = "Enviar al Mapa"; // Restaurar texto del botón
+            document.getElementById('report-edit-id').value = ''; 
+            document.getElementById('btn-submit-report').innerText = "Enviar al Mapa"; 
             
-            // Si no hay tipo seleccionado por defecto, marcar 'info'
             if (!document.getElementById('report-type').value) {
                 document.getElementById('report-type').value = 'info';
                 document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-type') === 'info'));
@@ -1349,25 +1353,21 @@
             const report = markersData.find(m => m.id === id);
             if (!report || !report.data) return;
             
-            // Rellenar formulario
             document.getElementById('report-edit-id').value = id;
             document.getElementById('inp-title').value = report.data.title || '';
             document.getElementById('inp-desc').value = report.data.desc || '';
             document.getElementById('report-type').value = report.data.type || 'info';
             document.getElementById('report-level').value = report.data.level || '1';
             
-            // Sincronizar botones de tipo
             document.querySelectorAll('.type-btn').forEach(b => {
                 b.classList.toggle('active', b.getAttribute('data-type') === report.data.type);
             });
 
-            // Actualizar UI de nivel
             selectedLevel = report.data.level || '1';
             document.querySelectorAll('.level-btn').forEach(b => {
                 b.classList.toggle('active', b.getAttribute('data-level') === String(selectedLevel));
             });
 
-            // Cambiar título y botón
             document.getElementById('modal-title').innerText = "Editar Reporte";
             document.getElementById('btn-submit-report').innerText = "Guardar Cambios";
             
@@ -1381,8 +1381,8 @@
         function closeModal() { 
             document.getElementById('modal-overlay').style.display = 'none'; 
             document.getElementById('report-form').reset(); 
-            document.getElementById('report-edit-id').value = ''; // Limpiar ID de edición
-            document.getElementById('btn-submit-report').innerText = "Enviar al Mapa"; // Restaurar texto
+            document.getElementById('report-edit-id').value = ''; 
+            document.getElementById('btn-submit-report').innerText = "Enviar al Mapa"; 
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); 
             document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active')); 
             markerToDeleteId = null; 
@@ -1403,16 +1403,13 @@
             };
 
             if (editId) {
-                // Modo Edición
                 db.ref('reports/' + editId).update(formData)
                     .then(() => closeModal())
                     .catch(err => alert("Error al actualizar: " + err));
             } else {
-                // Modo Creación
                 const lat = parseFloat(document.getElementById('report-lat').value);
                 const lng = parseFloat(document.getElementById('report-lng').value);
                 
-                // Evitar duplicados
                 const exists = markersData.some(m => 
                     !m.solved && 
                     parseFloat(m.marker.getLatLng().lat).toFixed(5) === lat.toFixed(5) && 
@@ -1552,7 +1549,6 @@
                 
             const icon = report.solved ? createSolvedIcon() : createCustomIcon(report.type, report.level);
             const marker = L.marker([report.lat, report.lng], { icon: icon }).addTo(map).bindPopup(popupContent, { maxWidth: 350 });
-            // Guardar los datos completos en markersData para acceder a ellos al editar
             markersData.push({ marker, type: report.type, id: id, solved: report.solved, data: report });
             
             addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved, isFavorite, reportCode);
