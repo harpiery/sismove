@@ -166,8 +166,12 @@
         .btn-create { background: #ef4444; } .btn-create:hover { background: #dc2626; }
         .btn-cancel-modal { background: #64748b; margin-top: 10px; } .btn-cancel-modal:hover { background: #475569; }
         .btn-danger-confirm { background: #991b1b; } .btn-danger-confirm:hover { background: #7f1d1d; }
-        .danger-level { display: flex; gap: 5px; }
-        .level-btn { flex: 1; padding: 10px; border: none; text-align: center; cursor: pointer; font-weight: bold; border-radius: 4px; color: white; transition: transform 0.1s;}
+
+        /* Selectores de Tipo y Nivel en el Formulario */
+        .type-level, .danger-level { display: flex; gap: 5px; margin-top: 5px; }
+        .type-btn, .level-btn { flex: 1; padding: 10px; border: none; text-align: center; cursor: pointer; font-weight: bold; border-radius: 4px; color: white; transition: all 0.2s; opacity: 0.6; font-size: 0.85rem; }
+        .type-btn:hover, .level-btn:hover { opacity: 0.9; }
+        .type-btn.active, .level-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 0 0 2px white; }
 
         .btn-popup { border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; font-size: 0.9rem; margin-top: 8px; color: white; }
         .btn-solved { background: #22c55e; } .btn-solved:hover { background: #16a34a; }
@@ -439,6 +443,15 @@
                         <textarea id="inp-desc" data-i18n-ph="ph_desc" rows="3" placeholder="Detalles adicionales..." required></textarea>
                     </div>
                     <div class="form-group">
+                        <label data-i18n="lbl_type">Tipo de Reporte</label>
+                        <div class="type-level">
+                            <button type="button" class="type-btn bg-critical" data-type="critical" data-i18n="filter_critical">Crítico</button>
+                            <button type="button" class="type-btn bg-danger" data-type="danger" data-i18n="filter_danger">Peligro</button>
+                            <button type="button" class="type-btn bg-help" data-type="help" data-i18n="filter_help">Ayuda</button>
+                            <button type="button" class="type-btn bg-info" data-type="info" data-i18n="filter_info">Info</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label data-i18n="lbl_level">Nivel de Peligro / Prioridad</label>
                         <div class="danger-level">
                             <button type="button" class="level-btn" style="background: #22c55e;" data-level="1" data-i18n="level_1">Bajo</button>
@@ -490,8 +503,8 @@
         // ==========================================
         let currentLang = 'es';
         const translations = {
-            es: { title: "🇻🇪 SismoVe Ayuda", legend_title: "Leyenda", lang_btn: "EN", btn_add_report: "➕ Generar", search_placeholder: "Buscar calle o coordenadas...", search_btn: "Ir", filter_critical: "Crítico", filter_danger: "Peligro", filter_help: "Ayuda", filter_info: "Info", filter_solved: "Solucionado", legend_critical: "Punto Crítico", legend_danger: "Zona de Peligro", legend_help: "Zona de Ayuda/Recursos", legend_info: "Punto Informativo", legend_solved: "Solucionado", ctx_critical: "🚨 Reportar Emergencia Crítica", ctx_danger: "⚠️ Marcar Zona de Peligro", ctx_help: "🏥 Solicitar/Ofrecer Ayuda", ctx_info: "ℹ️ Reporte Informativo", modal_title_prefix: "Nuevo Reporte: ", lbl_title: "Título del Reporte", ph_title: "Ej: Edificio colapsado en la calle 10", lbl_desc: "Descripción", ph_desc: "Detalles adicionales...", lbl_level: "Nivel de Peligro / Prioridad", level_1: "Bajo", level_2: "Medio", level_3: "Alto", level_4: "Crítico", btn_submit: "Enviar al Mapa", btn_cancel: "Cancelar", popup_priority: "Prioridad", popup_type: "Tipo", popup_solved: "✅ Marcar como Solucionado", popup_add_note: "+ Añadir nota", popup_save_note: "Guardar", popup_delete: "🗑️ Eliminar aviso", sidebar_solved: "✅ SOLUCIONADO", type_critical: "Emergencia Crítica", type_danger: "Zona de Peligro", type_help: "Ayuda/Recurso", type_info: "Informativo", alert_no_results: "Sin resultados para:", modal_confirm_title: "¿Estás seguro?", modal_confirm_text: "Esta acción eliminará el aviso permanentemente y no se puede deshacer.", modal_btn_confirm_delete: "Sí, eliminar aviso" },
-            en: { title: "🇻🇪 SismoVe Help", legend_title: "Legend", lang_btn: "ES", btn_add_report: "➕ Create", search_placeholder: "Search street or coordinates...", search_btn: "Go", filter_critical: "Critical", filter_danger: "Danger", filter_help: "Help", filter_info: "Info", filter_solved: "Solved", legend_critical: "Critical Point", legend_danger: "Danger Zone", legend_help: "Help/Resources Zone", legend_info: "Info Point", legend_solved: "Solved", ctx_critical: "🚨 Report Critical Emergency", ctx_danger: "⚠️ Mark Danger Zone", ctx_help: "🏥 Request/Offer Help", ctx_info: "ℹ️ Info Report", modal_title_prefix: "New Report: ", lbl_title: "Report Title", ph_title: "Ex: Building collapsed on 10th street", lbl_desc: "Description", ph_desc: "Additional details...", lbl_level: "Danger Level / Priority", level_1: "Low", level_2: "Medium", level_3: "High", level_4: "Critical", btn_submit: "Send to Map", btn_cancel: "Cancel", popup_priority: "Priority", popup_type: "Type", popup_solved: "✅ Mark as Solved", popup_add_note: "+ Add note", popup_save_note: "Save", popup_delete: "🗑️ Delete alert", sidebar_solved: "✅ SOLVED", type_critical: "Critical Emergency", type_danger: "Danger Zone", type_help: "Help/Resource", type_info: "Informational", alert_no_results: "No results for:", modal_confirm_title: "Are you sure?", modal_confirm_text: "This action will delete the alert permanently and cannot be undone.", modal_btn_confirm_delete: "Yes, delete alert" }
+            es: { title: "🇻🇪 SismoVe Ayuda", legend_title: "Leyenda", lang_btn: "EN", btn_add_report: "➕ Generar", search_placeholder: "Buscar calle o coordenadas...", search_btn: "Ir", filter_critical: "Crítico", filter_danger: "Peligro", filter_help: "Ayuda", filter_info: "Info", filter_solved: "Solucionado", legend_critical: "Punto Crítico", legend_danger: "Zona de Peligro", legend_help: "Zona de Ayuda/Recursos", legend_info: "Punto Informativo", legend_solved: "Solucionado", ctx_critical: "🚨 Reportar Emergencia Crítica", ctx_danger: "⚠️ Marcar Zona de Peligro", ctx_help: "🏥 Solicitar/Ofrecer Ayuda", ctx_info: "ℹ️ Reporte Informativo", modal_title_prefix: "Nuevo Reporte: ", lbl_title: "Título del Reporte", lbl_type: "Tipo de Reporte", ph_title: "Ej: Edificio colapsado en la calle 10", lbl_desc: "Descripción", ph_desc: "Detalles adicionales...", lbl_level: "Nivel de Peligro / Prioridad", level_1: "Bajo", level_2: "Medio", level_3: "Alto", level_4: "Crítico", btn_submit: "Enviar al Mapa", btn_cancel: "Cancelar", popup_priority: "Prioridad", popup_type: "Tipo", popup_solved: "✅ Marcar como Solucionado", popup_add_note: "+ Añadir nota", popup_save_note: "Guardar", popup_delete: "🗑️ Eliminar aviso", sidebar_solved: "✅ SOLUCIONADO", type_critical: "Emergencia Crítica", type_danger: "Zona de Peligro", type_help: "Ayuda/Recurso", type_info: "Informativo", alert_no_results: "Sin resultados para:", modal_confirm_title: "¿Estás seguro?", modal_confirm_text: "Esta acción eliminará el aviso permanentemente y no se puede deshacer.", modal_btn_confirm_delete: "Sí, eliminar aviso" },
+            en: { title: "🇻🇪 SismoVe Help", legend_title: "Legend", lang_btn: "ES", btn_add_report: "➕ Create", search_placeholder: "Search street or coordinates...", search_btn: "Go", filter_critical: "Critical", filter_danger: "Danger", filter_help: "Help", filter_info: "Info", filter_solved: "Solved", legend_critical: "Critical Point", legend_danger: "Danger Zone", legend_help: "Help/Resources Zone", legend_info: "Info Point", legend_solved: "Solved", ctx_critical: "🚨 Report Critical Emergency", ctx_danger: "⚠️ Mark Danger Zone", ctx_help: "🏥 Request/Offer Help", ctx_info: "ℹ️ Info Report", modal_title_prefix: "New Report: ", lbl_title: "Report Title", lbl_type: "Report Type", ph_title: "Ex: Building collapsed on 10th street", lbl_desc: "Description", ph_desc: "Additional details...", lbl_level: "Danger Level / Priority", level_1: "Low", level_2: "Medium", level_3: "High", level_4: "Critical", btn_submit: "Send to Map", btn_cancel: "Cancel", popup_priority: "Priority", popup_type: "Type", popup_solved: "✅ Mark as Solved", popup_add_note: "+ Add note", popup_save_note: "Save", popup_delete: "🗑️ Delete alert", sidebar_solved: "✅ SOLVED", type_critical: "Critical Emergency", type_danger: "Danger Zone", type_help: "Help/Resource", type_info: "Informational", alert_no_results: "No results for:", modal_confirm_title: "Are you sure?", modal_confirm_text: "This action will delete the alert permanently and cannot be undone.", modal_btn_confirm_delete: "Yes, delete alert" }
         };
         function t(key) { return translations[currentLang][key] || key; }
         function toggleLanguage() { 
@@ -1269,6 +1282,12 @@
             item.addEventListener('click', function() { 
                 currentType = this.getAttribute('data-type'); 
                 document.getElementById('report-type').value = currentType; 
+                
+                // Sincronizar botones de tipo en el formulario
+                document.querySelectorAll('.type-btn').forEach(b => {
+                    b.classList.toggle('active', b.getAttribute('data-type') === currentType);
+                });
+
                 if(this.closest('#add-report-menu')) {
                     const center = map.getCenter();
                     currentLatLng = { lat: center.lat, lng: center.lng };
@@ -1293,10 +1312,19 @@
         }
         function closeAddReportMenu() { document.getElementById('add-report-menu').style.display = 'none'; }
 
+        // Listeners para botones de Tipo y Nivel en el formulario
+        document.querySelectorAll('.type-btn').forEach(btn => { 
+            btn.addEventListener('click', function() { 
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); 
+                this.classList.add('active'); 
+                document.getElementById('report-type').value = this.getAttribute('data-type'); 
+            }); 
+        });
+
         document.querySelectorAll('.level-btn').forEach(btn => { 
             btn.addEventListener('click', function() { 
-                document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)'); 
-                this.style.transform = 'scale(1.1)'; 
+                document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active')); 
+                this.classList.add('active'); 
                 selectedLevel = this.getAttribute('data-level'); 
                 document.getElementById('report-level').value = selectedLevel; 
             }); 
@@ -1305,6 +1333,13 @@
         function openCreateModal() { 
             document.getElementById('report-edit-id').value = ''; // Limpiar ID de edición
             document.getElementById('btn-submit-report').innerText = "Enviar al Mapa"; // Restaurar texto del botón
+            
+            // Si no hay tipo seleccionado por defecto, marcar 'info'
+            if (!document.getElementById('report-type').value) {
+                document.getElementById('report-type').value = 'info';
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-type') === 'info'));
+            }
+            
             document.getElementById('modal-create-view').style.display = 'block'; 
             document.getElementById('modal-delete-view').style.display = 'none'; 
             document.getElementById('modal-overlay').style.display = 'flex'; 
@@ -1321,13 +1356,15 @@
             document.getElementById('report-type').value = report.data.type || 'info';
             document.getElementById('report-level').value = report.data.level || '1';
             
+            // Sincronizar botones de tipo
+            document.querySelectorAll('.type-btn').forEach(b => {
+                b.classList.toggle('active', b.getAttribute('data-type') === report.data.type);
+            });
+
             // Actualizar UI de nivel
             selectedLevel = report.data.level || '1';
             document.querySelectorAll('.level-btn').forEach(b => {
-                b.style.transform = 'scale(1)';
-                if (b.getAttribute('data-level') === String(selectedLevel)) {
-                    b.style.transform = 'scale(1.1)';
-                }
+                b.classList.toggle('active', b.getAttribute('data-level') === String(selectedLevel));
             });
 
             // Cambiar título y botón
@@ -1346,7 +1383,8 @@
             document.getElementById('report-form').reset(); 
             document.getElementById('report-edit-id').value = ''; // Limpiar ID de edición
             document.getElementById('btn-submit-report').innerText = "Enviar al Mapa"; // Restaurar texto
-            document.querySelectorAll('.level-btn').forEach(b => b.style.transform = 'scale(1)'); 
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); 
+            document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active')); 
             markerToDeleteId = null; 
         }
 
