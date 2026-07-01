@@ -137,13 +137,33 @@
 
         #open-sidebar-desktop { position: absolute; top: 10px; left: 10px; z-index: 999; background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: none; }
 
-        #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.9); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-width: 220px; }
+        #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.95); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-width: 220px; border: 1px solid #475569; }
         .legend-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #475569; padding-bottom: 5px; }
         .legend-header:hover { color: #3b82f6; }
         .legend-toggle-icon { font-size: 0.8rem; }
         #legend-content.collapsed { display: none; }
         .legend-item { display: flex; align-items: center; margin-bottom: 6px; font-size: 0.85rem; }
         .legend-color { width: 14px; height: 14px; border-radius: 50%; margin-right: 10px; }
+
+        .legend-divider { border: 0; border-top: 1px solid #475569; margin: 10px 0 5px 0; }
+        #download-kml-btn { 
+            width: 100%; 
+            margin-top: 8px; 
+            padding: 8px 12px; 
+            background: #3b82f6; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 0.9rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px; 
+            transition: background 0.2s; 
+        }
+        #download-kml-btn:hover { background: #2563eb; }
 
         #context-menu, #add-report-menu { position: absolute; z-index: 2000; background: #334155; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); padding: 8px 0; display: none; min-width: 240px; }
         .ctx-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
@@ -172,6 +192,14 @@
         .type-btn:hover, .level-btn:hover { opacity: 0.9; }
         .type-btn.active, .level-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 0 0 2px white; }
 
+        /* Estilos para el botón Atendiendo en el popup */
+        .popup-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+        .popup-header h3 { margin: 0; }
+        .btn-attending { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; white-space: nowrap; transition: all 0.2s; }
+        .btn-attending:hover { background: #22c55e; color: white; border-color: #16a34a; }
+        .btn-attending.active { background: #22c55e; color: white; border-color: #16a34a; animation: pulseBtn 1.5s infinite; }
+        @keyframes pulseBtn { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+
         .btn-popup { border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; font-size: 0.9rem; margin-top: 8px; color: white; }
         .btn-solved { background: #22c55e; } .btn-solved:hover { background: #16a34a; }
         .btn-edit-report { background: #3b82f6; } .btn-edit-report:hover { background: #2563eb; }
@@ -196,8 +224,12 @@
         .report-code { margin-top: 15px; padding-top: 10px; border-top: 1px solid #475569; text-align: center; }
         .report-code small { font-family: 'Courier New', Courier, monospace; color: #64748b; font-size: 0.75rem; word-break: break-all; }
 
+        /* Animación para marcadores siendo atendidos */
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         .marker-critical { animation: pulse 1.5s infinite; }
+        
+        @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+        .marker-attending { animation: pulseGreen 1.5s infinite; }
 
         @media (max-width: 768px) {
             .top-right-panel { left: 10px; right: 10px; align-items: stretch; }
@@ -238,7 +270,7 @@
             .coords-container small { font-size: 0.75rem; }
             .btn-copy-coords { padding: 2px 6px; font-size: 0.8rem; }
 
-            #legend { bottom: 10px; right: 10px; max-width: 140px; padding: 8px; font-size: 0.8rem; } 
+            #legend { bottom: 10px; right: 10px; max-width: 180px; padding: 10px; font-size: 0.8rem; } 
             .legend-item { margin-bottom: 4px; font-size: 0.75rem; }
             
             #modal { width: 95%; padding: 20px; }
@@ -281,9 +313,9 @@
         <div id="disaster-panel">
             <div class="disaster-header" onclick="toggleDisasterPanel()">
                 <span>🌍 Catástrofes Naturales (Tiempo Real)</span>
-                <span id="disaster-toggle-icon">➖</span>
+                <span id="disaster-toggle-icon">➕</span>
             </div>
-            <div id="disaster-content">
+            <div id="disaster-content" class="collapsed">
                 <div class="disaster-body">
                     <label class="disaster-control">
                         <div class="switch">
@@ -398,14 +430,17 @@
     <div id="legend">
         <div class="legend-header" onclick="toggleLegend()">
             <span data-i18n="legend_title">Leyenda</span>
-            <span class="legend-toggle-icon" id="legend-toggle-icon">➖</span>
+            <span class="legend-toggle-icon" id="legend-toggle-icon">➕</span>
         </div>
-        <div id="legend-content">
+        <div id="legend-content" class="collapsed">
             <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div><span data-i18n="legend_critical">Punto Crítico</span></div>
             <div class="legend-item"><div class="legend-color" style="background: #f97316;"></div><span data-i18n="legend_danger">Zona de Peligro</span></div>
             <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div><span data-i18n="legend_help">Zona de Ayuda/Recursos</span></div>
             <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div><span data-i18n="legend_info">Punto Informativo</span></div>
             <div class="legend-item"><div class="legend-color" style="background: #9ca3af;">✓</div><span data-i18n="legend_solved">Solucionado</span></div>
+            
+            <hr class="legend-divider">
+            <button id="download-kml-btn" onclick="downloadKML()" title="Exportar datos a KML">⬇️ Exportar KML</button>
         </div>
     </div>
 
@@ -589,7 +624,7 @@
                                     desc: desc,
                                     type: source.type, level: source.level,
                                     code: generarCodigo(),
-                                    solved: false, notes: {}
+                                    solved: false, attending: false, notes: {}
                                 };
                                 db.ref('reports').push(reportData);
                                 importedCount++;
@@ -629,6 +664,97 @@
         }
 
         // ==========================================
+        // EXPORTAR KML
+        // ==========================================
+        function escapeXml(unsafe) {
+            return unsafe.replace(/[<>&'"]/g, function (c) {
+                switch (c) {
+                    case '<': return '&lt;';
+                    case '>': return '&gt;';
+                    case '&': return '&amp;';
+                    case '\'': return '&apos;';
+                    case '"': return '&quot;';
+                }
+            });
+        }
+
+        function downloadKML() {
+            let kml = `<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2">\n<Document>\n<name>SismoVe Export</name>\n<description>Datos exportados de SismoVe</description>\n`;
+            
+            markersData.forEach(m => {
+                if (!m.data) return;
+                const lat = m.data.lat;
+                const lng = m.data.lng;
+                const title = escapeXml(m.data.title || "Sin título");
+                const desc = escapeXml(m.data.desc || "");
+                const type = m.data.type || "info";
+                let color = "ffff0000"; 
+                
+                if (m.attending) color = "ff00ff00"; // Verde atendiendo
+                else if (type === 'critical') color = "ff0000ff"; 
+                else if (type === 'danger') color = "ff00aaff"; 
+                else if (type === 'help') color = "ff00ff00"; 
+                else if (m.solved) color = "ff808080"; 
+
+                kml += `
+                <Placemark>
+                    <name>${title}</name>
+                    <description><![CDATA[${desc}<br>Tipo: ${type}<br>Estado: ${m.solved ? 'Solucionado' : (m.attending ? 'Atendiendo' : 'Activo')}<br>Código: ${m.data.code || 'N/A'}]]></description>
+                    <Style>
+                        <IconStyle>
+                            <color>${color}</color>
+                            <scale>1.0</scale>
+                        </IconStyle>
+                    </Style>
+                    <Point>
+                        <coordinates>${lng},${lat},0</coordinates>
+                    </Point>
+                </Placemark>`;
+            });
+
+            zonesData.forEach(z => {
+                if (!z.coords || z.coords.length < 3) return;
+                const name = escapeXml(z.name || "Zona Colapsada");
+                let coordsStr = z.coords.map(c => `${c[1]},${c[0]},0`).join(' ');
+                
+                kml += `
+                <Placemark>
+                    <name>${name}</name>
+                    <Style>
+                        <PolyStyle>
+                            <color>880000ff</color> 
+                            <fill>1</fill>
+                            <outline>1</outline>
+                        </PolyStyle>
+                        <LineStyle>
+                            <color>ff0000ff</color>
+                            <width>2</width>
+                        </LineStyle>
+                    </Style>
+                    <Polygon>
+                        <outerBoundaryIs>
+                            <LinearRing>
+                                <coordinates>${coordsStr}</coordinates>
+                            </LinearRing>
+                        </outerBoundaryIs>
+                    </Polygon>
+                </Placemark>`;
+            });
+
+            kml += `</Document>\n</kml>`;
+
+            const blob = new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `SismoVe_Export_${new Date().toISOString().split('T')[0]}.kml`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ==========================================
         // MAPA Y GUARDADO DE UBICACIÓN
         // ==========================================
         const savedPos = JSON.parse(localStorage.getItem("lastMapPosition"));
@@ -636,21 +762,19 @@
         const initialLng = savedPos ? savedPos.lng : 0;
         const initialZoom = savedPos ? savedPos.zoom : 2;
 
-        // Configuración de maxBounds para evitar el "espacio gris infinito"
         const worldBounds = [[-90, -180], [90, 180]];
-        
         const map = L.map('map', { 
             zoomControl: false, 
             doubleClickZoom: false,
             maxBounds: worldBounds, 
-            maxBoundsViscosity: 0.8 // Rebote suave al llegar al borde del mundo
+            maxBoundsViscosity: 0.8 
         }).setView([initialLat, initialLng], initialZoom);
         
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { 
             attribution: '&copy; OpenStreetMap', 
             subdomains: 'abcd', 
             maxZoom: 19,
-            noWrap: true // Evita que el mapa se repita horizontalmente
+            noWrap: true 
         }).addTo(map);
 
         function saveMapPosition() {
@@ -1426,7 +1550,8 @@
                     lat: lat.toString(), 
                     lng: lng.toString(),
                     code: generarCodigo(),
-                    solved: false, 
+                    solved: false,
+                    attending: false, // Nuevo campo por defecto
                     notes: {}
                 };
                 db.ref('reports').push(reportData).then(() => closeModal()).catch(err => alert("Error al guardar: " + err));
@@ -1439,6 +1564,7 @@
         }
 
         function updateSolvedInDB(markerId, isSolved) { db.ref('reports/' + markerId + '/solved').set(isSolved); }
+        function updateAttendingInDB(markerId, isAttending) { db.ref('reports/' + markerId + '/attending').set(isAttending); }
         function addNoteInDB(markerId, noteText) {
             const now = new Date(); const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
             db.ref('reports/' + markerId + '/notes').push({ text: noteText, time: time });
@@ -1517,10 +1643,14 @@
             const latFormatted = parseFloat(report.lat).toFixed(5);
             const lngFormatted = parseFloat(report.lng).toFixed(5);
             const reportCode = report.code || generarCodigo();
+            const isAttending = report.attending || false;
 
             const popupContent = `
                 <div style="min-width: 240px; max-width: 85vw;">
-                    <h3 style="margin:0 0 10px; color:${colors[report.type]};">${report.title}</h3>
+                    <div class="popup-header">
+                        <h3 style="color:${colors[report.type]};">${report.title}</h3>
+                        <button class="btn-attending ${isAttending ? 'active' : ''}" onclick="toggleAttending('${id}')">${isAttending ? '🟢 Atendiendo' : '🚑 Atender'}</button>
+                    </div>
                     <p style="margin:0 0 10px; font-size:0.95rem;">${report.desc}</p>
                     <hr style="margin:10px 0; border-color:#475569;">
                     <small>${t('popup_priority')}: ${report.level}/4 | ${t('popup_type')}: ${t('type_'+report.type)}</small>
@@ -1547,18 +1677,31 @@
                     </div>
                 </div>`;
                 
-            const icon = report.solved ? createSolvedIcon() : createCustomIcon(report.type, report.level);
+            const icon = report.solved ? createSolvedIcon() : createCustomIcon(report.type, report.level, isAttending);
             const marker = L.marker([report.lat, report.lng], { icon: icon }).addTo(map).bindPopup(popupContent, { maxWidth: 350 });
-            markersData.push({ marker, type: report.type, id: id, solved: report.solved, data: report });
+            markersData.push({ marker, type: report.type, id: id, solved: report.solved, attending: isAttending, data: report });
             
-            addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved, isFavorite, reportCode);
+            addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved, isAttending, isFavorite, reportCode);
         }
 
         // ==========================================
         // LÓGICA INTERFAZ
         // ==========================================
-        function createCustomIcon(type, level) { const size = (type === 'critical' || parseInt(level) >= 4) ? 20 : 14; const className = (type === 'critical') ? 'marker-critical' : ''; return L.divIcon({ className, html: `<div style="width:${size}px; height:${size}px; background-color:${colors[type]}; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.5);"></div>`, iconSize: [size, size], iconAnchor: [size/2, size/2] }); }
+        function createCustomIcon(type, level, attending = false) { 
+            const size = (type === 'critical' || parseInt(level) >= 4) ? 20 : 14; 
+            const className = attending ? 'marker-attending' : (type === 'critical' ? 'marker-critical' : '');
+            const bgColor = attending ? '#22c55e' : colors[type]; // Verde si está siendo atendido
+            return L.divIcon({ className, html: `<div style="width:${size}px; height:${size}px; background-color:${bgColor}; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.5);"></div>`, iconSize: [size, size], iconAnchor: [size/2, size/2] }); 
+        }
+        
         function createSolvedIcon() { return L.divIcon({ className: '', html: `<div style="width:18px; height:18px; background-color:#9ca3af; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:bold;">✓</div>`, iconSize: [18, 18], iconAnchor: [9, 9] }); }
+
+        function toggleAttending(id) {
+            const markerData = markersData.find(m => m.id === id);
+            if (!markerData) return;
+            const newAttending = !markerData.attending;
+            updateAttendingInDB(id, newAttending);
+        }
 
         function toggleNoteInput(markerId) { 
             const inputGroup = document.getElementById(`input-group-${markerId}`); 
@@ -1656,7 +1799,7 @@
         }
         function handleDragEnd() { this.classList.remove('dragging'); draggedItem = null; }
 
-        function addReportToSidebar(title, type, level, lat, lng, markerId, isSolved, isFavorite, code) { 
+        function addReportToSidebar(title, type, level, lat, lng, markerId, isSolved, isAttending, isFavorite, code) { 
             const list = document.getElementById('reports-list'); 
             const item = document.createElement('div'); 
             item.className = 'report-item' + (isSolved ? ' solved-item' : ''); 
@@ -1672,10 +1815,11 @@
 
             const favClass = isFavorite ? 'active' : '';
             const favIcon = isFavorite ? '⭐' : '☆';
+            const attendingIcon = isAttending ? '🟢' : '';
 
             item.innerHTML = `
                 <div class="report-item-header">
-                    <div class="report-title">${title}</div>
+                    <div class="report-title">${attendingIcon} ${title}</div>
                     <button class="fav-btn ${favClass}" onclick="toggleFavorite(event, '${markerId}')">${favIcon}</button>
                 </div>
                 <div class="report-meta">
