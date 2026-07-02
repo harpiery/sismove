@@ -10,7 +10,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: #1e293b; color: #f1f5f9; overflow: hidden; }
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; }
-        #map.drawing-mode { cursor: crosshair !important; }
+        #map.drawing-mode, #map.icon-mode { cursor: crosshair !important; }
 
         .leaflet-popup-content-wrapper { background: #334155; color: #f1f5f9; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .leaflet-popup-tip { background: #334155; }
@@ -137,33 +137,29 @@
 
         #open-sidebar-desktop { position: absolute; top: 10px; left: 10px; z-index: 999; background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: none; }
 
-        #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.95); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-width: 220px; border: 1px solid #475569; }
+        /* Paneles inferiores (Leyenda, Iconos) */
+        .bottom-panels { position: absolute; bottom: 30px; right: 30px; z-index: 1000; display: flex; align-items: flex-end; gap: 15px; }
+        #legend { background: rgba(30, 41, 59, 0.95); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-width: 220px; border: 1px solid #475569; }
         .legend-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #475569; padding-bottom: 5px; }
         .legend-header:hover { color: #3b82f6; }
         .legend-toggle-icon { font-size: 0.8rem; }
         #legend-content.collapsed { display: none; }
         .legend-item { display: flex; align-items: center; margin-bottom: 6px; font-size: 0.85rem; }
         .legend-color { width: 14px; height: 14px; border-radius: 50%; margin-right: 10px; }
-
         .legend-divider { border: 0; border-top: 1px solid #475569; margin: 10px 0 5px 0; }
-        #download-kml-btn { 
-            width: 100%; 
-            margin-top: 8px; 
-            padding: 8px 12px; 
-            background: #3b82f6; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 0.9rem; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 6px; 
-            transition: background 0.2s; 
-        }
+        #download-kml-btn { width: 100%; margin-top: 8px; padding: 8px 12px; background: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; }
         #download-kml-btn:hover { background: #2563eb; }
+
+        /* Panel de Herramientas de Iconos */
+        #icon-tool-panel { background: rgba(30, 41, 59, 0.95); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid #475569; width: 200px; }
+        .icon-tool-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #475569; padding-bottom: 5px; }
+        .icon-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+        .icon-btn { background: #1e293b; border: 1px solid #475569; color: white; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .icon-btn:hover { background: #334155; }
+        .icon-btn.active { background: #3b82f6; border-color: #2563eb; transform: scale(1.1); }
+        #eraser-btn { width: 100%; background: #991b1b; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        #eraser-btn:hover { background: #7f1d1d; }
+        #eraser-btn.active { background: #ef4444; }
 
         #context-menu, #add-report-menu { position: absolute; z-index: 2000; background: #334155; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); padding: 8px 0; display: none; min-width: 240px; }
         .ctx-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
@@ -192,7 +188,6 @@
         .type-btn:hover, .level-btn:hover { opacity: 0.9; }
         .type-btn.active, .level-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 0 0 2px white; }
 
-        /* Estilos para el botón Atendiendo en el popup */
         .popup-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
         .popup-header h3 { margin: 0; }
         .btn-attending { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; white-space: nowrap; transition: all 0.2s; }
@@ -224,10 +219,8 @@
         .report-code { margin-top: 15px; padding-top: 10px; border-top: 1px solid #475569; text-align: center; }
         .report-code small { font-family: 'Courier New', Courier, monospace; color: #64748b; font-size: 0.75rem; word-break: break-all; }
 
-        /* Animación para marcadores siendo atendidos */
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         .marker-critical { animation: pulse 1.5s infinite; }
-        
         @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
         .marker-attending { animation: pulseGreen 1.5s infinite; }
 
@@ -270,8 +263,10 @@
             .coords-container small { font-size: 0.75rem; }
             .btn-copy-coords { padding: 2px 6px; font-size: 0.8rem; }
 
-            #legend { bottom: 10px; right: 10px; max-width: 180px; padding: 10px; font-size: 0.8rem; } 
+            .bottom-panels { flex-direction: column-reverse; align-items: flex-end; bottom: 10px; right: 10px; gap: 10px; }
+            #legend { max-width: 180px; padding: 10px; font-size: 0.8rem; } 
             .legend-item { margin-bottom: 4px; font-size: 0.75rem; }
+            #icon-tool-panel { width: 160px; padding: 10px; }
             
             #modal { width: 95%; padding: 20px; }
         }
@@ -427,20 +422,40 @@
     
     <button id="open-sidebar-desktop" onclick="toggleSidebarDesktop()" title="Mostrar menú">☰</button>
 
-    <div id="legend">
-        <div class="legend-header" onclick="toggleLegend()">
-            <span data-i18n="legend_title">Leyenda</span>
-            <span class="legend-toggle-icon" id="legend-toggle-icon">➕</span>
+    <div class="bottom-panels">
+        <div id="icon-tool-panel">
+            <div class="icon-tool-header" onclick="toggleIconToolPanel()">
+                <span>🧰 Herramientas</span>
+                <span id="icon-tool-toggle-icon">➕</span>
+            </div>
+            <div id="icon-tool-content" class="collapsed">
+                <div class="icon-grid">
+                    <button class="icon-btn" data-icon="sos" title="SOS">🆘</button>
+                    <button class="icon-btn" data-icon="needs" title="Necesidades">📦</button>
+                    <button class="icon-btn" data-icon="resources" title="Recursos">💰</button>
+                    <button class="icon-btn" data-icon="help" title="Puntos de ayuda">📍</button>
+                    <button class="icon-btn" data-icon="info" title="Información">ℹ️</button>
+                    <button class="icon-btn" data-icon="resolved" title="Resuelto">✅</button>
+                </div>
+                <button id="eraser-btn" onclick="toggleEraserMode()">🧽 Borrar Iconos</button>
+            </div>
         </div>
-        <div id="legend-content" class="collapsed">
-            <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div><span data-i18n="legend_critical">Punto Crítico</span></div>
-            <div class="legend-item"><div class="legend-color" style="background: #f97316;"></div><span data-i18n="legend_danger">Zona de Peligro</span></div>
-            <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div><span data-i18n="legend_help">Zona de Ayuda/Recursos</span></div>
-            <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div><span data-i18n="legend_info">Punto Informativo</span></div>
-            <div class="legend-item"><div class="legend-color" style="background: #9ca3af;">✓</div><span data-i18n="legend_solved">Solucionado</span></div>
-            
-            <hr class="legend-divider">
-            <button id="download-kml-btn" onclick="downloadKML()" title="Exportar datos a KML">⬇️ Exportar KML</button>
+
+        <div id="legend">
+            <div class="legend-header" onclick="toggleLegend()">
+                <span data-i18n="legend_title">Leyenda</span>
+                <span class="legend-toggle-icon" id="legend-toggle-icon">➕</span>
+            </div>
+            <div id="legend-content" class="collapsed">
+                <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div><span data-i18n="legend_critical">Punto Crítico</span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #f97316;"></div><span data-i18n="legend_danger">Zona de Peligro</span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div><span data-i18n="legend_help">Zona de Ayuda/Recursos</span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div><span data-i18n="legend_info">Punto Informativo</span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #9ca3af;">✓</div><span data-i18n="legend_solved">Solucionado</span></div>
+                
+                <hr class="legend-divider">
+                <button id="download-kml-btn" onclick="downloadKML()" title="Exportar datos a KML">⬇️ Exportar KML</button>
+            </div>
         </div>
     </div>
 
@@ -690,7 +705,7 @@
                 const type = m.data.type || "info";
                 let color = "ffff0000"; 
                 
-                if (m.attending) color = "ff00ff00"; // Verde atendiendo
+                if (m.attending) color = "ff00ff00"; 
                 else if (type === 'critical') color = "ff0000ff"; 
                 else if (type === 'danger') color = "ff00aaff"; 
                 else if (type === 'help') color = "ff00ff00"; 
@@ -755,7 +770,7 @@
         }
 
         // ==========================================
-        // MAPA Y GUARDADO DE UBICACIÓN
+        // MAPA Y GUARDADO DE UBICACIÓN (Vista Satelital)
         // ==========================================
         const savedPos = JSON.parse(localStorage.getItem("lastMapPosition"));
         const initialLat = savedPos ? savedPos.lat : 20;
@@ -770,11 +785,17 @@
             maxBoundsViscosity: 0.8 
         }).setView([initialLat, initialLng], initialZoom);
         
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { 
-            attribution: '&copy; OpenStreetMap', 
-            subdomains: 'abcd', 
+        // Capa Satelital de Esri
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
             maxZoom: 19,
-            noWrap: true 
+            noWrap: true
+        }).addTo(map);
+
+        // Capa de etiquetas (calles, lugares) encima del satélite para mejor lectura
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19,
+            noWrap: true
         }).addTo(map);
 
         function saveMapPosition() {
@@ -789,7 +810,95 @@
         let disasterLayers = { quake: null, flood: null, fire: null, tsunami: null };
         let zonesLayer = L.layerGroup().addTo(map);
         let zonesData = []; 
+        let customIconsLayer = L.layerGroup().addTo(map);
         const colors = { critical: '#ef4444', danger: '#f97316', help: '#22c55e', info: '#3b82f6' };
+
+        // ==========================================
+        // HERRAMIENTA DE ICONOS Y GOMA
+        // ==========================================
+        let iconMode = null; // 'sos', 'needs', 'resources', 'help', 'info', 'resolved', 'eraser', null
+
+        function toggleIconToolPanel() {
+            const content = document.getElementById('icon-tool-content');
+            const icon = document.getElementById('icon-tool-toggle-icon');
+            content.classList.toggle('collapsed');
+            icon.innerText = content.classList.contains('collapsed') ? '➕' : '➖';
+        }
+
+        document.querySelectorAll('.icon-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const iconType = this.getAttribute('data-icon');
+                if (iconMode === iconType) {
+                    iconMode = null;
+                    this.classList.remove('active');
+                    map.getContainer().classList.remove('icon-mode');
+                } else {
+                    document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
+                    document.getElementById('eraser-btn').classList.remove('active');
+                    iconMode = iconType;
+                    this.classList.add('active');
+                    map.getContainer().classList.add('icon-mode');
+                }
+            });
+        });
+
+        function toggleEraserMode() {
+            const eraserBtn = document.getElementById('eraser-btn');
+            if (iconMode === 'eraser') {
+                iconMode = null;
+                eraserBtn.classList.remove('active');
+                map.getContainer().classList.remove('icon-mode');
+            } else {
+                document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
+                iconMode = 'eraser';
+                eraserBtn.classList.add('active');
+                map.getContainer().classList.add('icon-mode');
+            }
+        }
+
+        map.on('click', function(e) {
+            if (iconMode && iconMode !== 'eraser') {
+                const iconData = {
+                    lat: e.latlng.lat.toString(),
+                    lng: e.latlng.lng.toString(),
+                    type: iconMode
+                };
+                db.ref('map_icons').push(iconData);
+            }
+        });
+
+        function createCustomMapIcon(type) {
+            const icons = {
+                sos: '🆘', needs: '📦', resources: '💰', help: '📍', info: 'ℹ️', resolved: '✅'
+            };
+            const emoji = icons[type] || '📍';
+            return L.divIcon({
+                className: 'custom-map-icon',
+                html: `<div style="font-size: 24px; background: rgba(0,0,0,0.6); padding: 5px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">${emoji}</div>`,
+                iconSize: [34, 34],
+                iconAnchor: [17, 17]
+            });
+        }
+
+        function loadCustomIcons() {
+            db.ref('map_icons').on('value', (snapshot) => {
+                customIconsLayer.clearLayers();
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach(id => {
+                        const icon = data[id];
+                        if (icon.lat && icon.lng) {
+                            const marker = L.marker([icon.lat, icon.lng], { icon: createCustomMapIcon(icon.type) }).addTo(customIconsLayer);
+                            marker.on('click', function() {
+                                if (iconMode === 'eraser') {
+                                    db.ref('map_icons/' + id).remove();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
 
         // ==========================================
         // DIBUJO DE ZONAS COLAPSADAS
@@ -816,6 +925,7 @@
         }
 
         function addDrawPoint(e) {
+            if (iconMode) return; // No dibujar si estamos en modo icono
             currentPolygonPoints.push(e.latlng);
             if (!tempPolyline) {
                 tempPolyline = L.polyline([e.latlng], { color: '#ef4444', dashArray: '5, 5' }).addTo(map);
@@ -825,6 +935,7 @@
         }
 
         function updateDrawLine(e) {
+            if (iconMode) return;
             if (currentPolygonPoints.length > 0) {
                 let tempPoints = [...currentPolygonPoints, e.latlng];
                 if (!tempPolyline) {
@@ -836,6 +947,7 @@
         }
 
         function finishDrawPolygon() {
+            if (iconMode) return;
             if (currentPolygonPoints.length > 2) {
                 const zoneData = {
                     type: 'collapsed',
@@ -1325,23 +1437,98 @@
         function goToLocation(lat, lng, zoom = 17) { if (searchPinMarker) { map.removeLayer(searchPinMarker); searchPinMarker = null; } map.flyTo([lat, lng], zoom, { duration: 1.5 }); setTimeout(() => { if (searchPinMarker) { map.removeLayer(searchPinMarker); } searchPinMarker = L.marker([lat, lng], { icon: createSearchPinIcon() }).addTo(map); }, 1600); }
 
         // ==========================================
-        // BUSCADOR
+        // BUSCADOR (CORREGIDO)
         // ==========================================
         const searchInput = document.getElementById('search-input');
         const searchResults = document.getElementById('search-results');
         let searchTimeout;
         const VZLA_VIEWBOX = "-73.304687,-0.351562,-59.765625,12.480204"; 
-        function isLikelyCoordinates(text) { return /[\d°'"NSEW]/i.test(text); }
-        searchInput.addEventListener('input', function() { clearTimeout(searchTimeout); const query = this.value.trim(); if (query.length < 4 || isLikelyCoordinates(query)) { searchResults.style.display = 'none'; return; } searchTimeout = setTimeout(() => { fetchSuggestions(query); }, 1200); });
-        function fetchSuggestions(query) { const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${VZLA_VIEWBOX}&bounded=0&limit=5&addressdetails=1`; fetch(url).then(res => res.json()).then(data => { searchResults.innerHTML = ''; if (data.length > 0) { data.forEach(item => { const div = document.createElement('div'); div.className = 'search-result-item'; div.innerHTML = `<span class="search-result-icon">📍</span><span class="search-result-text">${item.display_name}</span>`; div.addEventListener('click', () => { goToLocation(parseFloat(item.lat), parseFloat(item.lon)); searchInput.value = item.display_name; searchResults.style.display = 'none'; }); searchResults.appendChild(div); }); searchResults.style.display = 'block'; } else { searchResults.innerHTML = `<div class="search-no-results">${t('alert_no_results')} "${query}"</div>`; searchResults.style.display = 'block'; } }).catch(err => console.error(err)); }
+        
+        searchInput.addEventListener('input', function() { 
+            clearTimeout(searchTimeout); 
+            const query = this.value.trim(); 
+            if (query.length < 3) { 
+                searchResults.style.display = 'none'; 
+                return; 
+            } 
+            searchTimeout = setTimeout(() => { fetchSuggestions(query); }, 800); 
+        });
+
+        function fetchSuggestions(query) { 
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${VZLA_VIEWBOX}&bounded=0&limit=5&addressdetails=1`; 
+            fetch(url).then(res => res.json()).then(data => { 
+                searchResults.innerHTML = ''; 
+                if (data.length > 0) { 
+                    data.forEach(item => { 
+                        const div = document.createElement('div'); 
+                        div.className = 'search-result-item'; 
+                        div.innerHTML = `<span class="search-result-icon">📍</span><span class="search-result-text">${item.display_name}</span>`; 
+                        div.addEventListener('click', () => { 
+                            goToLocation(parseFloat(item.lat), parseFloat(item.lon)); 
+                            searchInput.value = item.display_name; 
+                            searchResults.style.display = 'none'; 
+                        }); 
+                        searchResults.appendChild(div); 
+                    }); 
+                    searchResults.style.display = 'block'; 
+                } else { 
+                    searchResults.innerHTML = `<div class="search-no-results">${t('alert_no_results')} "${query}"</div>`; 
+                    searchResults.style.display = 'block'; 
+                } 
+            }).catch(err => console.error(err)); 
+        }
+        
         document.addEventListener('click', (e) => { 
             if (!document.getElementById('search-wrapper').contains(e.target)) searchResults.style.display = 'none'; 
             if (!document.getElementById('add-report-btn').contains(e.target)) document.getElementById('add-report-menu').style.display = 'none';
         });
+        
         document.getElementById('search-btn').addEventListener('click', performSearch);
         searchInput.addEventListener('keypress', function(e) { if(e.key === 'Enter') { e.preventDefault(); performSearch(); } });
-        function parseDMSToDecimal(dmsString) { const regex = /(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([NSns]).*?(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([EWew])/i; const match = dmsString.match(regex); if (match) { let lat = parseInt(match[1]) + (parseInt(match[2]) / 60) + (parseFloat(match[3].replace(',', '.')) / 3600); let lon = parseInt(match[5]) + (parseInt(match[6]) / 60) + (parseFloat(match[7].replace(',', '.')) / 3600); if (match[4].toUpperCase() === 'S') lat *= -1; if (match[8].toUpperCase() === 'W') lon *= -1; return { lat, lon }; } return null; }
-        function performSearch() { const query = searchInput.value.trim(); if (!query) return; searchResults.style.display = 'none'; const dmsCoords = parseDMSToDecimal(query); if (dmsCoords) { goToLocation(dmsCoords.lat, dmsCoords.lon, 18); return; } const coordRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/; if (coordRegex.test(query)) { const [lat, lng] = query.split(',').map(Number); goToLocation(lat, lng); return; } const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${VZLA_VIEWBOX}&bounded=0&limit=1`; fetch(url).then(res => res.json()).then(data => { if (data.length > 0) { goToLocation(parseFloat(data[0].lat), parseFloat(data[0].lon)); } else { alert(t('alert_no_results') + " " + query); } }).catch(err => alert("Error de conexión.")); }
+        
+        function parseDMSToDecimal(dmsString) { 
+            const regex = /(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([NSns]).*?(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([EWew])/i; 
+            const match = dmsString.match(regex); 
+            if (match) { 
+                let lat = parseInt(match[1]) + (parseInt(match[2]) / 60) + (parseFloat(match[3].replace(',', '.')) / 3600); 
+                let lon = parseInt(match[5]) + (parseInt(match[6]) / 60) + (parseFloat(match[7].replace(',', '.')) / 3600); 
+                if (match[4].toUpperCase() === 'S') lat *= -1; 
+                if (match[8].toUpperCase() === 'W') lon *= -1; 
+                return { lat, lon }; 
+            } 
+            return null; 
+        }
+        
+        function performSearch() { 
+            const query = searchInput.value.trim(); 
+            if (!query) return; 
+            searchResults.style.display = 'none'; 
+            
+            // 1. Intentar coordenadas decimales
+            const coordRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/; 
+            if (coordRegex.test(query)) { 
+                const [lat, lng] = query.split(',').map(Number); 
+                goToLocation(lat, lng); 
+                return; 
+            } 
+            
+            // 2. Intentar coordenadas DMS
+            const dmsCoords = parseDMSToDecimal(query); 
+            if (dmsCoords) { 
+                goToLocation(dmsCoords.lat, dmsCoords.lon, 18); 
+                return; 
+            } 
+            
+            // 3. Si no es coordenada, buscar dirección en Nominatim
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${VZLA_VIEWBOX}&bounded=0&limit=1`; 
+            fetch(url).then(res => res.json()).then(data => { 
+                if (data.length > 0) { 
+                    goToLocation(parseFloat(data[0].lat), parseFloat(data[0].lon)); 
+                } else { 
+                    alert(t('alert_no_results') + " " + query); 
+                } 
+            }).catch(err => alert("Error de conexión.")); 
+        }
 
         // ==========================================
         // LEYENDA COLAPSABLE
@@ -1400,7 +1587,7 @@
         // MODALES Y MENUS
         // ==========================================
         map.on('contextmenu', function(e) { 
-            if (drawingMode) return; 
+            if (drawingMode || iconMode) return; 
             e.originalEvent.preventDefault(); 
             currentLatLng = e.latlng; 
             const menu = document.getElementById('context-menu'); 
@@ -1551,7 +1738,7 @@
                     lng: lng.toString(),
                     code: generarCodigo(),
                     solved: false,
-                    attending: false, // Nuevo campo por defecto
+                    attending: false, 
                     notes: {}
                 };
                 db.ref('reports').push(reportData).then(() => closeModal()).catch(err => alert("Error al guardar: " + err));
@@ -1690,7 +1877,7 @@
         function createCustomIcon(type, level, attending = false) { 
             const size = (type === 'critical' || parseInt(level) >= 4) ? 20 : 14; 
             const className = attending ? 'marker-attending' : (type === 'critical' ? 'marker-critical' : '');
-            const bgColor = attending ? '#22c55e' : colors[type]; // Verde si está siendo atendido
+            const bgColor = attending ? '#22c55e' : colors[type]; 
             return L.divIcon({ className, html: `<div style="width:${size}px; height:${size}px; background-color:${bgColor}; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.5);"></div>`, iconSize: [size, size], iconAnchor: [size/2, size/2] }); 
         }
         
@@ -1837,25 +2024,4 @@
             list.appendChild(item);
         }
 
-        document.querySelectorAll('.filter-btn').forEach(btn => { btn.addEventListener('click', function() { this.classList.toggle('active'); const filterType = this.getAttribute('data-filter'); const isActive = this.classList.contains('active'); markersData.forEach(m => { const isHidden = (filterType === 'solved') ? m.solved : (m.type === filterType); if (isHidden) { if (isActive) map.addLayer(m.marker); else map.removeLayer(m.marker); } }); document.querySelectorAll('.report-item').forEach(item => { const mData = markersData.find(m => m.id === item.getAttribute('data-id')); if(mData) { const shouldHide = (filterType === 'solved' && mData.solved) || (mData.type === filterType && !mData.solved); if(shouldHide) item.style.display = isActive ? '' : 'none'; } }); }); });
-
-        // ==========================================
-        // INICIAR APP
-        // ==========================================
-        const savedRegion = localStorage.getItem('sismove_region') || 'global';
-        currentRegion = savedRegion;
-        const r = regions[currentRegion];
-        document.getElementById('region-flag').innerText = r.flag;
-        map.fitBounds(r.bounds);
-
-        loadReportsFromDB();
-        loadZones();
-        
-        if (document.getElementById('toggle-quake').checked) loadEarthquakes();
-        if (document.getElementById('toggle-flood').checked) loadGDACS('FL', 'flood', 'Inundaciones');
-        if (document.getElementById('toggle-fire').checked) loadNASAFires();
-        if (document.getElementById('toggle-tsunami').checked) loadGDACS('TS', 'tsunami', 'Tsunamis');
-
-    </script>
-</body>
-</html>
+        document.querySelectorAll('.filter-btn').forEach(btn => { btn.addEventListener('click', function() { this.classList.toggle('active'); const filterType
