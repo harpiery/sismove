@@ -10,7 +10,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: #1e293b; color: #f1f5f9; overflow: hidden; }
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; }
-        #map.drawing-mode { cursor: crosshair !important; }
+        #map.drawing-mode, #map.icon-placing-mode, #map.icon-erasing-mode { cursor: crosshair !important; }
 
         .leaflet-popup-content-wrapper { background: #334155; color: #f1f5f9; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .leaflet-popup-tip { background: #334155; }
@@ -137,33 +137,32 @@
 
         #open-sidebar-desktop { position: absolute; top: 10px; left: 10px; z-index: 999; background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: none; }
 
-        #legend { position: absolute; bottom: 30px; right: 30px; z-index: 1000; background: rgba(30, 41, 59, 0.95); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-width: 220px; border: 1px solid #475569; }
+        /* Contenedor de Leyenda + Iconos */
+        .bottom-right-container { position: absolute; bottom: 30px; right: 30px; z-index: 1000; display: flex; gap: 10px; align-items: flex-end; }
+
+        #legend { background: rgba(30, 41, 59, 0.95); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-width: 220px; border: 1px solid #475569; }
         .legend-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #475569; padding-bottom: 5px; }
         .legend-header:hover { color: #3b82f6; }
         .legend-toggle-icon { font-size: 0.8rem; }
         #legend-content.collapsed { display: none; }
         .legend-item { display: flex; align-items: center; margin-bottom: 6px; font-size: 0.85rem; }
         .legend-color { width: 14px; height: 14px; border-radius: 50%; margin-right: 10px; }
-
         .legend-divider { border: 0; border-top: 1px solid #475569; margin: 10px 0 5px 0; }
-        #download-kml-btn { 
-            width: 100%; 
-            margin-top: 8px; 
-            padding: 8px 12px; 
-            background: #3b82f6; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 0.9rem; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 6px; 
-            transition: background 0.2s; 
-        }
+        #download-kml-btn { width: 100%; margin-top: 8px; padding: 8px 12px; background: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; }
         #download-kml-btn:hover { background: #2563eb; }
+
+        /* Menú de Iconos del Mapa */
+        #icon-menu-panel { background: rgba(30, 41, 59, 0.95); padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid #475569; display: flex; flex-direction: column; gap: 6px; }
+        #icon-menu-btn { width: 40px; height: 40px; background: rgba(30, 41, 59, 0.95); color: white; border: 1px solid #475569; border-radius: 8px; cursor: pointer; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: background 0.2s; }
+        #icon-menu-btn:hover { background: #475569; }
+        #icon-menu-btn.active { background: #3b82f6; border-color: #2563eb; }
+        #icon-menu-content { display: none; flex-direction: column; gap: 5px; }
+        #icon-menu-content.show { display: flex; }
+        .icon-option { width: 36px; height: 36px; border: 2px solid transparent; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: all 0.2s; background: #1e293b; }
+        .icon-option:hover { transform: scale(1.1); }
+        .icon-option.active { border-color: white; box-shadow: 0 0 0 2px #3b82f6; }
+        .icon-eraser { border-color: #ef4444; }
+        .icon-eraser.active { background: #ef4444; border-color: white; }
 
         #context-menu, #add-report-menu { position: absolute; z-index: 2000; background: #334155; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); padding: 8px 0; display: none; min-width: 240px; }
         .ctx-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
@@ -192,7 +191,6 @@
         .type-btn:hover, .level-btn:hover { opacity: 0.9; }
         .type-btn.active, .level-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 0 0 2px white; }
 
-        /* Estilos para el botón Atendiendo en el popup */
         .popup-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
         .popup-header h3 { margin: 0; }
         .btn-attending { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; white-space: nowrap; transition: all 0.2s; }
@@ -224,10 +222,8 @@
         .report-code { margin-top: 15px; padding-top: 10px; border-top: 1px solid #475569; text-align: center; }
         .report-code small { font-family: 'Courier New', Courier, monospace; color: #64748b; font-size: 0.75rem; word-break: break-all; }
 
-        /* Animación para marcadores siendo atendidos */
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         .marker-critical { animation: pulse 1.5s infinite; }
-        
         @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
         .marker-attending { animation: pulseGreen 1.5s infinite; }
 
@@ -237,30 +233,24 @@
             #lang-toggle, #add-report-btn, #sidebar-toggle, #gps-btn, #sync-maps-btn { padding: 8px 10px; font-size: 0.9rem; }
             .zoom-controls button { padding: 6px 10px; font-size: 1rem; }
             #search-wrapper, #disaster-panel { width: 100%; }
-
             #sidebar { width: 100%; height: 70vh; top: auto; bottom: 0; left: 0; border-radius: 15px 15px 0 0; transform: translateY(100%); z-index: 2500; }
             #sidebar.mobile-open { transform: translateY(0); }
-            
             .mobile-handle { display: block; }
             .close-sidebar-mobile { display: block; top: 12px; right: 12px; font-size: 1.2rem; }
             #sidebar-toggle { display: flex; } 
-            
             .sidebar-header { padding: 12px; }
             .filters { padding: 8px; gap: 5px; }
             .filter-btn { padding: 4px 8px; font-size: 0.7rem; }
             .sidebar-search-container { padding: 8px; }
             #report-search { padding: 6px 8px; font-size: 0.85rem; }
-
             .reports-list { padding: 8px; }
             .report-item { padding: 10px; margin-bottom: 6px; }
             .report-title { font-size: 0.85rem; }
             .report-meta { font-size: 0.7rem; }
             .fav-btn { font-size: 1rem; }
-
             #reports-counter { padding: 8px 2px; gap: 2px; }
             .counter-badge { flex-direction: column; gap: 2px; padding: 4px 2px; font-size: 0.65rem; }
             .counter-badge span { font-size: 0.8rem; }
-
             .leaflet-popup-content { margin: 10px !important; width: auto !important; max-width: 80vw; }
             .leaflet-popup-content-wrapper { max-width: 85vw; }
             .btn-popup { font-size: 0.85rem; padding: 6px; margin-top: 6px; }
@@ -269,10 +259,9 @@
             .coords-container { padding: 4px 6px; }
             .coords-container small { font-size: 0.75rem; }
             .btn-copy-coords { padding: 2px 6px; font-size: 0.8rem; }
-
-            #legend { bottom: 10px; right: 10px; max-width: 180px; padding: 10px; font-size: 0.8rem; } 
+            .bottom-right-container { bottom: 10px; right: 10px; flex-direction: column-reverse; align-items: flex-end; gap: 8px; }
+            #legend { max-width: 180px; padding: 10px; font-size: 0.8rem; } 
             .legend-item { margin-bottom: 4px; font-size: 0.75rem; }
-            
             #modal { width: 95%; padding: 20px; }
         }
         
@@ -352,9 +341,7 @@
                         </div>
                         🏚️ Dibujar Zona Colapsada
                     </label>
-
                     <div id="disaster-status"></div>
-
                     <div class="scale-container">
                         <div class="scale-title">Escala de Impacto:</div>
                         <div class="scale-item"><span class="scale-color" style="background:#ef4444"></span> Crítico (Rojo)</div>
@@ -409,13 +396,10 @@
             <button class="filter-btn bg-info active" data-filter="info" data-i18n="filter_info">Info</button>
             <button class="filter-btn bg-solved active" data-filter="solved" data-i18n="filter_solved">Solucionado</button>
         </div>
-        
         <div class="sidebar-search-container">
             <input type="text" id="report-search" placeholder="🔍 Buscar por título o código...">
         </div>
-
         <div class="reports-list" id="reports-list"></div>
-
         <div id="reports-counter">
             <div class="counter-badge bg-critical">🚨 <span id="count-critical">0</span></div>
             <div class="counter-badge bg-danger">⚠️ <span id="count-danger">0</span></div>
@@ -427,20 +411,34 @@
     
     <button id="open-sidebar-desktop" onclick="toggleSidebarDesktop()" title="Mostrar menú">☰</button>
 
-    <div id="legend">
-        <div class="legend-header" onclick="toggleLegend()">
-            <span data-i18n="legend_title">Leyenda</span>
-            <span class="legend-toggle-icon" id="legend-toggle-icon">➕</span>
+    <div class="bottom-right-container">
+        <div id="legend">
+            <div class="legend-header" onclick="toggleLegend()">
+                <span data-i18n="legend_title">Leyenda</span>
+                <span class="legend-toggle-icon" id="legend-toggle-icon">➕</span>
+            </div>
+            <div id="legend-content" class="collapsed">
+                <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div><span data-i18n="legend_critical">Punto Crítico</span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #f97316;"></div><span data-i18n="legend_danger">Zona de Peligro</span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div><span data-i18n="legend_help">Zona de Ayuda/Recursos</span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div><span data-i18n="legend_info">Punto Informativo</span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #9ca3af;">✓</div><span data-i18n="legend_solved">Solucionado</span></div>
+                <hr class="legend-divider">
+                <button id="download-kml-btn" onclick="downloadKML()" title="Exportar datos a KML">⬇️ Exportar KML</button>
+            </div>
         </div>
-        <div id="legend-content" class="collapsed">
-            <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div><span data-i18n="legend_critical">Punto Crítico</span></div>
-            <div class="legend-item"><div class="legend-color" style="background: #f97316;"></div><span data-i18n="legend_danger">Zona de Peligro</span></div>
-            <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div><span data-i18n="legend_help">Zona de Ayuda/Recursos</span></div>
-            <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div><span data-i18n="legend_info">Punto Informativo</span></div>
-            <div class="legend-item"><div class="legend-color" style="background: #9ca3af;">✓</div><span data-i18n="legend_solved">Solucionado</span></div>
-            
-            <hr class="legend-divider">
-            <button id="download-kml-btn" onclick="downloadKML()" title="Exportar datos a KML">⬇️ Exportar KML</button>
+        
+        <div id="icon-menu-panel">
+            <button id="icon-menu-btn" onclick="toggleIconMenu()" title="Colocar Iconos en el Mapa">🏷️</button>
+            <div id="icon-menu-content">
+                <div class="icon-option" data-icon-type="sos" title="SOS" style="background:#ef4444;color:white;">🚨</div>
+                <div class="icon-option" data-icon-type="needs" title="Necesidades" style="background:#f97316;color:white;">📦</div>
+                <div class="icon-option" data-icon-type="resources" title="Recursos" style="background:#eab308;color:white;">💰</div>
+                <div class="icon-option" data-icon-type="help-point" title="Punto de Ayuda" style="background:#3b82f6;color:white;">📍</div>
+                <div class="icon-option" data-icon-type="info" title="Información" style="background:#06b6d4;color:white;">ℹ️</div>
+                <div class="icon-option" data-icon-type="resolved" title="Resuelto" style="background:#22c55e;color:white;">✅</div>
+                <div class="icon-option icon-eraser" data-icon-type="eraser" title="Borrar Icono" style="background:#1e293b;color:#ef4444;">🗑️</div>
+            </div>
         </div>
     </div>
 
@@ -462,7 +460,6 @@
     <div id="modal-overlay">
         <div id="modal">
             <button class="btn-close-modal" onclick="closeModal()" title="Cerrar">✖</button>
-            
             <div id="modal-create-view">
                 <h2 style="margin-bottom: 20px;" id="modal-title">Nuevo Reporte</h2>
                 <form id="report-form">
@@ -509,15 +506,11 @@
         </div>
     </div>
 
-    <!-- LIBRERÍAS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
     <script>
-        // ==========================================
-        // CONFIGURACIÓN FIREBASE 
-        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyD5Ci95IFp8CcUwlRavELCgdvQ5iKsLdxY",
             authDomain: "sismove-22ac2.firebaseapp.com",
@@ -528,13 +521,9 @@
             appId: "1:994621466767:web:9983184c1b414f3015e8fa",
             measurementId: "G-9RRMWMKY6Y"
         };
-        
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // ==========================================
-        // TRADUCCIONES
-        // ==========================================
         let currentLang = 'es';
         const translations = {
             es: { title: "🇻🇪 SismoVe Ayuda", legend_title: "Leyenda", lang_btn: "EN", btn_add_report: "➕ Generar", search_placeholder: "Buscar calle o coordenadas...", search_btn: "Ir", filter_critical: "Crítico", filter_danger: "Peligro", filter_help: "Ayuda", filter_info: "Info", filter_solved: "Solucionado", legend_critical: "Punto Crítico", legend_danger: "Zona de Peligro", legend_help: "Zona de Ayuda/Recursos", legend_info: "Punto Informativo", legend_solved: "Solucionado", ctx_critical: "🚨 Reportar Emergencia Crítica", ctx_danger: "⚠️ Marcar Zona de Peligro", ctx_help: "🏥 Solicitar/Ofrecer Ayuda", ctx_info: "ℹ️ Reporte Informativo", modal_title_prefix: "Nuevo Reporte: ", lbl_title: "Título del Reporte", lbl_type: "Tipo de Reporte", ph_title: "Ej: Edificio colapsado en la calle 10", lbl_desc: "Descripción", ph_desc: "Detalles adicionales...", lbl_level: "Nivel de Peligro / Prioridad", level_1: "Bajo", level_2: "Medio", level_3: "Alto", level_4: "Crítico", btn_submit: "Enviar al Mapa", btn_cancel: "Cancelar", popup_priority: "Prioridad", popup_type: "Tipo", popup_solved: "✅ Marcar como Solucionado", popup_add_note: "+ Añadir nota", popup_save_note: "Guardar", popup_delete: "🗑️ Eliminar aviso", sidebar_solved: "✅ SOLUCIONADO", type_critical: "Emergencia Crítica", type_danger: "Zona de Peligro", type_help: "Ayuda/Recurso", type_info: "Informativo", alert_no_results: "Sin resultados para:", modal_confirm_title: "¿Estás seguro?", modal_confirm_text: "Esta acción eliminará el aviso permanentemente y no se puede deshacer.", modal_btn_confirm_delete: "Sí, eliminar aviso" },
@@ -548,9 +537,6 @@
             document.querySelectorAll('[data-i18n-ph]').forEach(el => { const key = el.getAttribute('data-i18n-ph'); if (translations[currentLang][key]) el.placeholder = translations[currentLang][key]; }); 
         }
 
-        // ==========================================
-        // PREFERENCIAS LOCALES Y REGIONES
-        // ==========================================
         const regions = {
             'global': { flag: '🌍', name: 'Global', bounds: [[-90, -180], [90, 180]] },
             'VE': { flag: '🇻🇪', name: 'Venezuela', bounds: [[-2, -73], [12, -59]] },
@@ -582,9 +568,6 @@
             localStorage.setItem('sismove_order', JSON.stringify(order));
         }
 
-        // ==========================================
-        // FUENTES DE MAPAS EXTERNOS (KML)
-        // ==========================================
         const externalSources = [
             { name: "La Guaira 2026", url: "https://www.google.com/maps/d/kml?mid=1rlt3k8joPC2IeBBaIPgqmUd1oXcYgKc&forcekml=1", type: "danger", level: "3" }
         ];
@@ -594,187 +577,86 @@
             btn.innerText = "⏳";
             let importedCount = 0;
             let skippedDuplicates = 0;
-
             for (const source of externalSources) {
                 try {
                     const text = await fetchWithFallback(source.url, false);
                     const parser = new DOMParser();
                     const kml = parser.parseFromString(text, "text/xml");
                     const placemarks = kml.querySelectorAll("Placemark");
-                    
                     placemarks.forEach(pm => {
                         const name = pm.querySelector("name")?.textContent || "Sin nombre";
                         const desc = pm.querySelector("description")?.textContent || `Importado de ${source.name}`;
                         const point = pm.querySelector("Point > coordinates");
                         const polygon = pm.querySelector("Polygon > outerBoundaryIs > LinearRing > coordinates");
-
                         if (point) {
                             const [lng, lat] = point.textContent.trim().split(',').map(Number);
-                            
-                            const exists = markersData.some(m => 
-                                !m.solved && 
-                                parseFloat(m.marker.getLatLng().lat).toFixed(5) === lat.toFixed(5) && 
-                                parseFloat(m.marker.getLatLng().lng).toFixed(5) === lng.toFixed(5)
-                            );
-                            
+                            const exists = markersData.some(m => !m.solved && parseFloat(m.marker.getLatLng().lat).toFixed(5) === lat.toFixed(5) && parseFloat(m.marker.getLatLng().lng).toFixed(5) === lng.toFixed(5));
                             if (!exists) {
-                                const reportData = {
-                                    lat: lat.toString(), lng: lng.toString(),
-                                    title: name,
-                                    desc: desc,
-                                    type: source.type, level: source.level,
-                                    code: generarCodigo(),
-                                    solved: false, attending: false, notes: {}
-                                };
+                                const reportData = { lat: lat.toString(), lng: lng.toString(), title: name, desc: desc, type: source.type, level: source.level, code: generarCodigo(), solved: false, attending: false, notes: {} };
                                 db.ref('reports').push(reportData);
                                 importedCount++;
-                            } else {
-                                skippedDuplicates++;
-                            }
+                            } else { skippedDuplicates++; }
                         } else if (polygon) {
                             const coordsText = polygon.textContent.trim().split(' ');
-                            const latlngs = coordsText.map(c => {
-                                const [lng, lat] = c.split(',').map(Number);
-                                return [lat, lng];
-                            }).filter(c => !isNaN(c[0]) && !isNaN(c[1]));
-                            
+                            const latlngs = coordsText.map(c => { const [lng, lat] = c.split(',').map(Number); return [lat, lng]; }).filter(c => !isNaN(c[0]) && !isNaN(c[1]));
                             if (latlngs.length > 2) {
-                                const zoneExists = zonesData.some(z => {
-                                    if (!z.coords || z.coords.length === 0) return false;
-                                    return z.coords[0][0].toFixed(5) === latlngs[0][0].toFixed(5) &&
-                                           z.coords[0][1].toFixed(5) === latlngs[0][1].toFixed(5);
-                                });
-
-                                if (!zoneExists) {
-                                    const zoneData = { type: 'collapsed', coords: latlngs, name: name };
-                                    db.ref('zones').push(zoneData);
-                                    importedCount++;
-                                } else {
-                                    skippedDuplicates++;
-                                }
+                                const zoneExists = zonesData.some(z => { if (!z.coords || z.coords.length === 0) return false; return z.coords[0][0].toFixed(5) === latlngs[0][0].toFixed(5) && z.coords[0][1].toFixed(5) === latlngs[0][1].toFixed(5); });
+                                if (!zoneExists) { const zoneData = { type: 'collapsed', coords: latlngs, name: name }; db.ref('zones').push(zoneData); importedCount++; }
+                                else { skippedDuplicates++; }
                             }
                         }
                     });
-                } catch (e) {
-                    console.error(`Error cargando ${source.name}:`, e);
-                }
+                } catch (e) { console.error(`Error cargando ${source.name}:`, e); }
             }
             btn.innerText = "🗄️";
             alert(`Sincronización completada. ${importedCount} elementos importados. ${skippedDuplicates} duplicados evitados.`);
         }
 
-        // ==========================================
-        // EXPORTAR KML
-        // ==========================================
-        function escapeXml(unsafe) {
-            return unsafe.replace(/[<>&'"]/g, function (c) {
-                switch (c) {
-                    case '<': return '&lt;';
-                    case '>': return '&gt;';
-                    case '&': return '&amp;';
-                    case '\'': return '&apos;';
-                    case '"': return '&quot;';
-                }
-            });
-        }
+        function escapeXml(unsafe) { return unsafe.replace(/[<>&'"]/g, function (c) { switch (c) { case '<': return '&lt;'; case '>': return '&gt;'; case '&': return '&amp;'; case '\'': return '&apos;'; case '"': return '&quot;'; } }); }
 
         function downloadKML() {
             let kml = `<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2">\n<Document>\n<name>SismoVe Export</name>\n<description>Datos exportados de SismoVe</description>\n`;
-            
             markersData.forEach(m => {
                 if (!m.data) return;
-                const lat = m.data.lat;
-                const lng = m.data.lng;
+                const lat = m.data.lat, lng = m.data.lng;
                 const title = escapeXml(m.data.title || "Sin título");
                 const desc = escapeXml(m.data.desc || "");
                 const type = m.data.type || "info";
                 let color = "ffff0000"; 
-                
-                if (m.attending) color = "ff00ff00"; // Verde atendiendo
-                else if (type === 'critical') color = "ff0000ff"; 
-                else if (type === 'danger') color = "ff00aaff"; 
-                else if (type === 'help') color = "ff00ff00"; 
-                else if (m.solved) color = "ff808080"; 
-
-                kml += `
-                <Placemark>
-                    <name>${title}</name>
-                    <description><![CDATA[${desc}<br>Tipo: ${type}<br>Estado: ${m.solved ? 'Solucionado' : (m.attending ? 'Atendiendo' : 'Activo')}<br>Código: ${m.data.code || 'N/A'}]]></description>
-                    <Style>
-                        <IconStyle>
-                            <color>${color}</color>
-                            <scale>1.0</scale>
-                        </IconStyle>
-                    </Style>
-                    <Point>
-                        <coordinates>${lng},${lat},0</coordinates>
-                    </Point>
-                </Placemark>`;
+                if (m.attending) color = "ff00ff00"; else if (type === 'critical') color = "ff0000ff"; else if (type === 'danger') color = "ff00aaff"; else if (type === 'help') color = "ff00ff00"; else if (m.solved) color = "ff808080"; 
+                kml += `\n<Placemark>\n<name>${title}</name>\n<description><![CDATA[${desc}<br>Tipo: ${type}<br>Estado: ${m.solved ? 'Solucionado' : (m.attending ? 'Atendiendo' : 'Activo')}<br>Código: ${m.data.code || 'N/A'}]]></description>\n<Style><IconStyle><color>${color}</color><scale>1.0</scale></IconStyle></Style>\n<Point><coordinates>${lng},${lat},0</coordinates></Point>\n</Placemark>`;
             });
-
             zonesData.forEach(z => {
                 if (!z.coords || z.coords.length < 3) return;
                 const name = escapeXml(z.name || "Zona Colapsada");
                 let coordsStr = z.coords.map(c => `${c[1]},${c[0]},0`).join(' ');
-                
-                kml += `
-                <Placemark>
-                    <name>${name}</name>
-                    <Style>
-                        <PolyStyle>
-                            <color>880000ff</color> 
-                            <fill>1</fill>
-                            <outline>1</outline>
-                        </PolyStyle>
-                        <LineStyle>
-                            <color>ff0000ff</color>
-                            <width>2</width>
-                        </LineStyle>
-                    </Style>
-                    <Polygon>
-                        <outerBoundaryIs>
-                            <LinearRing>
-                                <coordinates>${coordsStr}</coordinates>
-                            </LinearRing>
-                        </outerBoundaryIs>
-                    </Polygon>
-                </Placemark>`;
+                kml += `\n<Placemark>\n<name>${name}</name>\n<Style><PolyStyle><color>880000ff</color><fill>1</fill><outline>1</outline></PolyStyle><LineStyle><color>ff0000ff</color><width>2</width></LineStyle></Style>\n<Polygon><outerBoundaryIs><LinearRing><coordinates>${coordsStr}</coordinates></LinearRing></outerBoundaryIs></Polygon>\n</Placemark>`;
             });
-
             kml += `</Document>\n</kml>`;
-
             const blob = new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = `SismoVe_Export_${new Date().toISOString().split('T')[0]}.kml`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            a.href = url; a.download = `SismoVe_Export_${new Date().toISOString().split('T')[0]}.kml`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
         }
 
-        // ==========================================
-        // MAPA Y GUARDADO DE UBICACIÓN
-        // ==========================================
         const savedPos = JSON.parse(localStorage.getItem("lastMapPosition"));
         const initialLat = savedPos ? savedPos.lat : 20;
         const initialLng = savedPos ? savedPos.lng : 0;
         const initialZoom = savedPos ? savedPos.zoom : 2;
 
         const worldBounds = [[-90, -180], [90, 180]];
-        const map = L.map('map', { 
-            zoomControl: false, 
-            doubleClickZoom: false,
-            maxBounds: worldBounds, 
-            maxBoundsViscosity: 0.8 
-        }).setView([initialLat, initialLng], initialZoom);
+        const map = L.map('map', { zoomControl: false, doubleClickZoom: false, maxBounds: worldBounds, maxBoundsViscosity: 0.8 }).setView([initialLat, initialLng], initialZoom);
         
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { 
-            attribution: '&copy; OpenStreetMap', 
-            subdomains: 'abcd', 
+        // Vista Satelital con etiquetas
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+            maxZoom: 19
+        }).addTo(map);
+        
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 19,
-            noWrap: true 
+            pane: 'overlayPane'
         }).addTo(map);
 
         function saveMapPosition() {
@@ -789,7 +671,124 @@
         let disasterLayers = { quake: null, flood: null, fire: null, tsunami: null };
         let zonesLayer = L.layerGroup().addTo(map);
         let zonesData = []; 
+        let mapIconsLayer = L.layerGroup().addTo(map);
+        let mapIconsData = [];
         const colors = { critical: '#ef4444', danger: '#f97316', help: '#22c55e', info: '#3b82f6' };
+
+        // ==========================================
+        // SISTEMA DE ICONOS DEL MAPA
+        // ==========================================
+        const iconTypes = {
+            'sos': { color: '#ef4444', emoji: '🚨', label: 'SOS' },
+            'needs': { color: '#f97316', emoji: '📦', label: 'Necesidades' },
+            'resources': { color: '#eab308', emoji: '💰', label: 'Recursos' },
+            'help-point': { color: '#3b82f6', emoji: '📍', label: 'Punto de Ayuda' },
+            'info': { color: '#06b6d4', emoji: 'ℹ️', label: 'Información' },
+            'resolved': { color: '#22c55e', emoji: '✅', label: 'Resuelto' }
+        };
+
+        let iconPlacingMode = null;
+        let iconEraserMode = false;
+
+        function toggleIconMenu() {
+            const btn = document.getElementById('icon-menu-btn');
+            const content = document.getElementById('icon-menu-content');
+            btn.classList.toggle('active');
+            content.classList.toggle('show');
+            if (!content.classList.contains('show')) {
+                iconPlacingMode = null;
+                iconEraserMode = false;
+                map.getContainer().classList.remove('icon-placing-mode', 'icon-erasing-mode');
+                document.querySelectorAll('.icon-option').forEach(o => o.classList.remove('active'));
+            }
+        }
+
+        document.querySelectorAll('.icon-option').forEach(opt => {
+            opt.addEventListener('click', function() {
+                const type = this.getAttribute('data-icon-type');
+                document.querySelectorAll('.icon-option').forEach(o => o.classList.remove('active'));
+                
+                if (type === 'eraser') {
+                    iconEraserMode = !iconEraserMode;
+                    iconPlacingMode = null;
+                    if (iconEraserMode) {
+                        this.classList.add('active');
+                        map.getContainer().classList.add('icon-erasing-mode');
+                        map.getContainer().classList.remove('icon-placing-mode');
+                    } else {
+                        map.getContainer().classList.remove('icon-erasing-mode');
+                    }
+                } else {
+                    iconPlacingMode = (iconPlacingMode === type) ? null : type;
+                    iconEraserMode = false;
+                    map.getContainer().classList.remove('icon-erasing-mode');
+                    if (iconPlacingMode) {
+                        this.classList.add('active');
+                        map.getContainer().classList.add('icon-placing-mode');
+                    } else {
+                        map.getContainer().classList.remove('icon-placing-mode');
+                    }
+                }
+            });
+        });
+
+        map.on('click', function(e) {
+            if (drawingMode) return;
+            
+            if (iconEraserMode) {
+                // Buscar icono cercano para borrar
+                let closest = null;
+                let minDist = 50;
+                mapIconsData.forEach(m => {
+                    const dist = map.distance(e.latlng, m.marker.getLatLng());
+                    if (dist < minDist) { minDist = dist; closest = m; }
+                });
+                if (closest) {
+                    db.ref('map_icons/' + closest.id).remove();
+                }
+                return;
+            }
+            
+            if (iconPlacingMode) {
+                const iconData = {
+                    lat: e.latlng.lat.toString(),
+                    lng: e.latlng.lng.toString(),
+                    type: iconPlacingMode,
+                    timestamp: Date.now()
+                };
+                db.ref('map_icons').push(iconData);
+            }
+        });
+
+        function createMapIcon(type) {
+            const config = iconTypes[type];
+            if (!config) return L.divIcon({ className: '', html: '<div>?</div>' });
+            return L.divIcon({
+                className: 'map-icon-marker',
+                html: `<div style="width:32px;height:32px;background:${config.color};border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,0.6);">${config.emoji}</div>`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 16],
+                popupAnchor: [0, -16]
+            });
+        }
+
+        function loadMapIcons() {
+            db.ref('map_icons').on('value', (snapshot) => {
+                mapIconsLayer.clearLayers();
+                mapIconsData = [];
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach(id => {
+                        const icon = data[id];
+                        const config = iconTypes[icon.type] || iconTypes['info'];
+                        const marker = L.marker([icon.lat, icon.lng], { icon: createMapIcon(icon.type) })
+                            .bindPopup(`<b>${config.emoji} ${config.label}</b>`)
+                            .addTo(mapIconsLayer);
+                        mapIconsData.push({ marker, id, data: icon });
+                    });
+                }
+            });
+        }
 
         // ==========================================
         // DIBUJO DE ZONAS COLAPSADAS
@@ -817,31 +816,21 @@
 
         function addDrawPoint(e) {
             currentPolygonPoints.push(e.latlng);
-            if (!tempPolyline) {
-                tempPolyline = L.polyline([e.latlng], { color: '#ef4444', dashArray: '5, 5' }).addTo(map);
-            } else {
-                tempPolyline.addLatLng(e.latlng);
-            }
+            if (!tempPolyline) { tempPolyline = L.polyline([e.latlng], { color: '#ef4444', dashArray: '5, 5' }).addTo(map); }
+            else { tempPolyline.addLatLng(e.latlng); }
         }
 
         function updateDrawLine(e) {
             if (currentPolygonPoints.length > 0) {
                 let tempPoints = [...currentPolygonPoints, e.latlng];
-                if (!tempPolyline) {
-                    tempPolyline = L.polyline(tempPoints, { color: '#ef4444', dashArray: '5, 5' }).addTo(map);
-                } else {
-                    tempPolyline.setLatLngs(tempPoints);
-                }
+                if (!tempPolyline) { tempPolyline = L.polyline(tempPoints, { color: '#ef4444', dashArray: '5, 5' }).addTo(map); }
+                else { tempPolyline.setLatLngs(tempPoints); }
             }
         }
 
         function finishDrawPolygon() {
             if (currentPolygonPoints.length > 2) {
-                const zoneData = {
-                    type: 'collapsed',
-                    coords: currentPolygonPoints.map(p => [p.lat, p.lng]),
-                    name: `Zona Colapsada ${new Date().toLocaleTimeString()}`
-                };
+                const zoneData = { type: 'collapsed', coords: currentPolygonPoints.map(p => [p.lat, p.lng]), name: `Zona Colapsada ${new Date().toLocaleTimeString()}` };
                 db.ref('zones').push(zoneData);
             }
             if (tempPolyline) { map.removeLayer(tempPolyline); tempPolyline = null; }
@@ -860,12 +849,7 @@
                         const zone = data[id];
                         zonesData.push(zone); 
                         if (zone.coords && zone.coords.length > 2) {
-                            L.polygon(zone.coords, {
-                                color: '#ef4444',
-                                fillColor: '#f97316',
-                                fillOpacity: 0.4,
-                                weight: 2
-                            }).bindPopup(`<b>🏚️ ${zone.name}</b>`).addTo(zonesLayer);
+                            L.polygon(zone.coords, { color: '#ef4444', fillColor: '#f97316', fillOpacity: 0.4, weight: 2 }).bindPopup(`<b>🏚️ ${zone.name}</b>`).addTo(zonesLayer);
                         }
                     });
                 }
@@ -877,14 +861,8 @@
         // ==========================================
         let audioCtx = null;
         function initAudio() {
-            if (!audioCtx) {
-                try {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                } catch(e) { console.warn("AudioContext no soportado"); }
-            }
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { console.warn("AudioContext no soportado"); } }
+            if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); }
         }
 
         let userLocation = null;
@@ -893,27 +871,18 @@
 
         function checkNearbyDisasters() {
             if (!userLocation) return;
-
             Object.values(disasterLayers).forEach(layerGroup => {
                 if (!layerGroup) return;
                 layerGroup.eachLayer(layer => {
                     let latlng;
-                    if (layer.getLatLng) {
-                        latlng = layer.getLatLng();
-                    } else if (layer.getBounds) {
-                        latlng = layer.getBounds().getCenter();
-                    } else {
-                        return;
-                    }
-
+                    if (layer.getLatLng) latlng = layer.getLatLng();
+                    else if (layer.getBounds) latlng = layer.getBounds().getCenter();
+                    else return;
                     const distance = map.distance(userLocation, latlng);
-                    let severity = null;
-                    let icon = '';
-                    
+                    let severity = null, icon = '';
                     if (distance < 20000) { severity = "CRÍTICO"; icon = "🔴"; }
                     else if (distance < 50000) { severity = "ALERTA"; icon = "🟠"; }
                     else if (distance < 100000) { severity = "INFORMACIÓN"; icon = "🟡"; }
-
                     if (severity) {
                         const key = `${latlng.lat.toFixed(2)}_${latlng.lng.toFixed(2)}_${severity}`;
                         if (!triggeredAlarms.has(key)) {
@@ -924,17 +893,13 @@
                     }
                 });
             });
-            
             zonesLayer.eachLayer(layer => {
                 let latlng = layer.getBounds().getCenter();
                 const distance = map.distance(userLocation, latlng);
-                let severity = null;
-                let icon = '';
-                
+                let severity = null, icon = '';
                 if (distance < 20000) { severity = "CRÍTICO"; icon = "🔴"; }
                 else if (distance < 50000) { severity = "ALERTA"; icon = "🟠"; }
                 else if (distance < 100000) { severity = "INFORMACIÓN"; icon = "🟡"; }
-
                 if (severity) {
                     const key = `zone_${latlng.lat.toFixed(2)}_${latlng.lng.toFixed(2)}_${severity}`;
                     if (!triggeredAlarms.has(key)) {
@@ -947,11 +912,7 @@
 
         setInterval(() => {
             const now = Date.now();
-            for (const [key, time] of triggeredAlarms) {
-                if (now - time > 3600000) {
-                    triggeredAlarms.delete(key);
-                }
-            }
+            for (const [key, time] of triggeredAlarms) { if (now - time > 3600000) triggeredAlarms.delete(key); }
         }, 600000);
 
         function triggerAlarm(severity, icon, props, distance) {
@@ -960,60 +921,41 @@
             if (props.mag) disasterType = `Sismo Magnitud ${props.mag}`;
             else if (props.event) disasterType = props.event;
             else if (props.name) disasterType = props.name;
-            
             let msgText = `Alerta ${severity}. ${disasterType} detectado a ${distKm} kilómetros de tu ubicación.`;
-            
             if ('speechSynthesis' in window) {
                 speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(msgText);
-                utterance.lang = 'es-ES';
-                utterance.rate = 1.1;
+                utterance.lang = 'es-ES'; utterance.rate = 1.1;
                 speechSynthesis.speak(utterance);
             }
-
             if (audioCtx) {
                 try {
                     const oscillator = audioCtx.createOscillator();
                     const gainNode = audioCtx.createGain();
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
+                    oscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
                     oscillator.type = 'square';
                     oscillator.frequency.value = severity === "CRÍTICO" ? 880 : 440;
                     gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
                     gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-                    oscillator.start();
-                    oscillator.stop(audioCtx.currentTime + 0.5);
+                    oscillator.start(); oscillator.stop(audioCtx.currentTime + 0.5);
                 } catch(e) { console.warn("Error reproduciendo audio"); }
             }
-
             const container = document.getElementById('alarm-container');
             const banner = document.createElement('div');
             banner.className = `alarm-banner alarm-${severity.toLowerCase()}`;
             banner.innerHTML = `<span style="font-size: 1.5rem;">${icon}</span> <div>${msgText}</div>`;
             container.appendChild(banner);
-
             setTimeout(() => {
-                banner.style.opacity = '0';
-                banner.style.transform = 'translateY(-20px)';
-                banner.style.transition = 'all 0.5s ease';
+                banner.style.opacity = '0'; banner.style.transform = 'translateY(-20px)'; banner.style.transition = 'all 0.5s ease';
                 setTimeout(() => banner.remove(), 500);
             }, 15000);
         }
 
-        // ==========================================
-        // FETCH SEGURO CON TIMEOUT Y PROXY FALLBACK
-        // ==========================================
         async function fetchTimeout(url, timeout = 10000) {
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), timeout);
-            try {
-                const response = await fetch(url, { signal: controller.signal });
-                clearTimeout(timer);
-                return response;
-            } catch(err) {
-                clearTimeout(timer);
-                throw err;
-            }
+            try { const response = await fetch(url, { signal: controller.signal }); clearTimeout(timer); return response; }
+            catch(err) { clearTimeout(timer); throw err; }
         }
 
         async function fetchWithFallback(url, isJson = true) {
@@ -1029,29 +971,11 @@
             }
         }
 
-        // ==========================================
-        // SISTEMA DE CACHÉ PARA CATÁSTROFES
-        // ==========================================
-        const cache = {
-            quake: { data: null, time: 0 },
-            flood: { data: null, time: 0 },
-            fire: { data: null, time: 0 },
-            tsunami: { data: null, time: 0 }
-        };
+        const cache = { quake: { data: null, time: 0 }, flood: { data: null, time: 0 }, fire: { data: null, time: 0 }, tsunami: { data: null, time: 0 } };
         const CACHE_DURATION = 10 * 60 * 1000;
 
-        // ==========================================
-        // SELECTOR DE REGIÓN
-        // ==========================================
-        function toggleRegionMenu(e) {
-            e.stopPropagation();
-            document.getElementById('region-menu').classList.toggle('show');
-        }
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.region-selector')) {
-                document.getElementById('region-menu').classList.remove('show');
-            }
-        });
+        function toggleRegionMenu(e) { e.stopPropagation(); document.getElementById('region-menu').classList.toggle('show'); }
+        document.addEventListener('click', (e) => { if (!e.target.closest('.region-selector')) document.getElementById('region-menu').classList.remove('show'); });
 
         function selectRegion(e, code) {
             if (e && e.stopPropagation) e.stopPropagation();
@@ -1062,7 +986,6 @@
             map.flyToBounds(r.bounds, { padding: [20, 20] });
             document.getElementById('region-menu').classList.remove('show');
             loadReportsFromDB(); 
-            
             if (document.getElementById('toggle-quake').checked) { if (disasterLayers.quake) map.removeLayer(disasterLayers.quake); disasterLayers.quake = null; cache.quake.time = 0; loadEarthquakes(); }
             if (document.getElementById('toggle-flood').checked) { if (disasterLayers.flood) map.removeLayer(disasterLayers.flood); disasterLayers.flood = null; cache.flood.time = 0; loadGDACS('FL', 'flood', 'Inundaciones'); }
             if (document.getElementById('toggle-fire').checked) { if (disasterLayers.fire) map.removeLayer(disasterLayers.fire); disasterLayers.fire = null; cache.fire.time = 0; loadNASAFires(); }
@@ -1078,12 +1001,8 @@
                     .then(res => res.json())
                     .then(data => {
                         const cc = data.address.country_code.toUpperCase();
-                        if (regions[cc]) {
-                            selectRegion(null, cc);
-                        } else {
-                            alert('País no predefinido en la lista. Mostrando vista global.');
-                            selectRegion(null, 'global');
-                        }
+                        if (regions[cc]) selectRegion(null, cc);
+                        else { alert('País no predefinido en la lista. Mostrando vista global.'); selectRegion(null, 'global'); }
                     }).catch(() => alert('No se pudo determinar tu país.'));
             }, () => alert('Permiso de ubicación denegado.'));
         }
@@ -1094,9 +1013,6 @@
             return lat >= b[0][0] && lat <= b[1][0] && lng >= b[0][1] && lng <= b[1][1];
         }
 
-        // ==========================================
-        // LOCALIZACIÓN GPS USUARIO
-        // ==========================================
         function locateUser() {
             initAudio();
             if (!navigator.geolocation) { alert('La geolocalización no es soportada por tu navegador.'); return; }
@@ -1104,27 +1020,17 @@
                 position => {
                     const lat = position.coords.latitude, lng = position.coords.longitude;
                     userLocation = L.latLng(lat, lng); 
-                    
                     if (userMarker) map.removeLayer(userMarker);
                     userMarker = L.marker([lat, lng], { icon: createUserIcon() }).addTo(map);
                     userMarker.bindPopup('📍 Tu ubicación actual').openPopup();
                     map.flyTo([lat, lng], 15, { duration: 1.2 });
-                    
-                    if (!proximityInterval) {
-                        checkNearbyDisasters(); 
-                        proximityInterval = setInterval(checkNearbyDisasters, 60000); 
-                    }
+                    if (!proximityInterval) { checkNearbyDisasters(); proximityInterval = setInterval(checkNearbyDisasters, 60000); }
                 },
                 error => { alert('No se pudo obtener tu ubicación. Verifica los permisos de ubicación en tu navegador.'); }
             );
         }
-        function createUserIcon() {
-            return L.divIcon({ className: 'user-location-icon', html: `<div class="user-pulse"></div><div class="user-dot"></div>`, iconSize: [20, 20], iconAnchor: [10, 10] });
-        }
+        function createUserIcon() { return L.divIcon({ className: 'user-location-icon', html: `<div class="user-pulse"></div><div class="user-dot"></div>`, iconSize: [20, 20], iconAnchor: [10, 10] }); }
 
-        // ==========================================
-        // MONITOREO DE CATÁSTROFES NATURALES
-        // ==========================================
         function toggleDisasterPanel() {
             const content = document.getElementById('disaster-content');
             const icon = document.getElementById('disaster-toggle-icon');
@@ -1139,22 +1045,13 @@
                     else if (type === 'flood') loadGDACS('FL', 'flood', 'Inundaciones');
                     else if (type === 'fire') loadNASAFires();
                     else if (type === 'tsunami') loadGDACS('TS', 'tsunami', 'Tsunamis');
-                } else {
-                    disasterLayers[type].addTo(map);
-                }
-            } else {
-                if (disasterLayers[type]) map.removeLayer(disasterLayers[type]);
-            }
+                } else { disasterLayers[type].addTo(map); }
+            } else { if (disasterLayers[type]) map.removeLayer(disasterLayers[type]); }
         }
 
-        // 1. Sismos (USGS)
         async function loadEarthquakes() {
             const status = document.getElementById('disaster-status');
-            if (cache.quake.data && Date.now() - cache.quake.time < CACHE_DURATION) {
-                renderEarthquakes(cache.quake.data);
-                return;
-            }
-            
+            if (cache.quake.data && Date.now() - cache.quake.time < CACHE_DURATION) { renderEarthquakes(cache.quake.data); return; }
             status.innerText = "🌍 Cargando sismos...";
             const url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
             try {
@@ -1162,9 +1059,7 @@
                 cache.quake = { data, time: Date.now() };
                 renderEarthquakes(data);
                 status.innerText = "✅ Sismos actualizados";
-            } catch(e) {
-                status.innerText = "❌ Error cargando sismos";
-            }
+            } catch(e) { status.innerText = "❌ Error cargando sismos"; }
         }
 
         function renderEarthquakes(data) {
@@ -1173,36 +1068,21 @@
             data.features.forEach(feature => {
                 const [lon, lat, depth] = feature.geometry.coordinates;
                 if (!isInRegionBounds(lat, lon)) return;
-
                 const mag = feature.properties.mag || 0;
                 let color = '#22c55e', radius = 5000;
                 if (mag >= 6.0) { color = '#ef4444'; radius = 60000; }
                 else if (mag >= 4.5) { color = '#f97316'; radius = 30000; }
                 else if (mag >= 2.5) { color = '#eab308'; radius = 15000; }
-                
-                L.circle([lat, lon], {
-                    radius: radius, color: color, fillColor: color, fillOpacity: 0.3, weight: 2
-                }).bindPopup(`
-                    <div style="min-width: 150px;">
-                        <h3 style="margin:0 0 5px; color:${color};">🌍 Sismo Detectado</h3>
-                        <b>Magnitud:</b> ${mag}<br>
-                        <b>Profundidad:</b> ${depth} km<br>
-                        <b>Lugar:</b> ${feature.properties.place || 'Desconocido'}<br>
-                        <b>Fecha:</b> ${new Date(feature.properties.time).toLocaleString()}
-                    </div>
-                `).addTo(disasterLayers.quake);
+                L.circle([lat, lon], { radius: radius, color: color, fillColor: color, fillOpacity: 0.3, weight: 2 })
+                    .bindPopup(`<div style="min-width: 150px;"><h3 style="margin:0 0 5px; color:${color};">🌍 Sismo Detectado</h3><b>Magnitud:</b> ${mag}<br><b>Profundidad:</b> ${depth} km<br><b>Lugar:</b> ${feature.properties.place || 'Desconocido'}<br><b>Fecha:</b> ${new Date(feature.properties.time).toLocaleString()}</div>`)
+                    .addTo(disasterLayers.quake);
             });
             disasterLayers.quake.addTo(map);
         }
 
-        // 2. Inundaciones y Tsunamis (GDACS)
         async function loadGDACS(type, layerKey, displayName) {
             const status = document.getElementById('disaster-status');
-            if (cache[layerKey].data && Date.now() - cache[layerKey].time < CACHE_DURATION) {
-                renderGDACS(cache[layerKey].data, type, layerKey, displayName);
-                return;
-            }
-
+            if (cache[layerKey].data && Date.now() - cache[layerKey].time < CACHE_DURATION) { renderGDACS(cache[layerKey].data, type, layerKey, displayName); return; }
             status.innerText = `Cargando ${displayName}...`;
             const url = `https://www.gdacs.org/gdacs/api/api/geteventlist/SEARCH?eventlist=${type}&limit=50`;
             try {
@@ -1210,9 +1090,7 @@
                 cache[layerKey] = { data, time: Date.now() };
                 renderGDACS(data, type, layerKey, displayName);
                 status.innerText = `✅ ${displayName} actualizados`;
-            } catch(e) {
-                status.innerText = `❌ Error cargando ${displayName}`;
-            }
+            } catch(e) { status.innerText = `❌ Error cargando ${displayName}`; }
         }
 
         function renderGDACS(data, type, layerKey, displayName) {
@@ -1225,41 +1103,28 @@
                 let color = '#22c55e';
                 if (alertLevel === 'Orange' || alertLevel === 2) color = '#f97316';
                 if (alertLevel === 'Red' || alertLevel === 3) color = '#ef4444';
-
                 if (f.geometry) {
                     try {
                         const bounds = L.geoJSON(f).getBounds();
                         const center = bounds.getCenter();
                         if (!isInRegionBounds(center.lat, center.lng)) return;
                     } catch(e) { return; }
-
-                    L.geoJSON(f, {
-                        style: { color: color, fillColor: color, fillOpacity: 0.4, weight: 2 },
-                        pointToLayer: (feature, latlng) => L.circle(latlng, { radius: 50000, color: color, fillColor: color, fillOpacity: 0.4 })
-                    }).bindPopup(`<b>${props.name || displayName}</b><br>Alerta: ${alertLevel}<br>${props.description || ''}`).addTo(disasterLayers[layerKey]);
+                    L.geoJSON(f, { style: { color: color, fillColor: color, fillOpacity: 0.4, weight: 2 }, pointToLayer: (feature, latlng) => L.circle(latlng, { radius: 50000, color: color, fillColor: color, fillOpacity: 0.4 }) })
+                        .bindPopup(`<b>${props.name || displayName}</b><br>Alerta: ${alertLevel}<br>${props.description || ''}`).addTo(disasterLayers[layerKey]);
                 }
             });
-            if (disasterLayers[layerKey].getLayers().length > 0) {
-                disasterLayers[layerKey].addTo(map);
-            }
+            if (disasterLayers[layerKey].getLayers().length > 0) disasterLayers[layerKey].addTo(map);
         }
 
-        // 3. Incendios (NASA FIRMS) con Respaldo Local
         async function loadNASAFires() {
             const status = document.getElementById('disaster-status');
-            if (cache.fire.data && Date.now() - cache.fire.time < CACHE_DURATION) {
-                renderNASAFires(cache.fire.data);
-                return;
-            }
-
+            if (cache.fire.data && Date.now() - cache.fire.time < CACHE_DURATION) { renderNASAFires(cache.fire.data); return; }
             const apiKey = 'be41bd312c91f171946a830be39c9a95'; 
             const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/-180,-90,180,90/2/`;
-            
             status.innerText = "🔥 Cargando incendios (NASA)...";
             try {
                 const text = await fetchWithFallback(url, false);
                 if (!text || text.includes('Invalid')) throw new Error("Invalid API Key or response");
-                
                 localStorage.setItem("last_fire_data", text);
                 cache.fire = { data: text, time: Date.now() };
                 renderNASAFires(text);
@@ -1267,13 +1132,8 @@
             } catch(e) {
                 console.error("Error loading NASA Fires", e);
                 const backup = localStorage.getItem("last_fire_data");
-                if (backup) {
-                    status.innerText = "⚠️ Mostrando últimos incendios guardados";
-                    renderNASAFires(backup);
-                } else {
-                    status.innerText = "❌ Error NASA, fallback a GDACS";
-                    await loadGDACS('WF', 'fire', 'Incendios');
-                }
+                if (backup) { status.innerText = "⚠️ Mostrando últimos incendios guardados"; renderNASAFires(backup); }
+                else { status.innerText = "❌ Error NASA, fallback a GDACS"; await loadGDACS('WF', 'fire', 'Incendios'); }
             }
         }
 
@@ -1282,70 +1142,117 @@
             disasterLayers.fire = L.layerGroup();
             const lines = text.trim().split('\n');
             if (lines.length < 2) return;
-            
             const headers = lines[0].split(',');
-            const latIdx = headers.indexOf('latitude');
-            const lonIdx = headers.indexOf('longitude');
-            const brightIdx = headers.indexOf('brightness');
-            
+            const latIdx = headers.indexOf('latitude'), lonIdx = headers.indexOf('longitude'), brightIdx = headers.indexOf('brightness');
             if (latIdx === -1 || lonIdx === -1) return;
-
             for (let i = 1; i < lines.length; i++) {
                 const cols = lines[i].split(',');
                 if (cols.length <= Math.max(latIdx, lonIdx, brightIdx)) continue;
-                
-                const lat = parseFloat(cols[latIdx]);
-                const lng = parseFloat(cols[lonIdx]);
+                const lat = parseFloat(cols[latIdx]), lng = parseFloat(cols[lonIdx]);
                 const brightness = brightIdx !== -1 ? parseFloat(cols[brightIdx]) : 0;
-                
                 if (!isNaN(lat) && !isNaN(lng) && isInRegionBounds(lat, lng)) {
-                    L.circle([lat, lng], {
-                        radius: 15000,
-                        color: '#ef4444',
-                        fillColor: '#f97316',
-                        fillOpacity: 0.5
-                    }).bindPopup(`🔥 Incendio Activo (NASA FIRMS)<br>Brillo: ${brightness}`).addTo(disasterLayers.fire);
+                    L.circle([lat, lng], { radius: 15000, color: '#ef4444', fillColor: '#f97316', fillOpacity: 0.5 })
+                        .bindPopup(`🔥 Incendio Activo (NASA FIRMS)<br>Brillo: ${brightness}`).addTo(disasterLayers.fire);
                 }
             }
-            if (disasterLayers.fire.getLayers().length > 0) {
-                disasterLayers.fire.addTo(map);
-            }
+            if (disasterLayers.fire.getLayers().length > 0) disasterLayers.fire.addTo(map);
         }
 
-        // ==========================================
-        // CÓDIGO DE REPORTE ROBUSTO
-        // ==========================================
-        function generarCodigo() {
-            const timestamp = Date.now();
-            const random = Math.random().toString(36).substring(2,8).toUpperCase();
-            return `REP-${timestamp}-${random}`;
-        }
-
+        function generarCodigo() { const timestamp = Date.now(); const random = Math.random().toString(36).substring(2,8).toUpperCase(); return `REP-${timestamp}-${random}`; }
         function createSearchPinIcon() { return L.divIcon({ className: 'search-pin-icon', html: `<div class="pin-bounce-inner"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="32" height="48"><path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#EF4444" stroke="#B91C1C" stroke-width="1"/><circle cx="12" cy="12" r="5" fill="white"/></svg></div>`, iconSize: [32, 48], iconAnchor: [16, 48], popupAnchor: [0, -45] }); }
         function goToLocation(lat, lng, zoom = 17) { if (searchPinMarker) { map.removeLayer(searchPinMarker); searchPinMarker = null; } map.flyTo([lat, lng], zoom, { duration: 1.5 }); setTimeout(() => { if (searchPinMarker) { map.removeLayer(searchPinMarker); } searchPinMarker = L.marker([lat, lng], { icon: createSearchPinIcon() }).addTo(map); }, 1600); }
 
         // ==========================================
-        // BUSCADOR
+        // BUSCADOR MEJORADO
         // ==========================================
         const searchInput = document.getElementById('search-input');
         const searchResults = document.getElementById('search-results');
         let searchTimeout;
-        const VZLA_VIEWBOX = "-73.304687,-0.351562,-59.765625,12.480204"; 
-        function isLikelyCoordinates(text) { return /[\d°'"NSEW]/i.test(text); }
-        searchInput.addEventListener('input', function() { clearTimeout(searchTimeout); const query = this.value.trim(); if (query.length < 4 || isLikelyCoordinates(query)) { searchResults.style.display = 'none'; return; } searchTimeout = setTimeout(() => { fetchSuggestions(query); }, 1200); });
-        function fetchSuggestions(query) { const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${VZLA_VIEWBOX}&bounded=0&limit=5&addressdetails=1`; fetch(url).then(res => res.json()).then(data => { searchResults.innerHTML = ''; if (data.length > 0) { data.forEach(item => { const div = document.createElement('div'); div.className = 'search-result-item'; div.innerHTML = `<span class="search-result-icon">📍</span><span class="search-result-text">${item.display_name}</span>`; div.addEventListener('click', () => { goToLocation(parseFloat(item.lat), parseFloat(item.lon)); searchInput.value = item.display_name; searchResults.style.display = 'none'; }); searchResults.appendChild(div); }); searchResults.style.display = 'block'; } else { searchResults.innerHTML = `<div class="search-no-results">${t('alert_no_results')} "${query}"</div>`; searchResults.style.display = 'block'; } }).catch(err => console.error(err)); }
+        
+        // Función mejorada: solo detecta coordenadas reales (dos números separados por coma)
+        function isLikelyCoordinates(text) {
+            const coordRegex = /^-?\d+\.?\d*\s*,\s*-?\d+\.?\d*$/;
+            return coordRegex.test(text.trim());
+        }
+        
+        searchInput.addEventListener('input', function() { 
+            clearTimeout(searchTimeout); 
+            const query = this.value.trim(); 
+            if (query.length < 3) { searchResults.style.display = 'none'; return; } 
+            searchTimeout = setTimeout(() => { fetchSuggestions(query); }, 800); 
+        });
+        
+        function fetchSuggestions(query) { 
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`; 
+            fetch(url).then(res => res.json()).then(data => { 
+                searchResults.innerHTML = ''; 
+                if (data.length > 0) { 
+                    data.forEach(item => { 
+                        const div = document.createElement('div'); 
+                        div.className = 'search-result-item'; 
+                        div.innerHTML = `<span class="search-result-icon">📍</span><span class="search-result-text">${item.display_name}</span>`; 
+                        div.addEventListener('click', () => { goToLocation(parseFloat(item.lat), parseFloat(item.lon)); searchInput.value = item.display_name; searchResults.style.display = 'none'; }); 
+                        searchResults.appendChild(div); 
+                    }); 
+                    searchResults.style.display = 'block'; 
+                } else { 
+                    searchResults.innerHTML = `<div class="search-no-results">${t('alert_no_results')} "${query}"</div>`; 
+                    searchResults.style.display = 'block'; 
+                } 
+            }).catch(err => console.error(err)); 
+        }
+        
         document.addEventListener('click', (e) => { 
             if (!document.getElementById('search-wrapper').contains(e.target)) searchResults.style.display = 'none'; 
             if (!document.getElementById('add-report-btn').contains(e.target)) document.getElementById('add-report-menu').style.display = 'none';
+            if (!document.getElementById('icon-menu-panel').contains(e.target)) {
+                document.getElementById('icon-menu-content').classList.remove('show');
+                document.getElementById('icon-menu-btn').classList.remove('active');
+                iconPlacingMode = null; iconEraserMode = false;
+                map.getContainer().classList.remove('icon-placing-mode', 'icon-erasing-mode');
+                document.querySelectorAll('.icon-option').forEach(o => o.classList.remove('active'));
+            }
         });
+        
         document.getElementById('search-btn').addEventListener('click', performSearch);
         searchInput.addEventListener('keypress', function(e) { if(e.key === 'Enter') { e.preventDefault(); performSearch(); } });
-        function parseDMSToDecimal(dmsString) { const regex = /(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([NSns]).*?(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([EWew])/i; const match = dmsString.match(regex); if (match) { let lat = parseInt(match[1]) + (parseInt(match[2]) / 60) + (parseFloat(match[3].replace(',', '.')) / 3600); let lon = parseInt(match[5]) + (parseInt(match[6]) / 60) + (parseFloat(match[7].replace(',', '.')) / 3600); if (match[4].toUpperCase() === 'S') lat *= -1; if (match[8].toUpperCase() === 'W') lon *= -1; return { lat, lon }; } return null; }
-        function performSearch() { const query = searchInput.value.trim(); if (!query) return; searchResults.style.display = 'none'; const dmsCoords = parseDMSToDecimal(query); if (dmsCoords) { goToLocation(dmsCoords.lat, dmsCoords.lon, 18); return; } const coordRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/; if (coordRegex.test(query)) { const [lat, lng] = query.split(',').map(Number); goToLocation(lat, lng); return; } const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${VZLA_VIEWBOX}&bounded=0&limit=1`; fetch(url).then(res => res.json()).then(data => { if (data.length > 0) { goToLocation(parseFloat(data[0].lat), parseFloat(data[0].lon)); } else { alert(t('alert_no_results') + " " + query); } }).catch(err => alert("Error de conexión.")); }
+        
+        function parseDMSToDecimal(dmsString) { 
+            const regex = /(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([NSns]).*?(\d+)\s*[°]\s*(\d+)\s*[′'`]\s*([\d.,]+)\s*[″"\u201d]\s*([EWew])/i; 
+            const match = dmsString.match(regex); 
+            if (match) { 
+                let lat = parseInt(match[1]) + (parseInt(match[2]) / 60) + (parseFloat(match[3].replace(',', '.')) / 3600); 
+                let lon = parseInt(match[5]) + (parseInt(match[6]) / 60) + (parseFloat(match[7].replace(',', '.')) / 3600); 
+                if (match[4].toUpperCase() === 'S') lat *= -1; 
+                if (match[8].toUpperCase() === 'W') lon *= -1; 
+                return { lat, lon }; 
+            } 
+            return null; 
+        }
+        
+        function performSearch() { 
+            const query = searchInput.value.trim(); 
+            if (!query) return; 
+            searchResults.style.display = 'none'; 
+            
+            // Intentar coordenadas decimales primero
+            if (isLikelyCoordinates(query)) { 
+                const [lat, lng] = query.split(',').map(s => parseFloat(s.trim())); 
+                if (!isNaN(lat) && !isNaN(lng)) { goToLocation(lat, lng); return; }
+            } 
+            
+            // Intentar DMS
+            const dmsCoords = parseDMSToDecimal(query); 
+            if (dmsCoords) { goToLocation(dmsCoords.lat, dmsCoords.lon, 18); return; } 
+            
+            // Búsqueda normal de dirección
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`; 
+            fetch(url).then(res => res.json()).then(data => { 
+                if (data.length > 0) { goToLocation(parseFloat(data[0].lat), parseFloat(data[0].lon)); } 
+                else { alert(t('alert_no_results') + " " + query); } 
+            }).catch(err => alert("Error de conexión.")); 
+        }
 
-        // ==========================================
-        // LEYENDA COLAPSABLE
-        // ==========================================
         function toggleLegend() {
             const content = document.getElementById('legend-content');
             const icon = document.getElementById('legend-toggle-icon');
@@ -1353,15 +1260,9 @@
             icon.innerText = content.classList.contains('collapsed') ? '➕' : '➖';
         }
 
-        // ==========================================
-        // CONTROL MENÚ MÓVIL Y ESCRITORIO
-        // ==========================================
         function toggleSidebarMobile() { document.getElementById('sidebar').classList.toggle('mobile-open'); }
         function toggleSidebarDesktop() { document.getElementById('sidebar').classList.toggle('closed'); }
 
-        // ==========================================
-        // BUSCADOR INTERNO DE INFORMES
-        // ==========================================
         document.getElementById('report-search').addEventListener('input', function(e) {
             const searchText = e.target.value.toLowerCase().trim();
             document.querySelectorAll('#reports-list .report-item').forEach(item => {
@@ -1371,9 +1272,6 @@
             });
         });
 
-        // ==========================================
-        // COPIAR COORDENADAS
-        // ==========================================
         function copyCoords(id, e) {
             e.stopPropagation(); e.preventDefault();
             const coordsText = document.getElementById(`coords-${id}`).innerText;
@@ -1383,24 +1281,16 @@
         }
         function fallbackCopy(text, btn) {
             const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed"; textArea.style.top = "-9999px"; textArea.style.left = "-9999px";
+            textArea.value = text; textArea.style.position = "fixed"; textArea.style.top = "-9999px"; textArea.style.left = "-9999px";
             document.body.appendChild(textArea); textArea.focus(); textArea.select();
             let successful = false; try { successful = document.execCommand('copy'); } catch (err) { console.error('Error en fallback de copiado:', err); }
             document.body.removeChild(textArea);
             if (successful) { showCopySuccess(btn); } else { alert('No se pudo copiar automáticamente. Por favor, cópialo manualmente: ' + text); }
         }
-        function showCopySuccess(btn) {
-            const originalText = btn.innerText;
-            btn.innerText = '✅';
-            setTimeout(() => { if (btn.innerText === '✅') btn.innerText = originalText; }, 1500);
-        }
+        function showCopySuccess(btn) { const originalText = btn.innerText; btn.innerText = '✅'; setTimeout(() => { if (btn.innerText === '✅') btn.innerText = originalText; }, 1500); }
 
-        // ==========================================
-        // MODALES Y MENUS
-        // ==========================================
         map.on('contextmenu', function(e) { 
-            if (drawingMode) return; 
+            if (drawingMode || iconPlacingMode || iconEraserMode) return; 
             e.originalEvent.preventDefault(); 
             currentLatLng = e.latlng; 
             const menu = document.getElementById('context-menu'); 
@@ -1413,18 +1303,9 @@
             item.addEventListener('click', function() { 
                 currentType = this.getAttribute('data-type'); 
                 document.getElementById('report-type').value = currentType; 
-                
-                document.querySelectorAll('.type-btn').forEach(b => {
-                    b.classList.toggle('active', b.getAttribute('data-type') === currentType);
-                });
-
-                if(this.closest('#add-report-menu')) {
-                    const center = map.getCenter();
-                    currentLatLng = { lat: center.lat, lng: center.lng };
-                    closeAddReportMenu();
-                } else {
-                    document.getElementById('context-menu').style.display = 'none';
-                }
+                document.querySelectorAll('.type-btn').forEach(b => { b.classList.toggle('active', b.getAttribute('data-type') === currentType); });
+                if(this.closest('#add-report-menu')) { const center = map.getCenter(); currentLatLng = { lat: center.lat, lng: center.lng }; closeAddReportMenu(); }
+                else { document.getElementById('context-menu').style.display = 'none'; }
                 document.getElementById('report-lat').value = currentLatLng.lat; 
                 document.getElementById('report-lng').value = currentLatLng.lng; 
                 document.getElementById('modal-title').innerText = t('modal_title_prefix') + t('type_'+currentType); 
@@ -1462,12 +1343,10 @@
         function openCreateModal() { 
             document.getElementById('report-edit-id').value = ''; 
             document.getElementById('btn-submit-report').innerText = "Enviar al Mapa"; 
-            
             if (!document.getElementById('report-type').value) {
                 document.getElementById('report-type').value = 'info';
                 document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-type') === 'info'));
             }
-            
             document.getElementById('modal-create-view').style.display = 'block'; 
             document.getElementById('modal-delete-view').style.display = 'none'; 
             document.getElementById('modal-overlay').style.display = 'flex'; 
@@ -1476,25 +1355,16 @@
         function openEditModal(id) {
             const report = markersData.find(m => m.id === id);
             if (!report || !report.data) return;
-            
             document.getElementById('report-edit-id').value = id;
             document.getElementById('inp-title').value = report.data.title || '';
             document.getElementById('inp-desc').value = report.data.desc || '';
             document.getElementById('report-type').value = report.data.type || 'info';
             document.getElementById('report-level').value = report.data.level || '1';
-            
-            document.querySelectorAll('.type-btn').forEach(b => {
-                b.classList.toggle('active', b.getAttribute('data-type') === report.data.type);
-            });
-
+            document.querySelectorAll('.type-btn').forEach(b => { b.classList.toggle('active', b.getAttribute('data-type') === report.data.type); });
             selectedLevel = report.data.level || '1';
-            document.querySelectorAll('.level-btn').forEach(b => {
-                b.classList.toggle('active', b.getAttribute('data-level') === String(selectedLevel));
-            });
-
+            document.querySelectorAll('.level-btn').forEach(b => { b.classList.toggle('active', b.getAttribute('data-level') === String(selectedLevel)); });
             document.getElementById('modal-title').innerText = "Editar Reporte";
             document.getElementById('btn-submit-report').innerText = "Guardar Cambios";
-            
             document.getElementById('modal-create-view').style.display = 'block';
             document.getElementById('modal-delete-view').style.display = 'none';
             document.getElementById('modal-overlay').style.display = 'flex';
@@ -1512,118 +1382,56 @@
             markerToDeleteId = null; 
         }
 
-        // ==========================================
-        // BASE DE DATOS: CREAR, EDITAR, ELIMINAR
-        // ==========================================
         document.getElementById('report-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const editId = document.getElementById('report-edit-id').value;
-            
-            const formData = {
-                title: document.getElementById('inp-title').value,
-                desc: document.getElementById('inp-desc').value,
-                type: document.getElementById('report-type').value,
-                level: document.getElementById('report-level').value
-            };
-
+            const formData = { title: document.getElementById('inp-title').value, desc: document.getElementById('inp-desc').value, type: document.getElementById('report-type').value, level: document.getElementById('report-level').value };
             if (editId) {
-                db.ref('reports/' + editId).update(formData)
-                    .then(() => closeModal())
-                    .catch(err => alert("Error al actualizar: " + err));
+                db.ref('reports/' + editId).update(formData).then(() => closeModal()).catch(err => alert("Error al actualizar: " + err));
             } else {
                 const lat = parseFloat(document.getElementById('report-lat').value);
                 const lng = parseFloat(document.getElementById('report-lng').value);
-                
-                const exists = markersData.some(m => 
-                    !m.solved && 
-                    parseFloat(m.marker.getLatLng().lat).toFixed(5) === lat.toFixed(5) && 
-                    parseFloat(m.marker.getLatLng().lng).toFixed(5) === lng.toFixed(5)
-                );
-
-                if (exists) {
-                    alert('⚠️ Ya existe un informe activo en estas coordenadas. No se pueden generar duplicados.');
-                    return;
-                }
-                
-                const reportData = {
-                    ...formData,
-                    lat: lat.toString(), 
-                    lng: lng.toString(),
-                    code: generarCodigo(),
-                    solved: false,
-                    attending: false, // Nuevo campo por defecto
-                    notes: {}
-                };
+                const exists = markersData.some(m => !m.solved && parseFloat(m.marker.getLatLng().lat).toFixed(5) === lat.toFixed(5) && parseFloat(m.marker.getLatLng().lng).toFixed(5) === lng.toFixed(5));
+                if (exists) { alert('⚠️ Ya existe un informe activo en estas coordenadas. No se pueden generar duplicados.'); return; }
+                const reportData = { ...formData, lat: lat.toString(), lng: lng.toString(), code: generarCodigo(), solved: false, attending: false, notes: {} };
                 db.ref('reports').push(reportData).then(() => closeModal()).catch(err => alert("Error al guardar: " + err));
             }
         });
 
-        function confirmDeleteMarker() {
-            if (!markerToDeleteId) return;
-            db.ref('reports/' + markerToDeleteId).remove().then(() => closeModal()).catch(err => alert("Error al eliminar: " + err));
-        }
-
+        function confirmDeleteMarker() { if (!markerToDeleteId) return; db.ref('reports/' + markerToDeleteId).remove().then(() => closeModal()).catch(err => alert("Error al eliminar: " + err)); }
         function updateSolvedInDB(markerId, isSolved) { db.ref('reports/' + markerId + '/solved').set(isSolved); }
         function updateAttendingInDB(markerId, isAttending) { db.ref('reports/' + markerId + '/attending').set(isAttending); }
-        function addNoteInDB(markerId, noteText) {
-            const now = new Date(); const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-            db.ref('reports/' + markerId + '/notes').push({ text: noteText, time: time });
-        }
+        function addNoteInDB(markerId, noteText) { const now = new Date(); const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`; db.ref('reports/' + markerId + '/notes').push({ text: noteText, time: time }); }
 
-        // ==========================================
-        // ESCUCHAR BASE DE DATOS EN TIEMPO REAL
-        // ==========================================
         function loadReportsFromDB() {
             db.ref('reports').on('value', (snapshot) => {
                 let openPopupId = null;
                 markersData.forEach(m => { if (m.marker.isPopupOpen()) openPopupId = m.id; });
-                
                 markersData.forEach(m => map.removeLayer(m.marker));
                 markersData = [];
-                
                 const list = document.getElementById('reports-list');
                 list.innerHTML = '';
-                
                 const data = snapshot.val();
                 let counts = { critical: 0, danger: 0, help: 0, info: 0, solved: 0 };
-                
                 if (data) {
                     const favs = getFavorites();
                     const order = getOrder();
                     let keys = Object.keys(data);
-
                     keys.sort((a, b) => {
-                        const aFav = favs.includes(a);
-                        const bFav = favs.includes(b);
-                        if (aFav && !bFav) return -1;
-                        if (!aFav && bFav) return 1;
-
-                        const aIdx = order.indexOf(a);
-                        const bIdx = order.indexOf(b);
-                        if (aIdx === -1 && bIdx === -1) return 0;
-                        if (aIdx === -1) return -1; 
-                        if (bIdx === -1) return 1;
-                        return aIdx - bIdx; 
+                        const aFav = favs.includes(a); const bFav = favs.includes(b);
+                        if (aFav && !bFav) return -1; if (!aFav && bFav) return 1;
+                        const aIdx = order.indexOf(a); const bIdx = order.indexOf(b);
+                        if (aIdx === -1 && bIdx === -1) return 0; if (aIdx === -1) return -1; if (bIdx === -1) return 1; return aIdx - bIdx; 
                     });
-
                     keys.forEach(id => {
                         const report = data[id];
-                        
-                        if (!isInRegionBounds(parseFloat(report.lat), parseFloat(report.lng))) {
-                            return;
-                        }
-
+                        if (!isInRegionBounds(parseFloat(report.lat), parseFloat(report.lng))) return;
                         if (report.solved) counts.solved++;
                         else if (counts[report.type] !== undefined) counts[report.type]++;
-                        
                         renderMarkerOnMap(id, report, favs.includes(id));
-                        if (id === openPopupId) {
-                            const m = markersData.find(m => m.id === id);
-                            if (m) m.marker.openPopup();
-                        }
+                        if (id === openPopupId) { const m = markersData.find(m => m.id === id); if (m) m.marker.openPopup(); }
                     });
                 }
-
                 document.getElementById('count-critical').innerText = counts.critical;
                 document.getElementById('count-danger').innerText = counts.danger;
                 document.getElementById('count-help').innerText = counts.help;
@@ -1634,17 +1442,11 @@
 
         function renderMarkerOnMap(id, report, isFavorite) {
             let notesHtml = '';
-            if (report.notes) {
-                Object.values(report.notes).forEach(note => {
-                    notesHtml += `<div class="note-item"><strong>[${note.time}]</strong> ${note.text}</div>`;
-                });
-            }
-
+            if (report.notes) { Object.values(report.notes).forEach(note => { notesHtml += `<div class="note-item"><strong>[${note.time}]</strong> ${note.text}</div>`; }); }
             const latFormatted = parseFloat(report.lat).toFixed(5);
             const lngFormatted = parseFloat(report.lng).toFixed(5);
             const reportCode = report.code || generarCodigo();
             const isAttending = report.attending || false;
-
             const popupContent = `
                 <div style="min-width: 240px; max-width: 85vw;">
                     <div class="popup-header">
@@ -1654,66 +1456,36 @@
                     <p style="margin:0 0 10px; font-size:0.95rem;">${report.desc}</p>
                     <hr style="margin:10px 0; border-color:#475569;">
                     <small>${t('popup_priority')}: ${report.level}/4 | ${t('popup_type')}: ${t('type_'+report.type)}</small>
-                    
-                    <div class="coords-container">
-                        <small>📍 <span id="coords-${id}">${latFormatted}, ${lngFormatted}</span></small>
-                        <button class="btn-copy-coords" onclick="copyCoords('${id}', event)" title="Copiar coordenadas">📋</button>
-                    </div>
-                    
+                    <div class="coords-container"><small>📍 <span id="coords-${id}">${latFormatted}, ${lngFormatted}</span></small><button class="btn-copy-coords" onclick="copyCoords('${id}', event)" title="Copiar coordenadas">📋</button></div>
                     <div class="notes-list" id="notes-${id}">${notesHtml}</div>
-                    
-                    <div class="note-input-group" id="input-group-${id}" style="display: none;">
-                        <input type="text" id="note-input-${id}" placeholder="Escribe una nota...">
-                        <button onclick="saveNote('${id}')">${t('popup_save_note')}</button>
-                    </div>
-                    
+                    <div class="note-input-group" id="input-group-${id}" style="display: none;"><input type="text" id="note-input-${id}" placeholder="Escribe una nota..."><button onclick="saveNote('${id}')">${t('popup_save_note')}</button></div>
                     <button class="btn-popup btn-add-note" id="btn-note-${id}" onclick="toggleNoteInput('${id}')">${t('popup_add_note')}</button>
                     <button class="btn-popup btn-edit-report" onclick="openEditModal('${id}')">✏️ Editar Reporte</button>
                     ${!report.solved ? `<button class="btn-popup btn-solved" onclick="markAsSolved('${id}')">${t('popup_solved')}</button>` : ''}
                     <button class="btn-popup btn-delete-popup" onclick="openDeleteModal('${id}')">${t('popup_delete')}</button>
-                    
-                    <div class="report-code">
-                        <small>${reportCode}</small>
-                    </div>
+                    <div class="report-code"><small>${reportCode}</small></div>
                 </div>`;
-                
             const icon = report.solved ? createSolvedIcon() : createCustomIcon(report.type, report.level, isAttending);
             const marker = L.marker([report.lat, report.lng], { icon: icon }).addTo(map).bindPopup(popupContent, { maxWidth: 350 });
             markersData.push({ marker, type: report.type, id: id, solved: report.solved, attending: isAttending, data: report });
-            
             addReportToSidebar(report.title, report.type, report.level, report.lat, report.lng, id, report.solved, isAttending, isFavorite, reportCode);
         }
 
-        // ==========================================
-        // LÓGICA INTERFAZ
-        // ==========================================
         function createCustomIcon(type, level, attending = false) { 
             const size = (type === 'critical' || parseInt(level) >= 4) ? 20 : 14; 
             const className = attending ? 'marker-attending' : (type === 'critical' ? 'marker-critical' : '');
-            const bgColor = attending ? '#22c55e' : colors[type]; // Verde si está siendo atendido
+            const bgColor = attending ? '#22c55e' : colors[type]; 
             return L.divIcon({ className, html: `<div style="width:${size}px; height:${size}px; background-color:${bgColor}; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.5);"></div>`, iconSize: [size, size], iconAnchor: [size/2, size/2] }); 
         }
-        
         function createSolvedIcon() { return L.divIcon({ className: '', html: `<div style="width:18px; height:18px; background-color:#9ca3af; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:bold;">✓</div>`, iconSize: [18, 18], iconAnchor: [9, 9] }); }
 
-        function toggleAttending(id) {
-            const markerData = markersData.find(m => m.id === id);
-            if (!markerData) return;
-            const newAttending = !markerData.attending;
-            updateAttendingInDB(id, newAttending);
-        }
+        function toggleAttending(id) { const markerData = markersData.find(m => m.id === id); if (!markerData) return; const newAttending = !markerData.attending; updateAttendingInDB(id, newAttending); }
 
         function toggleNoteInput(markerId) { 
             const inputGroup = document.getElementById(`input-group-${markerId}`); 
             const btnNote = document.getElementById(`btn-note-${markerId}`); 
-            if (inputGroup.style.display === 'none') { 
-                inputGroup.style.display = 'flex'; 
-                btnNote.style.display = 'none'; 
-                document.getElementById(`note-input-${markerId}`).focus(); 
-            } else { 
-                inputGroup.style.display = 'none'; 
-                btnNote.style.display = 'block'; 
-            } 
+            if (inputGroup.style.display === 'none') { inputGroup.style.display = 'flex'; btnNote.style.display = 'none'; document.getElementById(`note-input-${markerId}`).focus(); } 
+            else { inputGroup.style.display = 'none'; btnNote.style.display = 'block'; } 
         }
         
         function saveNote(markerId) {
@@ -1724,60 +1496,34 @@
             const now = new Date();
             const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
             const notesContainer = document.getElementById(`notes-${markerId}`);
-            if (notesContainer) {
-                const newNote = document.createElement('div');
-                newNote.className = 'note-item';
-                newNote.innerHTML = `<strong>[${time}]</strong> ${text}`;
-                notesContainer.appendChild(newNote);
-                notesContainer.scrollTop = notesContainer.scrollHeight;
-            }
-            input.value = '';
-            toggleNoteInput(markerId);
+            if (notesContainer) { const newNote = document.createElement('div'); newNote.className = 'note-item'; newNote.innerHTML = `<strong>[${time}]</strong> ${text}`; notesContainer.appendChild(newNote); notesContainer.scrollTop = notesContainer.scrollHeight; }
+            input.value = ''; toggleNoteInput(markerId);
         }
         
         function markAsSolved(markerId) { updateSolvedInDB(markerId, true); const markerData = markersData.find(m => m.id === markerId); if (markerData) { markerData.solved = true; markerData.marker.setIcon(createSolvedIcon()); markerData.marker.closePopup(); const sidebarItem = document.querySelector(`.report-item[data-id="${markerId}"]`); if (sidebarItem) { sidebarItem.classList.add('solved-item'); sidebarItem.querySelector('.report-meta span:first-child').innerText = t('sidebar_solved'); } } }
         
-        // ==========================================
-        // FAVORITOS (LOCAL)
-        // ==========================================
         function toggleFavorite(e, id) {
             e.stopPropagation();
             const btn = e.currentTarget;
             const isFav = btn.classList.contains('active');
-            
             let favs = getFavorites();
-            if (isFav) {
-                favs = favs.filter(f => f !== id);
-            } else {
-                favs.push(id);
-            }
+            if (isFav) favs = favs.filter(f => f !== id);
+            else favs.push(id);
             saveFavorites(favs);
-
             btn.classList.toggle('active');
             btn.innerText = btn.classList.contains('active') ? '⭐' : '☆';
-            
             const item = btn.closest('.report-item');
             const list = document.getElementById('reports-list');
-            if (btn.classList.contains('active')) {
-                list.prepend(item);
-            } else {
+            if (btn.classList.contains('active')) list.prepend(item);
+            else {
                 const items = list.querySelectorAll('.report-item');
                 let inserted = false;
-                for (let it of items) {
-                    if (!it.querySelector('.fav-btn.active')) {
-                        list.insertBefore(item, it);
-                        inserted = true;
-                        break;
-                    }
-                }
+                for (let it of items) { if (!it.querySelector('.fav-btn.active')) { list.insertBefore(item, it); inserted = true; break; } }
                 if (!inserted) list.appendChild(item);
             }
             saveOrder(); 
         }
 
-        // ==========================================
-        // DRAG AND DROP PARA REORDENAR
-        // ==========================================
         let draggedItem = null;
         function handleDragStart(e) { draggedItem = this; setTimeout(() => this.classList.add('dragging'), 0); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/html', this.innerHTML); }
         function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
@@ -1787,12 +1533,8 @@
                 const list = document.getElementById('reports-list');
                 const allItems = Array.from(list.querySelectorAll('.report-item:not(.dragging)')).filter(i => i.style.display !== 'none');
                 let inserted = false;
-                for (let item of allItems) {
-                    if (e.clientY < item.getBoundingClientRect().top + item.offsetHeight / 2) {
-                        list.insertBefore(draggedItem, item); inserted = true; break;
-                    }
-                }
-                if (!inserted) { list.appendChild(draggedItem); }
+                for (let item of allItems) { if (e.clientY < item.getBoundingClientRect().top + item.offsetHeight / 2) { list.insertBefore(draggedItem, item); inserted = true; break; } }
+                if (!inserted) list.appendChild(draggedItem);
                 saveOrder(); 
             }
             return false;
@@ -1807,33 +1549,15 @@
             item.setAttribute('data-id', markerId); 
             item.setAttribute('data-code', code ? code.toLowerCase() : ''); 
             item.draggable = true;
-
             item.addEventListener('dragstart', handleDragStart);
             item.addEventListener('dragover', handleDragOver);
             item.addEventListener('drop', handleDrop);
             item.addEventListener('dragend', handleDragEnd);
-
             const favClass = isFavorite ? 'active' : '';
             const favIcon = isFavorite ? '⭐' : '☆';
             const attendingIcon = isAttending ? '🟢' : '';
-
-            item.innerHTML = `
-                <div class="report-item-header">
-                    <div class="report-title">${attendingIcon} ${title}</div>
-                    <button class="fav-btn ${favClass}" onclick="toggleFavorite(event, '${markerId}')">${favIcon}</button>
-                </div>
-                <div class="report-meta">
-                    <span>${isSolved ? t('sidebar_solved') : `${t('type_'+type)} - ${t('popup_priority')} ${level}`}</span>
-                </div>
-            `; 
-
-            item.addEventListener('click', () => { 
-                map.flyTo([lat, lng], 15, { duration: 1.5 }); 
-                const m = markersData.find(m => m.id === markerId); 
-                if(m) m.marker.openPopup(); 
-                if (window.innerWidth <= 768) { toggleSidebarMobile(); }
-            }); 
-
+            item.innerHTML = `<div class="report-item-header"><div class="report-title">${attendingIcon} ${title}</div><button class="fav-btn ${favClass}" onclick="toggleFavorite(event, '${markerId}')">${favIcon}</button></div><div class="report-meta"><span>${isSolved ? t('sidebar_solved') : `${t('type_'+type)} - ${t('popup_priority')} ${level}`}</span></div>`; 
+            item.addEventListener('click', () => { map.flyTo([lat, lng], 15, { duration: 1.5 }); const m = markersData.find(m => m.id === markerId); if(m) m.marker.openPopup(); if (window.innerWidth <= 768) toggleSidebarMobile(); }); 
             list.appendChild(item);
         }
 
@@ -1850,6 +1574,7 @@
 
         loadReportsFromDB();
         loadZones();
+        loadMapIcons();
         
         if (document.getElementById('toggle-quake').checked) loadEarthquakes();
         if (document.getElementById('toggle-flood').checked) loadGDACS('FL', 'flood', 'Inundaciones');
