@@ -646,17 +646,25 @@
         const initialZoom = savedPos ? savedPos.zoom : 2;
 
         const worldBounds = [[-90, -180], [90, 180]];
-        const map = L.map('map', { zoomControl: false, doubleClickZoom: false, maxBounds: worldBounds, maxBoundsViscosity: 0.8 }).setView([initialLat, initialLng], initialZoom);
+        const map = L.map('map', { 
+            zoomControl: false, 
+            doubleClickZoom: false,
+            maxBounds: worldBounds, 
+            maxBoundsViscosity: 1.0, // Frontera estricta
+            minZoom: 2 // Evita alejarse demasiado y ver el fondo gris
+        }).setView([initialLat, initialLng], initialZoom);
         
-        // Vista Satelital con etiquetas
+        // Vista Satelital con etiquetas (noWrap: true evita repetición horizontal infinita)
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: '&copy; Esri, Maxar, Earthstar Geographics',
-            maxZoom: 19
+            maxZoom: 19,
+            noWrap: true
         }).addTo(map);
         
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 19,
-            pane: 'overlayPane'
+            pane: 'overlayPane',
+            noWrap: true
         }).addTo(map);
 
         function saveMapPosition() {
@@ -736,7 +744,6 @@
             if (drawingMode) return;
             
             if (iconEraserMode) {
-                // Buscar icono cercano para borrar
                 let closest = null;
                 let minDist = 50;
                 mapIconsData.forEach(m => {
@@ -1169,7 +1176,6 @@
         const searchResults = document.getElementById('search-results');
         let searchTimeout;
         
-        // Función mejorada: solo detecta coordenadas reales (dos números separados por coma)
         function isLikelyCoordinates(text) {
             const coordRegex = /^-?\d+\.?\d*\s*,\s*-?\d+\.?\d*$/;
             return coordRegex.test(text.trim());
@@ -1235,17 +1241,14 @@
             if (!query) return; 
             searchResults.style.display = 'none'; 
             
-            // Intentar coordenadas decimales primero
             if (isLikelyCoordinates(query)) { 
                 const [lat, lng] = query.split(',').map(s => parseFloat(s.trim())); 
                 if (!isNaN(lat) && !isNaN(lng)) { goToLocation(lat, lng); return; }
             } 
             
-            // Intentar DMS
             const dmsCoords = parseDMSToDecimal(query); 
             if (dmsCoords) { goToLocation(dmsCoords.lat, dmsCoords.lon, 18); return; } 
             
-            // Búsqueda normal de dirección
             const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`; 
             fetch(url).then(res => res.json()).then(data => { 
                 if (data.length > 0) { goToLocation(parseFloat(data[0].lat), parseFloat(data[0].lon)); } 
